@@ -99,7 +99,7 @@ project(":ios") {
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
     }
 }
-*/
+
 project(":core") {
     apply plugin: "java"
 
@@ -108,3 +108,4 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     }
 }
+*/

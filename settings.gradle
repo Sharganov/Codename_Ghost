@@ -1,3 +1,2 @@
 rootProject.name = 'Codename_Ghost'
-include 'core'
 //include 'desktop', 'android', 'ios', 'core'
