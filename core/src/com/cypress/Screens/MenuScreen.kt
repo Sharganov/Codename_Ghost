@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
-public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
+public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     private val batcher = SpriteBatch()
     private val assets  = assets
@@ -20,15 +20,14 @@ public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     init {
         // style of big text buttons
-        val font            = assets.generateFont("Calibri.ttf", 60, Color.GREEN)
+        val font            = assets.generateFont("Calibri.ttf", 32, Color.GREEN)
         val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
-        // style of settings button
-        var settingsStyle = assets.getImageButtonStyle(517, 194, 596, 194, 70, 70)
+        // style of back button
+        var backStyle  = assets.getImageButtonStyle(517, 120, 595, 121, 70, 70)
 
-        // style of labels
-        var titleStyle  = Label.LabelStyle()
-        titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
+        // style of back button
+        var soundsStyle     = assets.getImageButtonStyle(667, 156, 767, 156, 100, 100)
 
 
         // initializing table
@@ -36,78 +35,92 @@ public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
         table.setFillParent(true)
 
         // initializing buttons
-        var play =
+        var sounds   = ImageButton(soundsStyle)
+        var language =
                 when (assets.language) {
-                    "english" -> TextButton("Play", textButtonStyle)
-                    else      -> TextButton("»грать", textButtonStyle)
+                    "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
+                    else      -> TextButton("язык:\n" + assets.language, textButtonStyle)
                 }
-        var exit =
+        var about    =
                 when (assets.language) {
-                    "english" -> TextButton("Exit", textButtonStyle)
-                    else      -> TextButton("¬ыход", textButtonStyle)
+                    "english" -> TextButton("About", textButtonStyle)
+                    else      -> TextButton("ќб игре", textButtonStyle)
                 }
-        var settings = ImageButton(settingsStyle)
-
-        // initializing labels
-        var title = Label("Codename: Ghost", titleStyle)
+        var back     = ImageButton(backStyle)
 
 
-        play.addListener(object : ClickListener() {
+        language.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 return true
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = LevelsScreen(assets, game)
+                when (assets.language) {
+                    "english" -> {
+                        assets.language = "русский"
+                        language.setText("язык:\n" + assets.language)
+                        about.setText("ќб игре")
+                    }
+                    else      -> {
+                        assets.language = "english"
+                        language.setText("Language:\n" + assets.language)
+                        about.setText("About")
+                    }
+                }
+            }
+        })
+
+        sounds.addListener(object : ClickListener() {
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                return true
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                if (assets.musicOn) {
+                    assets.musicOn = false
+                    assets.mainTheme?.stop()
+                }
+                else {
+                    assets.musicOn = true
+                    assets.mainTheme?.play()
+                }
+            }
+        })
+
+        about.addListener(object : ClickListener() {
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                return true
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                game.screen = AboutScreen(assets, game)
                 dispose()
             }
         })
 
-        exit.addListener(object : ClickListener() {
+        back.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 return true
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                //val skin = Skin()
-                //skin.add("background", assets.dialogBackground)
-                //val dialogStyle = Window.WindowStyle()
-                //dialogStyle.titleFont = assets.settingsScreenFont
-                //dialogStyle.background = skin.getDrawable("background")
-                //
-                //val dialog = Dialog("Are you really want to exit?", dialogStyle)
-                //
-                //dialog.setPosition(50f, 20f)
-                //stage.addActor(dialog)
-                game.dispose()
-                Gdx.app.exit()
-            }
-        })
-
-        settings.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
-
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = SettingsScreen(assets, game)
+                game.screen = MainScreen(assets, game)
                 dispose()
             }
         })
 
 
-        table.add(play)
+        table.add(sounds)
         table.row()
-        table.add(exit)
-        table.setPosition(170f, -40f)
+        table.add(language)
+        table.row()
+        table.add(about)
+        table.setPosition(-230f, 30f)
 
-        settings.setPosition(735f, 0f)
-
-        title.setPosition(100f, 350f)
+        back.setPosition(10f, 10f)
 
         stage.addActor(table)
-        stage.addActor(settings)
-        stage.addActor(title)
+        stage.addActor(back)
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
@@ -118,14 +131,14 @@ public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        // playing main theme
-        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
-
         // drawing picture
         batcher.begin()
         batcher.disableBlending()
-        batcher.draw(assets.main, 0f, 0f, 800f, 480f)
+        batcher.draw(assets.settings, 0f, 0f, 800f, 480f)
         batcher.end()
+
+        // playing main theme
+        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
 
         // drawing stage
         stage.act(delta)

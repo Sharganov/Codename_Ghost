@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -20,32 +19,15 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
     private val stage   = Stage()
 
     init {
-        // skin for buttons
-        val skin = Skin()
-        skin.add("big_button-up", TextureRegion(assets.buttons, 314, 128, 191, 127))
-        skin.add("big_button-down", TextureRegion(assets.buttons, 41, 128, 191, 127))
-        skin.add("settings-up", TextureRegion(assets.buttons, 521, 196, 60, 60))
-        skin.add("settings-down", TextureRegion(assets.buttons, 600, 196, 60, 60))
-        skin.add("back-up", TextureRegion(assets.buttons, 517, 120, 70, 70))
-        skin.add("back-down", TextureRegion(assets.buttons, 595, 121, 70, 70))
-        skin.add("sounds-up", TextureRegion(assets.buttons, 667, 156, 100, 100))
-        skin.add("sounds-checked", TextureRegion(assets.buttons, 767, 156, 100, 100))
-
         // style of big text buttons
-        var textButtonStyle  = TextButton.TextButtonStyle()
-        textButtonStyle.font = assets.generateFont("Calibri.ttf", 32, Color.GREEN)
-        textButtonStyle.up   = skin.getDrawable("big_button-up")
-        textButtonStyle.down = skin.getDrawable("big_button-down")
+        val font            = assets.generateFont("Calibri.ttf", 32, Color.GREEN)
+        val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
         // style of back button
-        var backStyle  = ImageButton.ImageButtonStyle()
-        backStyle.up   = skin.getDrawable("back-up")
-        backStyle.down = skin.getDrawable("back-down")
+        var backStyle  = assets.getImageButtonStyle(517, 120, 595, 121, 70, 70)
 
         // style of back button
-        var soundsStyle     = ImageButton.ImageButtonStyle()
-        soundsStyle.up      = skin.getDrawable("sounds-up")
-        soundsStyle.checked = skin.getDrawable("sounds-checked")
+        var soundsStyle     = assets.getImageButtonStyle(667, 156, 767, 156, 100, 100)
 
 
         // initializing table
@@ -65,6 +47,7 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
                     else      -> TextButton("ќб игре", textButtonStyle)
                 }
         var back     = ImageButton(backStyle)
+
 
         language.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -125,6 +108,7 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
                 dispose()
             }
         })
+
 
         table.add(sounds)
         table.row()

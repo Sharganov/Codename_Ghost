@@ -9,20 +9,21 @@ import com.cypress.CGHelpers.AssetLoader
 
 public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, height : Int) {
 
-    public var health = 100
-    public var shouldGoLeft    = false
-    public var shouldGoRight   = false
+    public var health          = 100
+    public var shouldGoToLeft  = false
+    public var shouldGoToRight = false
 
-    private val batcher  = SpriteBatch()
-    private var position = Vector2(x, y)
-    private val velocity = Vector2(0f, 0f)
+    private var x            = 2f
+    private val width        = width
+    private val height       = height
+    private var position     = Vector2(x, y)
+    private val velocity     = Vector2(5f, 0f)
+    private val maxMapLength = 5000f + 100f
+    private var stayRight    = true
 
-    private val width    = width
-    private val height   = height
-
-    private var stayRight       = true
-    private var playerGoLeft    = Animation(0.2f, Array<TextureRegion>())
-    private var playerGoRight   = Animation(0.2f, Array<TextureRegion>())
+    private val batcher         = SpriteBatch()
+    private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
+    private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
 
@@ -43,34 +44,89 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
         playerStayRight = Animation(0.2f, playerRight2)
         playerStayLeft  = Animation(0.2f, playerLeft2)
 
-        playerGoRight          = Animation(0.2f, playersRight)
-        playerGoRight.playMode = Animation.PlayMode.LOOP_PINGPONG
+        playerGoToRight          = Animation(0.2f, playersRight)
+        playerGoToRight.playMode = Animation.PlayMode.LOOP_PINGPONG
 
-        playerGoLeft          = Animation(0.2f, playersLeft)
-        playerGoLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+        playerGoToLeft          = Animation(0.2f, playersLeft)
+        playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
     public fun update(delta : Float) {
-        if (shouldGoRight) position = Vector2(position.x - 5, position.y)
-        else position = Vector2(position.x + 5, position.y)
+        if (shouldGoToRight) {
+            // player goes right
+            position = Vector2(position.x - velocity.x, position.y)
+
+            // if he reaches right end of map, camera stops
+            if (position.x < -(maxMapLength - 800f)) {
+                position.x = -(maxMapLength - 800f)
+                x += velocity.x
+            }
+        }
+        else {
+            // player goes left
+            position = Vector2(position.x + velocity.x, position.y)
+
+            // if he reaches left end of map, camera stops
+            if (position.x > 0f) {
+                position.x = 0f
+                x -= velocity.x
+            }
+        }
     }
 
     public fun draw(delta : Float) {
         batcher.begin()
-        if (!shouldGoLeft && !shouldGoRight) {
+
+        // player should stay still ...
+        if (!shouldGoToLeft && !shouldGoToRight) {
             when (stayRight) {
-                true  -> batcher.draw(playerStayRight.getKeyFrame(delta), 2f, 96f, width.toFloat(), (health * 1.5).toFloat())
-                false -> batcher.draw(playerStayLeft.getKeyFrame(delta), 2f, 96f, width.toFloat(), (health * 1.5).toFloat())
+
+                // ... turning to the right side
+                true  -> {
+                    if (x > 678f) x = 678f
+                    if (x < 2f)   x = 2f
+                    batcher.draw(playerStayRight.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
+                }
+
+                // ... turning to the left side
+                false -> {
+                    if (x > 678f) x = 678f
+                    if (x < 2f) x = 2f
+                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
+                }
             }
         }
-        if (shouldGoLeft) {
+
+        // player should go to left
+        if (shouldGoToLeft) {
+
+            // the camera follows player
+            if (position.x < 0f && (x + 50) <= 678f) {
+                x += 25f
+                position.x += 25f
+            }
+
+            if (x > 678f) x = 678f
+            if (x < 2f) x = 2f
             stayRight = false
-            batcher.draw(playerGoLeft.getKeyFrame(delta), 2f, 96f, width.toFloat(), (health * 1.5).toFloat())
+
+            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
             update(delta)
         }
-        if (shouldGoRight) {
+
+        // player should go to left
+        if (shouldGoToRight) {
+
+            // the camera follows player
+            if (position.x < 0f && position.x > -(maxMapLength - 800f) && (x - 50) >= 0f) {
+                x -= 25f
+                position.x -= 25f
+            }
+
+            if (x > 678f) x = 678f
+            if (x < 2f) x = 2f
             stayRight = true
-            batcher.draw(playerGoRight.getKeyFrame(delta), 2f, 96f, width.toFloat(), (health * 1.5).toFloat())
+            batcher.draw(playerGoToRight.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
             update(delta)
         }
 

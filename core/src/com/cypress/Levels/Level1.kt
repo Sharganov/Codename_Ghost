@@ -3,7 +3,6 @@ package com.cypress.Levels
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -17,19 +16,15 @@ public class Level1(assets : AssetLoader, var game : CGGame) : Screen {
     private val batcher = SpriteBatch()
     private val assets  = assets
     private var stage   = Stage()
-    private val camera  = OrthographicCamera()
     private val player  = Player(assets, 2f, 96f, 120, 177)
 
     private var runTime      = 0f
-    private val screenWidth  = Gdx.graphics.width;
-    private val screenHeight = Gdx.graphics.height;
-    private val gameWidth    = 400;
-    private val gameHeight   = screenHeight / (screenWidth / gameWidth);
+    //private val screenWidth  = Gdx.graphics.width;
+    //private val screenHeight = Gdx.graphics.height;
+    //private val gameWidth    = 400;
+    //private val gameHeight   = screenHeight / (screenWidth / gameWidth);
 
     init {
-        camera.setToOrtho(false, 800f, 480f)
-        batcher.projectionMatrix = camera.combined
-
         stage = Controls(assets, player, game).getStage()
     }
 

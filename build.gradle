@@ -87,7 +87,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
     }
 }
-
+/*
 project(":ios") {
     apply plugin: "java"
     apply plugin: "robovm"

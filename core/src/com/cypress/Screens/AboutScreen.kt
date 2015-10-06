@@ -20,11 +20,6 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
     private val stage   = Stage()
 
     init {
-        // skin for buttons
-        val skin = Skin()
-        skin.add("back-up", TextureRegion(assets.buttons, 517, 120, 70, 70))
-        skin.add("back-down", TextureRegion(assets.buttons, 595, 121, 70, 70))
-
         // style of labels
         var titleStyle = Label.LabelStyle()
         titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
@@ -38,19 +33,14 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
                     else      -> com.cypress.Locale.ru.info()
                 }
 
-        // style of back button
-        var backStyle  = ImageButton.ImageButtonStyle()
-        backStyle.up   = skin.getDrawable("back-up")
-        backStyle.down = skin.getDrawable("back-down")
-
-
         // initializing labels
         var title = Label("Codename: Ghost", titleStyle)
         var info  = Label(text, textStyle)
         val textPanel = ScrollPane(info)
 
         // initializing button
-        var back = ImageButton(backStyle)
+        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
+
 
         back.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -62,6 +52,7 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
                 dispose()
             }
         })
+
 
         title.setPosition(100f, 350f)
 

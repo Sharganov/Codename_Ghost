@@ -12,8 +12,8 @@ public class CGGame : Game() {
         val assets = AssetLoader()
         assets.load()
         setScreen(LogoScreen(assets, this))
-        //assets.loadLevel1()
-        //setScreen(Level1(assets, this))
+        assets.loadLevel1()
+        setScreen(Level1(assets, this))
     }
 
     public override fun dispose() {
