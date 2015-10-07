@@ -6,8 +6,13 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 
+/** Loads assets of project. */
 public class AssetLoader {
 
     public var manager: AssetManager = AssetManager()
@@ -22,6 +27,7 @@ public class AssetLoader {
     public var level1BG : Texture? = null
     public var level1FP : Texture? = null
 
+    public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
     public var level1Music : Music? = null
     public var level1Snow  : Music? = null
@@ -40,7 +46,7 @@ public class AssetLoader {
         manager.load("data/images/levels.png", Texture::class.java)
         manager.load("data/images/Panda.png", Texture::class.java)
 
-        //  loading of sounds
+        // loading of sounds
         //manager.load("data/sounds/MainTheme.ogg", Music::class.java)
 
         manager.finishLoading()
@@ -56,7 +62,7 @@ public class AssetLoader {
         //mainTheme = manager.get("data/sounds/MainTheme.ogg")
     }
 
-    /** Generates font from given parameters. */
+    /** Generates font with given parameters. */
     public fun generateFont(fileName : String, size : Int, color : Color) : BitmapFont {
         val generator = FreeTypeFontGenerator(Gdx.files.internal("data/fonts/" + fileName))
         var param     = FreeTypeFontGenerator.FreeTypeFontParameter()
@@ -75,13 +81,42 @@ public class AssetLoader {
         return font
     }
 
+    /** Returns image button style with given parameters. */
+    fun getImageButtonStyle(x1 : Int, y1 : Int, x2 : Int, y2 : Int, height : Int, width : Int)
+            : ImageButton.ImageButtonStyle {
+        // skin for button
+        val skin = Skin()
+        skin.add("button-up", TextureRegion(buttons, x1, y1, height, width))
+        skin.add("button-down", TextureRegion(buttons, x2, y2, height, width))
+
+        val style  = ImageButton.ImageButtonStyle()
+        style.up   = skin.getDrawable("button-up")
+        style.down = skin.getDrawable("button-down")
+        return style
+    }
+
+    /** Returns text button style with given parameters. */
+    fun getTextButtonStyle(x1 : Int, y1 : Int, x2 : Int, y2 : Int, height : Int, width : Int, font : BitmapFont)
+            : TextButton.TextButtonStyle {
+        // skin for button
+        val skin = Skin()
+        skin.add("button-up", TextureRegion(buttons, x1, y1, height, width))
+        skin.add("button-down", TextureRegion(buttons, x2, y2, height, width))
+
+        val style  = TextButton.TextButtonStyle()
+        style.font = font
+        style.up   = skin.getDrawable("button-up")
+        style.down = skin.getDrawable("button-down")
+        return style
+    }
+
     /** Loads resources of level 1 to AssetManager. */
     public fun loadLevel1() {
-        // loaing of images
+        // loading of images
         manager.load("data/images/level1/background.png", Texture::class.java)
         manager.load("data/images/level1/firstplan.png", Texture::class.java)
 
-        // loaing of music
+        // loading of music
         //manager.load("data/sounds/Level1.ogg", Music::class.java)
 
         manager.finishLoading()

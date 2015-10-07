@@ -7,12 +7,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
+/** Contains definition of screen with logo. */
 public class LogoScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     private var runTime = 0f
     private val batcher = SpriteBatch()
     private val assets  = assets
 
+    /** Draws screen with logo. */
     public override fun render(delta : Float) {
         runTime += delta
 
@@ -46,6 +48,7 @@ public class LogoScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Clears this screen. */
     public override fun dispose() {
         game.dispose()
     }

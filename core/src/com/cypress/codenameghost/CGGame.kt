@@ -4,18 +4,19 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.Screens.LogoScreen
-import com.cypress.Levels.Level1
 
+/** Contains definition of game. */
 public class CGGame : Game() {
+
+    /** Creates game. */
     public override fun create() {
         Gdx.app.log("CGGame", "created")
         val assets = AssetLoader()
         assets.load()
         setScreen(LogoScreen(assets, this))
-        //assets.loadLevel1()
-        //setScreen(Level1(assets, this))
     }
 
+    /** Dispose game. */
     public override fun dispose() {
         super.dispose()
     }
