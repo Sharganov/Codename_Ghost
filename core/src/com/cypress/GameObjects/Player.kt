@@ -12,12 +12,10 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
     public var health = 100
     public var shouldGoLeft    = false
     public var shouldGoRight   = false
-    public var shouldJump      = false
 
     private val batcher  = SpriteBatch()
     private var position = Vector2(x, y)
     private val velocity = Vector2(0f, 0f)
-    private val acceleration = Vector2(0f, 480f)
 
     private val width    = width
     private val height   = height
@@ -27,7 +25,6 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
     private var playerGoRight   = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
-    private var playerJump      =  Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 218, 802, width, height)
@@ -39,11 +36,9 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
 
         val playersRight = Array<TextureRegion>()
         val playersLeft  = Array<TextureRegion>()
-        val playersJump  = Array<TextureRegion>()
 
         playersRight.addAll(playerRight1, playerRight2, playerRight3)
         playersLeft.addAll(playerLeft1, playerLeft2, playerLeft3)
-        playersJump.addAll(playerLeft1, playerLeft2, playerLeft3)
 
         playerStayRight = Animation(0.2f, playerRight2)
         playerStayLeft  = Animation(0.2f, playerLeft2)
@@ -53,29 +48,15 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
 
         playerGoLeft          = Animation(0.2f, playersLeft)
         playerGoLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
-
-        playerJump          = Animation(0.2f, playersJump)
-        playerJump.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
     public fun update(delta : Float) {
-        velocity.add(acceleration.cpy().scl(delta));
-        if(velocity.y > 1) velocity.y = 8f
-        position.add(velocity.cpy().scl(delta));
-
         if (shouldGoRight) position = Vector2(position.x - 5, position.y)
-        else if(shouldGoLeft) position = Vector2(position.x + 5, position.y)
-        else if(shouldJump) position = Vector2(position.x , position.y - 10)
+        else position = Vector2(position.x + 5, position.y)
     }
 
     public fun draw(delta : Float) {
         batcher.begin()
-        update(delta)
-        if(shouldJump)
-        {
-            batcher.draw(playerGoRight.getKeyFrame(delta), 2f, 96f, width.toFloat(), (health * 1.5).toFloat())
-            update(delta)
-        }
         if (!shouldGoLeft && !shouldGoRight) {
             when (stayRight) {
                 true  -> batcher.draw(playerStayRight.getKeyFrame(delta), 2f, 96f, width.toFloat(), (health * 1.5).toFloat())
