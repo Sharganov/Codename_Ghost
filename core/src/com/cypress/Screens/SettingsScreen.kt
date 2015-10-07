@@ -12,10 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
-public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
+/** Contains definition of screen of settings. */
+public class SettingsScreen(val assets : AssetLoader, val game : CGGame) : Screen {
 
     private val batcher = SpriteBatch()
-    private val assets  = assets
     private val stage   = Stage()
 
     init {
@@ -23,19 +23,12 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
         val font            = assets.generateFont("Calibri.ttf", 32, Color.GREEN)
         val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
-        // style of back button
-        var backStyle  = assets.getImageButtonStyle(517, 120, 595, 121, 70, 70)
-
-        // style of back button
-        var soundsStyle     = assets.getImageButtonStyle(667, 156, 767, 156, 100, 100)
-
-
         // initializing table
         var table = Table()
         table.setFillParent(true)
 
         // initializing buttons
-        var sounds   = ImageButton(soundsStyle)
+        var sounds   = ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100))
         var language =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
@@ -46,7 +39,7 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
                     "english" -> TextButton("About", textButtonStyle)
                     else      -> TextButton("ќб игре", textButtonStyle)
                 }
-        var back     = ImageButton(backStyle)
+        var back     = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
 
 
         language.addListener(object : ClickListener() {
@@ -116,7 +109,6 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
         table.row()
         table.add(about)
         table.setPosition(-230f, 30f)
-
         back.setPosition(10f, 10f)
 
         stage.addActor(table)
@@ -126,6 +118,7 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Draws screen of settings. */
     public override fun render(delta : Float) {
         // drawing background color
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -138,7 +131,7 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
         batcher.end()
 
         // playing main theme
-        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
+        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing stage
         stage.act(delta)
@@ -155,6 +148,7 @@ public class SettingsScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Clears this screen. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()

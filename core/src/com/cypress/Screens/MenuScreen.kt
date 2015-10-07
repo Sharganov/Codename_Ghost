@@ -10,12 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
+import com.cypress.GameObjects.Player
 import com.cypress.codenameghost.CGGame
+import com.cypress.Levels.Level1
 
-public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
+/** Contains definition of pause menu. */
+public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player : Player) : Screen {
 
     private val batcher = SpriteBatch()
-    private val assets  = assets
     private val stage   = Stage()
 
     init {
@@ -23,30 +25,23 @@ public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
         val font            = assets.generateFont("Calibri.ttf", 32, Color.GREEN)
         val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
-        // style of back button
-        var backStyle  = assets.getImageButtonStyle(517, 120, 595, 121, 70, 70)
-
-        // style of back button
-        var soundsStyle     = assets.getImageButtonStyle(667, 156, 767, 156, 100, 100)
-
-
         // initializing table
         var table = Table()
         table.setFillParent(true)
 
         // initializing buttons
-        var sounds   = ImageButton(soundsStyle)
-        var language =
+        var sounds     = ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100))
+        var language   =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
                     else      -> TextButton("язык:\n" + assets.language, textButtonStyle)
                 }
-        var about    =
+        var backToMain =
                 when (assets.language) {
-                    "english" -> TextButton("About", textButtonStyle)
-                    else      -> TextButton("ќб игре", textButtonStyle)
+                    "english" -> TextButton("Back to \nmain menu", textButtonStyle)
+                    else      -> TextButton("¬ главное \nменю", textButtonStyle)
                 }
-        var back     = ImageButton(backStyle)
+        var back       = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
 
 
         language.addListener(object : ClickListener() {
@@ -59,12 +54,12 @@ public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
                     "english" -> {
                         assets.language = "русский"
                         language.setText("язык:\n" + assets.language)
-                        about.setText("ќб игре")
+                        backToMain.setText("¬ главное \nменю")
                     }
                     else      -> {
                         assets.language = "english"
                         language.setText("Language:\n" + assets.language)
-                        about.setText("About")
+                        backToMain.setText("Back to \nmain menu")
                     }
                 }
             }
@@ -87,18 +82,7 @@ public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
             }
         })
 
-        about.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
-
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = AboutScreen(assets, game)
-                dispose()
-            }
-        })
-
-        back.addListener(object : ClickListener() {
+        backToMain.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 return true
             }
@@ -109,14 +93,24 @@ public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
             }
         })
 
+        back.addListener(object : ClickListener() {
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                return true
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                game.screen = Level1(assets, game, player)
+                dispose()
+            }
+        })
+
 
         table.add(sounds)
         table.row()
         table.add(language)
         table.row()
-        table.add(about)
+        table.add(backToMain)
         table.setPosition(-230f, 30f)
-
         back.setPosition(10f, 10f)
 
         stage.addActor(table)
@@ -126,6 +120,7 @@ public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Draws pause menu. */
     public override fun render(delta : Float) {
         // drawing background color
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -155,6 +150,7 @@ public class MenuScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Clears this screen. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()

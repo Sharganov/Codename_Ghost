@@ -10,12 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
-import com.cypress.Levels.Level1
+import com.cypress.Levels.*
+import com.cypress.GameObjects.Player
 
-public class LevelsScreen(assets : AssetLoader, var game : CGGame) : Screen {
+/** Contains definition of screen of level selection. */
+public class LevelsScreen(val assets : AssetLoader, val game : CGGame) : Screen {
 
     private val batcher = SpriteBatch()
-    private val assets  = assets
     private val stage   = Stage()
 
     init {
@@ -37,9 +38,11 @@ public class LevelsScreen(assets : AssetLoader, var game : CGGame) : Screen {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                assets.mainTheme?.stop()
+                if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
+
                 assets.loadLevel1()
-                game.screen = Level1(assets, game)
+                val player  = Player(assets, 2f, 80f, 120, 177)
+                game.screen = Level1(assets, game, player)
                 dispose()
             }
         })
@@ -67,6 +70,7 @@ public class LevelsScreen(assets : AssetLoader, var game : CGGame) : Screen {
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Draws screen of level selection. */
     public override fun render(delta : Float) {
         // drawing background color
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -79,7 +83,7 @@ public class LevelsScreen(assets : AssetLoader, var game : CGGame) : Screen {
         batcher.end()
 
         // playing main theme
-        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
+        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing stage
         stage.act(delta)
@@ -96,6 +100,7 @@ public class LevelsScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Clears this screen. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()

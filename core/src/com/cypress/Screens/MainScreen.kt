@@ -12,10 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
-public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
+/** Contains definition of main screen. */
+public class MainScreen(val assets : AssetLoader, val game : CGGame) : Screen {
 
     private val batcher = SpriteBatch()
-    private val assets  = assets
     private val stage   = Stage()
 
     init {
@@ -100,26 +100,27 @@ public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
         table.row()
         table.add(exit)
         table.setPosition(170f, -40f)
-
         settings.setPosition(735f, 0f)
-
         title.setPosition(100f, 350f)
 
         stage.addActor(table)
         stage.addActor(settings)
         stage.addActor(title)
 
+        assets.activeMusic = assets.mainTheme
+
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Draws main screen. */
     public override fun render(delta : Float) {
         // drawing background color
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // playing main theme
-        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
+        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing picture
         batcher.begin()
@@ -142,6 +143,7 @@ public class MainScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Clears this screen. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()

@@ -1,5 +1,6 @@
 package com.cypress.Locale.ru
 
+/** Returns string with info on Russian. */
 public fun info() : String {
     val text =
             "                                     ¬ерси€ 0.1\n" +
@@ -10,14 +11,14 @@ public fun info() : String {
             "јртем Ўарганов\n" +
             "\n" +
             "—ледите за нашим проектом на сайте\n" +
-            "http://github.com/maktoff/codename:%20ghost\n" +
+            "http://github.com/MaKToff/Codename_Ghost\n" +
             "\n" +
             "\n" +
             "ћы хотим сказать отдельное спасибо команде Penguin DT за разрешение\n" +
-            "использовать некоторые из их ресурсов.\n" +
-            "\n" +
-            "ƒл€ получени€ дополнительной информации посетите http://www.tagap.net/\n" +
-            "TAGAP(R) - зарегистрированный товарный знак, принадлежащий Jouni Lahtinen.\n" +
+            "использовать некоторые из их ресурсов. ƒл€ получени€ дополнительной\n" +
+            "информации посетите http://www.tagap.net/.\n" +
+            "TAGAP(R) - зарегистрированный товарный знак, принадлежащий\n" +
+            "Jouni Lahtinen.\n" +
             "\n" +
             "\n" +
             "¬се остальные ресурсы €вл€ютс€ бесплатными и были найдены в свободном\n" +

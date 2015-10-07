@@ -7,18 +7,17 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
-public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, height : Int) {
+/** Contains definition of player. */
+public class Player(val assets : AssetLoader, private var x : Float, private var y : Float,
+                    private val width : Int, private val height : Int) {
 
     public var health          = 100
     public var shouldGoToLeft  = false
     public var shouldGoToRight = false
 
-    private var x            = 2f
-    private val width        = width
-    private val height       = height
     private var position     = Vector2(x, y)
     private val velocity     = Vector2(5f, 0f)
-    private val maxMapLength = 5000f + 100f
+    private val maxMapLength = 5000f
     private var stayRight    = true
 
     private val batcher         = SpriteBatch()
@@ -51,6 +50,7 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
+    /** Updates player position. */
     public fun update(delta : Float) {
         if (shouldGoToRight) {
             // player goes right
@@ -74,6 +74,7 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
         }
     }
 
+    /** Draws player. */
     public fun draw(delta : Float) {
         batcher.begin()
 
@@ -85,14 +86,14 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
                 true  -> {
                     if (x > 678f) x = 678f
                     if (x < 2f)   x = 2f
-                    batcher.draw(playerStayRight.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
+                    batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
                 }
 
                 // ... turning to the left side
                 false -> {
                     if (x > 678f) x = 678f
                     if (x < 2f) x = 2f
-                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
+                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
                 }
             }
         }
@@ -110,7 +111,7 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
             if (x < 2f) x = 2f
             stayRight = false
 
-            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
+            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
             update(delta)
         }
 
@@ -126,25 +127,29 @@ public class Player(assets : AssetLoader, x : Float, y : Float, width : Int, hei
             if (x > 678f) x = 678f
             if (x < 2f) x = 2f
             stayRight = true
-            batcher.draw(playerGoToRight.getKeyFrame(delta), x, 96f, width.toFloat(), (health * 1.5).toFloat())
+            batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
             update(delta)
         }
 
         batcher.end()
     }
 
+    /** Returns position of player on Ox axis. */
     public fun getX() : Float {
         return position.x
     }
 
+    /** Returns position of player on Oy axis. */
     public fun getY() : Float {
         return position.y
     }
 
+    /** Returns width of player. */
     public fun getWidth() : Float {
         return width.toFloat()
     }
 
+    /** Returns height of player. */
     public fun getHeight() : Float {
         return height.toFloat()
     }

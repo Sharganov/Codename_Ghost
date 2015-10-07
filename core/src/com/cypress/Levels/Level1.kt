@@ -11,23 +11,27 @@ import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.Player
 import com.cypress.codenameghost.CGGame
 
-public class Level1(assets : AssetLoader, var game : CGGame) : Screen {
+/** Contains definition of first level. */
+public class Level1(val assets : AssetLoader, val game : CGGame, val player : Player) : Screen {
 
     private val batcher = SpriteBatch()
-    private val assets  = assets
+    private var runTime = 0f
     private var stage   = Stage()
-    private val player  = Player(assets, 2f, 96f, 120, 177)
 
-    private var runTime      = 0f
+    private val spruce = TextureRegion(assets.level1FP, 19, 0, 221, 417)
+    private val fence  = TextureRegion(assets.level1FP, 30, 446, 253, 359)
+
     //private val screenWidth  = Gdx.graphics.width;
     //private val screenHeight = Gdx.graphics.height;
     //private val gameWidth    = 400;
     //private val gameHeight   = screenHeight / (screenWidth / gameWidth);
 
     init {
-        stage = Controls(assets, player, game).getStage()
+        stage = Controls(assets, game, player).getStage()
+        assets.activeMusic = assets.level1Music
     }
 
+    /** Draws level. */
     public override fun render(delta : Float) {
         runTime += delta
 
@@ -38,7 +42,7 @@ public class Level1(assets : AssetLoader, var game : CGGame) : Screen {
         // drawing background
         batcher.begin()
         batcher.disableBlending()
-        batcher.draw(assets.level1BG, player.getX(), player.getY() - 96f, 5000f, 480f)
+        batcher.draw(assets.level1BG, player.getX(), 0f, 5000f, 730f)
         batcher.end()
 
         // drawing player
@@ -47,11 +51,12 @@ public class Level1(assets : AssetLoader, var game : CGGame) : Screen {
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
-        batcher.draw(TextureRegion(assets.level1FP, 19, 0, 221, 417), 300f + player.getX(), player.getY() - 96f, 221f, 417f)
+        batcher.draw(spruce, 300f + player.getX(), player.getY() - 80f, 221f, 417f)
+        batcher.draw(fence, 4745f + player.getX(), 120f - player.getY(), 253f, 359f)
         batcher.end()
 
         // playing level1 music
-        if (!(assets.level1Music?.isPlaying ?: false)&& assets.musicOn) assets.level1Music?.play()
+        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing stage
         stage.act(delta)
@@ -68,6 +73,7 @@ public class Level1(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Dispose level 1. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()

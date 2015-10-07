@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 
+/** Loads assets of project. */
 public class AssetLoader {
 
     public var manager: AssetManager = AssetManager()
@@ -26,6 +27,7 @@ public class AssetLoader {
     public var level1BG : Texture? = null
     public var level1FP : Texture? = null
 
+    public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
     public var level1Music : Music? = null
     public var level1Snow  : Music? = null
@@ -110,11 +112,11 @@ public class AssetLoader {
 
     /** Loads resources of level 1 to AssetManager. */
     public fun loadLevel1() {
-        // loaing of images
+        // loading of images
         manager.load("data/images/level1/background.png", Texture::class.java)
         manager.load("data/images/level1/firstplan.png", Texture::class.java)
 
-        // loaing of music
+        // loading of music
         //manager.load("data/sounds/Level1.ogg", Music::class.java)
 
         manager.finishLoading()

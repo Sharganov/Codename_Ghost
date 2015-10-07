@@ -9,14 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.GameObjects.Player
 import com.cypress.codenameghost.CGGame
+import com.cypress.Screens.MenuScreen
 
-public class Controls(assets : AssetLoader, player : Player, game : CGGame) {
+/** Contains definition of controls. */
+public class Controls(val assets : AssetLoader, val game : CGGame, val player : Player) {
 
-    private val assets  = assets
-    private val stage   = Stage()
+    private val stage  = Stage()
 
     init {
-
         // initializing buttons
         val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65))
         val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65))
@@ -82,8 +82,8 @@ public class Controls(assets : AssetLoader, player : Player, game : CGGame) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                if (assets.level1Music?.isPlaying ?: false && assets.musicOn) assets.level1Music?.stop()
-                game.screen = com.cypress.Screens.SettingsScreen(assets, game)
+                if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
+                game.screen = MenuScreen(assets, game, player)
                 dispose()
             }
         })
@@ -108,29 +108,21 @@ public class Controls(assets : AssetLoader, player : Player, game : CGGame) {
 
 
         left.setPosition(20f, 0f)
-        left.sizeBy(42f, 42f)
-
+        left.sizeBy(35f, 35f)
         right.setPosition(130f, 0f)
-        right.sizeBy(42f, 42f)
-
+        right.sizeBy(35f, 35f)
         jump.setPosition(660f, 70f)
-        jump.sizeBy(42f, 42f)
-
+        jump.sizeBy(35f, 35f)
         shoot.setPosition(530f, 20f)
-        shoot.sizeBy(42f, 42f)
-
+        shoot.sizeBy(35f, 35f)
         pause.setPosition(695f, 380f)
-        pause.sizeBy(40f, 40f)
-
+        pause.sizeBy(25f, 25f)
         leftGun.setPosition(30f, 380f)
         leftGun.sizeBy(25f, 40f)
-
         rightGun.setPosition(150f, 380f)
         rightGun.sizeBy(25f, 40f)
-
         heart.setPosition(250f, 395f)
         heart.sizeBy(20f, 20f)
-
         health.setPosition(265f, 415f)
 
         stage.addActor(left)
@@ -147,10 +139,12 @@ public class Controls(assets : AssetLoader, player : Player, game : CGGame) {
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Returns stage. */
     public fun getStage() : Stage {
         return stage
     }
 
+    /** Dispose stage. */
     public fun dispose() {
         stage.dispose()
     }

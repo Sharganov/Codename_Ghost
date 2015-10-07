@@ -1,5 +1,6 @@
 package com.cypress.Locale.en
 
+/** Returns string with info on English. */
 public fun info() : String {
     val text =
             "                                     Version 0.1\n" +
@@ -10,13 +11,11 @@ public fun info() : String {
             "Artem Sharganov\n" +
             "\n" +
             "Watch for our project on the site\n" +
-            "http://github.com/maktoff/codename:%20ghost\n" +
+            "http://github.com/MaKToff/Codename_Ghost\n" +
             "\n" +
             "\n" +
-            "We wants to say special thanks to Penguin Development Team for\n" +
-            "permission to use some of their resources.\n" +
-            "\n" +
-            "For more information visit http://www.tagap.net/\n" +
+            "We wants to say special thanks to Penguin Development Team for permission\n" +
+            "to use some of their resources. For more information visit http://www.tagap.net/\n" +
             "TAGAP(R) is a registered trademark of Jouni Lahtinen.\n" +
             "\n" +
             "\n" +
