@@ -70,10 +70,12 @@ public class Controls(assets : AssetLoader, player : Player, game : CGGame) {
 
         jump.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                player.shouldJump = true
                 return true
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            player.shouldJump = false
             }
         })
 
