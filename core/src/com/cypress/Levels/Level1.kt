@@ -49,7 +49,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         batcher.begin()
         batcher.disableBlending()
         //if (player.getX() > -(4096f - 800f))
-        batcher.draw(assets.level1BG, player.getX(), 0f, 4096f, 730f)
+        batcher.draw(assets.level1BG, player.getX(), player.getY() - 80f, 4096f, 730f)
         //else
             //batcher.draw(assets.level1BG, player.getX() + 4096f - 800f, 0f, 4096f, 730f)
         batcher.end()
@@ -68,12 +68,13 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
                 }
         batcher.draw(gunIcon, 80f, 400f, 80f, 55f)
         batcher.draw(spruce, 300f + player.getX(), player.getY() - 80f, 221f, 417f)
-        batcher.draw(fence, 3885f + player.getX(), 130f - player.getY(), 212f, 344f)
+        batcher.draw(fence, 3885f + player.getX(), player.getY() - 30f, 212f, 344f)
+
         batcher.end()
 
         // playing level1 music and sounds
         if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
-        if (player.shouldGoToLeft || player.shouldGoToRight) assets.level1Snow?.play()
+        if ((player.shouldGoToLeft || player.shouldGoToRight) && player.onGround) assets.level1Snow?.play()
         else assets.level1Snow?.stop()
 
         // drawing stage

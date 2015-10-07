@@ -19,18 +19,21 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
     public var shouldGoToLeft  = false
     public var shouldGoToRight = false
     public var stayRight       = true
+    public var shouldJump      = false
+    public var onGround        = true
     public var gunType         = "usi"
 
     private var position     = Vector2(x, y)
-    private val velocity     = Vector2(5f, 0f)
+    private var velocity     = Vector2(3f, 10f)
+    private val acceleration = Vector2(0f, 0.15f)
     private val gun          = Gun(assets, this, gunType, x, y)
-
 
     private val batcher         = SpriteBatch()
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
+    private var playerJump      =  Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
@@ -42,6 +45,7 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
 
         val playersRight = Array<TextureRegion>()
         val playersLeft  = Array<TextureRegion>()
+        val playersJump  = Array<TextureRegion>()
 
         playersRight.addAll(playerRight1, playerRight2, playerRight3)
         playersLeft.addAll(playerLeft1, playerLeft2, playerLeft3)
@@ -54,13 +58,34 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
 
         playerGoToLeft          = Animation(0.2f, playersLeft)
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+
+        playerJump          = Animation(0.2f, playersJump)
+        playerJump.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
     /** Updates player position. */
     public fun update(delta : Float) {
+        if(position.y >= 80f ) {
+            onGround = true
+            position.y     = 80f
+            velocity.y     = 10f
+            acceleration.y = 0.15f
+        }
+        else {
+            onGround    = false
+            position.y -= velocity.y
+            velocity.y -= acceleration.y
+        }
+
         if (shouldGoToRight) {
             // player goes right
-            position = Vector2(position.x - velocity.x, position.y)
+            position.x -= velocity.x
+
+            // if he should jump
+            if (shouldJump) {
+                position.y -= velocity.y
+                shouldJump = false
+            }
 
             // if he reaches right end of map, camera stops
             if (position.x < -(maxMapLength - 800f)) {
@@ -68,15 +93,26 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
                 x += velocity.x
             }
         }
-        else {
+        else if (shouldGoToLeft){
             // player goes left
-            position = Vector2(position.x + velocity.x, position.y)
+            position.x += velocity.x
+
+            // if he should jump
+            if (shouldJump) {
+                position.y -= velocity.y
+                shouldJump = false
+            }
 
             // if he reaches left end of map, camera stops
             if (position.x > 0f) {
                 position.x = 0f
                 x -= velocity.x
             }
+        }
+        else if (shouldJump) {
+            position.y     = 20f
+            acceleration.y = 0.3f
+            shouldJump     = false
         }
 
         if (position.x == -3296f && x > 650f) {
@@ -95,8 +131,9 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
 
         batcher.begin()
 
+        update(delta)
         // player should stay still ...
-        if (!shouldGoToLeft && !shouldGoToRight) {
+        if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
 
                 // ... turning to the right side
@@ -128,11 +165,14 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
             if (x < 2f)   x = 2f
             stayRight = false
 
-            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            if (shouldJump) onGround = false
+
+            if (!onGround) batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            else batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
             update(delta)
         }
 
-        // player should go to left
+        // player should go to right
         if (shouldGoToRight) {
 
             // the camera follows player
@@ -144,7 +184,19 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
             if (x > 678f) x = 678f
             if (x < 2f)   x = 2f
             stayRight = true
-            batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+
+            if (shouldJump) onGround = false
+
+            if (!onGround) batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            else batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            update(delta)
+        }
+
+        // player should jump
+        if (shouldJump)
+        {
+            onGround = false
+            batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
             update(delta)
         }
 
