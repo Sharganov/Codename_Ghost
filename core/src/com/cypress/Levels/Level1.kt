@@ -18,8 +18,14 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
     private var runTime = 0f
     private var stage   = Stage()
 
-    private val spruce = TextureRegion(assets.level1FP, 19, 0, 221, 417)
-    private val fence  = TextureRegion(assets.level1FP, 30, 446, 253, 359)
+    private val spruce  = TextureRegion(assets.level1FP, 19, 0, 221, 417)
+    private val fence   = TextureRegion(assets.level1FP, 30, 446, 207, 344)
+    private var gunIcon =
+            when (player.gunType) {
+                "shotgun" -> TextureRegion(assets.guns, 405, 175, 80, 55)
+                "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
+                else -> TextureRegion(assets.guns, 410, 87, 80, 55)
+            }
 
     //private val screenWidth  = Gdx.graphics.width;
     //private val screenHeight = Gdx.graphics.height;
@@ -42,7 +48,10 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         // drawing background
         batcher.begin()
         batcher.disableBlending()
-        batcher.draw(assets.level1BG, player.getX(), player.getY() - 80f, 5000f, 730f)
+        //if (player.getX() > -(4096f - 800f))
+        batcher.draw(assets.level1BG, player.getX(), player.getY() - 80f, 4096f, 730f)
+        //else
+            //batcher.draw(assets.level1BG, player.getX() + 4096f - 800f, 0f, 4096f, 730f)
         batcher.end()
 
         // drawing player
@@ -51,12 +60,22 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
+        gunIcon =
+                when (player.gunType) {
+                    "shotgun" -> TextureRegion(assets.guns, 405, 175, 80, 55)
+                    "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
+                    else -> TextureRegion(assets.guns, 410, 87, 80, 55)
+                }
+        batcher.draw(gunIcon, 80f, 400f, 80f, 55f)
         batcher.draw(spruce, 300f + player.getX(), player.getY() - 80f, 221f, 417f)
-        batcher.draw(fence, 4745f + player.getX(), player.getY() - 120f, 253f, 359f)
+        batcher.draw(fence, 3885f + player.getX(), player.getY() - 30f, 212f, 344f)
+
         batcher.end()
 
-        // playing level1 music
+        // playing level1 music and sounds
         if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
+        if ((player.shouldGoToLeft || player.shouldGoToRight) && player.onGround) assets.level1Snow?.play()
+        else assets.level1Snow?.stop()
 
         // drawing stage
         stage.act(delta)
