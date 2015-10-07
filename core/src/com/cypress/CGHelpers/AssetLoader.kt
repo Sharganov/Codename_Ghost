@@ -23,6 +23,7 @@ public class AssetLoader {
     public var settings : Texture? = null
     public var about    : Texture? = null
     public var player   : Texture? = null
+    public var guns     : Texture? = null
     public var levels   : Texture? = null
     public var level1BG : Texture? = null
     public var level1FP : Texture? = null
@@ -43,8 +44,9 @@ public class AssetLoader {
         manager.load("data/images/buttons.png", Texture::class.java)
         manager.load("data/images/settings.png", Texture::class.java)
         manager.load("data/images/about.png", Texture::class.java)
-        manager.load("data/images/levels.png", Texture::class.java)
         manager.load("data/images/Panda.png", Texture::class.java)
+        manager.load("data/images/guns.png", Texture::class.java)
+        manager.load("data/images/levels.png", Texture::class.java)
 
         // loading of sounds
         //manager.load("data/sounds/MainTheme.ogg", Music::class.java)
@@ -56,8 +58,9 @@ public class AssetLoader {
         buttons  = manager.get("data/images/buttons.png")
         settings = manager.get("data/images/settings.png")
         about    = manager.get("data/images/about.png")
-        levels   = manager.get("data/images/levels.png")
         player   = manager.get("data/images/Panda.png")
+        guns     = manager.get("data/images/guns.png")
+        levels   = manager.get("data/images/levels.png")
 
         //mainTheme = manager.get("data/sounds/MainTheme.ogg")
     }
@@ -118,6 +121,7 @@ public class AssetLoader {
 
         // loading of music
         //manager.load("data/sounds/Level1.ogg", Music::class.java)
+        manager.load("data/sounds/Snow.ogg", Music::class.java)
 
         manager.finishLoading()
 
@@ -125,5 +129,6 @@ public class AssetLoader {
         level1FP = manager.get("data/images/level1/firstplan.png")
 
         //level1Music = manager.get("data/sounds/Level1.ogg")
+        level1Snow = manager.get("data/sounds/Snow.ogg")
     }
 }

@@ -6,19 +6,25 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
+import com.cypress.Screens.LevelsScreen
+import com.cypress.codenameghost.CGGame
+import com.cypress.GameObjects.Gun
 
 /** Contains definition of player. */
-public class Player(val assets : AssetLoader, private var x : Float, private var y : Float,
-                    private val width : Int, private val height : Int) {
+public class Player(val assets : AssetLoader, val game : CGGame, private var x : Float, private var y : Float,
+                    private val width : Int, private val height : Int, val maxMapLength : Float) {
 
     public var health          = 100
+    public var lives           = 2
     public var shouldGoToLeft  = false
     public var shouldGoToRight = false
+    public var stayRight       = true
+    public var gunType         = "usi"
 
     private var position     = Vector2(x, y)
     private val velocity     = Vector2(5f, 0f)
-    private val maxMapLength = 5000f
-    private var stayRight    = true
+    private val gun          = Gun(assets, this, gunType, x, y)
+
 
     private val batcher         = SpriteBatch()
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
@@ -27,11 +33,11 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
 
     init {
-        val playerRight1 = TextureRegion(assets.player, 218, 802, width, height)
+        val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
         val playerRight2 = TextureRegion(assets.player, 47, 802, width, height)
-        val playerRight3 = TextureRegion(assets.player, 387, 802, width, height)
-        val playerLeft1  = TextureRegion(assets.player, 712, 802, width, height)
-        val playerLeft2  = TextureRegion(assets.player, 883, 802, width, height)
+        val playerRight3 = TextureRegion(assets.player, 391, 802, width, height)
+        val playerLeft1  = TextureRegion(assets.player, 707, 802, width, height)
+        val playerLeft2  = TextureRegion(assets.player, 880, 802, width, height)
         val playerLeft3  = TextureRegion(assets.player, 540, 802, width, height)
 
         val playersRight = Array<TextureRegion>()
@@ -72,10 +78,21 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
                 x -= velocity.x
             }
         }
+
+        if (position.x == -3296f && x > 650f) {
+            if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
+            shouldGoToLeft  = false
+            shouldGoToRight = false
+            assets.activeMusic = assets.mainTheme
+            game.screen = LevelsScreen(assets, game)
+        }
     }
 
     /** Draws player. */
     public fun draw(delta : Float) {
+        gun.update(gunType, x, y)
+        gun.draw(delta)
+
         batcher.begin()
 
         // player should stay still ...
@@ -86,14 +103,14 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
                 true  -> {
                     if (x > 678f) x = 678f
                     if (x < 2f)   x = 2f
-                    batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+                    batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
                 }
 
                 // ... turning to the left side
                 false -> {
                     if (x > 678f) x = 678f
-                    if (x < 2f) x = 2f
-                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+                    if (x < 2f)   x = 2f
+                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
                 }
             }
         }
@@ -108,10 +125,10 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
             }
 
             if (x > 678f) x = 678f
-            if (x < 2f) x = 2f
+            if (x < 2f)   x = 2f
             stayRight = false
 
-            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
             update(delta)
         }
 
@@ -125,9 +142,9 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
             }
 
             if (x > 678f) x = 678f
-            if (x < 2f) x = 2f
+            if (x < 2f)   x = 2f
             stayRight = true
-            batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+            batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
             update(delta)
         }
 

@@ -30,11 +30,10 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
         val labelStyle = Label.LabelStyle()
         labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
 
-        val health = Label(player.health.toString(), labelStyle)
+        val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
 
         // initializing image
-        val heart  = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
-
+        val heart   = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
 
         left.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -94,6 +93,11 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                when (player.gunType) {
+                    "usi"           -> player.gunType = "assaultRiffle"
+                    "shotgun"       -> player.gunType = "usi"
+                    "assaultRiffle" -> player.gunType = "shotgun"
+                }
             }
         })
 
@@ -103,27 +107,32 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                when (player.gunType) {
+                    "usi"           -> player.gunType = "shotgun"
+                    "shotgun"       -> player.gunType = "assaultRiffle"
+                    "assaultRiffle" -> player.gunType = "usi"
+                }
             }
         })
 
 
         left.setPosition(20f, 0f)
-        left.sizeBy(35f, 35f)
+        left.sizeBy(25f, 25f)
         right.setPosition(130f, 0f)
-        right.sizeBy(35f, 35f)
-        jump.setPosition(660f, 70f)
-        jump.sizeBy(35f, 35f)
-        shoot.setPosition(530f, 20f)
-        shoot.sizeBy(35f, 35f)
-        pause.setPosition(695f, 380f)
-        pause.sizeBy(25f, 25f)
+        right.sizeBy(25f, 25f)
+        jump.setPosition(530f, 20f)
+        jump.sizeBy(20f, 20f)
+        shoot.setPosition(660f, 70f)
+        shoot.sizeBy(20f, 20f)
+        pause.setPosition(715f, 400f)
+        pause.sizeBy(10f, 10f)
         leftGun.setPosition(30f, 380f)
-        leftGun.sizeBy(25f, 40f)
+        leftGun.sizeBy(20f, 35f)
         rightGun.setPosition(150f, 380f)
-        rightGun.sizeBy(25f, 40f)
+        rightGun.sizeBy(20f, 35f)
         heart.setPosition(250f, 395f)
         heart.sizeBy(20f, 20f)
-        health.setPosition(265f, 415f)
+        health.setPosition(263f, 414f)
 
         stage.addActor(left)
         stage.addActor(right)
