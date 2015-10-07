@@ -1,8 +1,8 @@
-package com.cypress.codenameghost.desktop;
+package com.cypress.codenameghost.desktop
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.cypress.codenameghost.CGGame;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.cypress.codenameghost.CGGame
 
 public class DesktopLauncher {
 

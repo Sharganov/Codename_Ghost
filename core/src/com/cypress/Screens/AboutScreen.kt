@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -13,18 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
-public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
+/** Contains definition of about screen. */
+public class AboutScreen(val assets : AssetLoader, val game : CGGame) : Screen {
 
     private val batcher = SpriteBatch()
-    private val assets  = assets
     private val stage   = Stage()
 
     init {
-        // skin for buttons
-        val skin = Skin()
-        skin.add("back-up", TextureRegion(assets.buttons, 517, 120, 70, 70))
-        skin.add("back-down", TextureRegion(assets.buttons, 595, 121, 70, 70))
-
         // style of labels
         var titleStyle = Label.LabelStyle()
         titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
@@ -38,19 +32,14 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
                     else      -> com.cypress.Locale.ru.info()
                 }
 
-        // style of back button
-        var backStyle  = ImageButton.ImageButtonStyle()
-        backStyle.up   = skin.getDrawable("back-up")
-        backStyle.down = skin.getDrawable("back-down")
-
-
         // initializing labels
         var title = Label("Codename: Ghost", titleStyle)
         var info  = Label(text, textStyle)
         val textPanel = ScrollPane(info)
 
         // initializing button
-        var back = ImageButton(backStyle)
+        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
+
 
         back.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -62,6 +51,7 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
                 dispose()
             }
         })
+
 
         title.setPosition(100f, 350f)
 
@@ -80,6 +70,7 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Draws about screen. */
     public override fun render(delta : Float) {
         // drawing background color
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -92,7 +83,7 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
         batcher.end()
 
         // playing main theme
-        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
+        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing stage
         stage.act(delta)
@@ -109,6 +100,7 @@ public class AboutScreen(assets : AssetLoader, var game : CGGame) : Screen {
 
     public override fun resume() {}
 
+    /** Dispose about screen. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()
