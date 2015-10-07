@@ -14,9 +14,12 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
     public var health          = 100
     public var shouldGoToLeft  = false
     public var shouldGoToRight = false
+    public var shouldJump      = false
+    private var onGround       = true
 
     private var position     = Vector2(x, y)
-    private val velocity     = Vector2(5f, 0f)
+    private var velocity     = Vector2(5f, 15f)
+    private val acceleration = Vector2(0f, 0.5f)
     private val maxMapLength = 5000f
     private var stayRight    = true
 
@@ -25,6 +28,7 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
+    private var playerJump      =  Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 218, 802, width, height)
@@ -36,6 +40,7 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
 
         val playersRight = Array<TextureRegion>()
         val playersLeft  = Array<TextureRegion>()
+        val playersJump  = Array<TextureRegion>()
 
         playersRight.addAll(playerRight1, playerRight2, playerRight3)
         playersLeft.addAll(playerLeft1, playerLeft2, playerLeft3)
@@ -48,13 +53,30 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
 
         playerGoToLeft          = Animation(0.2f, playersLeft)
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+
+        playerJump          = Animation(0.2f, playersJump)
+        playerJump.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
     /** Updates player position. */
     public fun update(delta : Float) {
+        if(position.y >= 80f ) {
+            onGround = true
+            position.y = 80f
+            velocity.y = 15f
+            acceleration.y = 0.5f
+
+println("ok")
+        }
+        else {
+            println("fuck")
+            position.y -= velocity.y
+            velocity.y -= acceleration.y
+        }
+
         if (shouldGoToRight) {
             // player goes right
-            position = Vector2(position.x - velocity.x, position.y)
+            position.x -= velocity.x
 
             // if he reaches right end of map, camera stops
             if (position.x < -(maxMapLength - 800f)) {
@@ -62,7 +84,7 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
                 x += velocity.x
             }
         }
-        else {
+        else if (shouldGoToLeft){
             // player goes left
             position = Vector2(position.x + velocity.x, position.y)
 
@@ -72,14 +94,21 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
                 x -= velocity.x
             }
         }
+        else if(shouldJump)
+        {
+            position = Vector2(position.x, position.y - velocity.y)
+            onGround = false
+            shouldJump = false
+        }
     }
 
     /** Draws player. */
     public fun draw(delta : Float) {
         batcher.begin()
 
+        update(delta)
         // player should stay still ...
-        if (!shouldGoToLeft && !shouldGoToRight) {
+        if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
 
                 // ... turning to the right side
@@ -128,6 +157,11 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
             if (x < 2f) x = 2f
             stayRight = true
             batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+            update(delta)
+        }
+        if(shouldJump)
+        {
+            batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
             update(delta)
         }
 

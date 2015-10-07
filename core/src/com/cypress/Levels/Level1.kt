@@ -42,7 +42,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         // drawing background
         batcher.begin()
         batcher.disableBlending()
-        batcher.draw(assets.level1BG, player.getX(), 0f, 5000f, 730f)
+        batcher.draw(assets.level1BG, player.getX(), player.getY() - 80f, 5000f, 730f)
         batcher.end()
 
         // drawing player
@@ -52,7 +52,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         batcher.begin()
         batcher.enableBlending()
         batcher.draw(spruce, 300f + player.getX(), player.getY() - 80f, 221f, 417f)
-        batcher.draw(fence, 4745f + player.getX(), 120f - player.getY(), 253f, 359f)
+        batcher.draw(fence, 4745f + player.getX(), player.getY() - 120f, 253f, 359f)
         batcher.end()
 
         // playing level1 music
