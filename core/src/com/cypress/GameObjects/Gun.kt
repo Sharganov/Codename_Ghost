@@ -16,7 +16,9 @@ public class Gun(val assets : AssetLoader, val player : Player, private var type
     private val usiRight           = TextureRegion(assets.guns, 23, 95, 90, 58)
     private val usiLeft            = TextureRegion(assets.guns, 281, 95, 90, 58)
     private val shotgunRight       = TextureRegion(assets.guns, 19, 176, 124, 65)
-    private val shotgunLeft       = TextureRegion(assets.guns, 264, 172, 124, 65)
+    private val shotgunLeft        = TextureRegion(assets.guns, 264, 172, 124, 65)
+    private val plasmagunRight     = TextureRegion(assets.guns, 9, 250, 178, 86)
+    private val plasmagunLeft      = TextureRegion(assets.guns, 223, 250, 178, 86)
 
     /** Updates player position. */
     public fun update(newType : String, newX : Float, newY : Float) {
@@ -47,6 +49,12 @@ public class Gun(val assets : AssetLoader, val player : Player, private var type
                     batcher.draw(assaultRiffleRight, x + 35, y + 30, 187f, 80f)
                 else
                     batcher.draw(assaultRiffleLeft, x - 75, y + 30, 187f, 80f)
+            }
+            "plasmagun" -> {
+                if (player.shouldGoToRight || player.stayRight)
+                    batcher.draw(plasmagunRight, x + 20, y + 30, 178f, 86f)
+                else
+                    batcher.draw(plasmagunLeft, x - 55, y + 30, 178f, 86f)
             }
         }
 

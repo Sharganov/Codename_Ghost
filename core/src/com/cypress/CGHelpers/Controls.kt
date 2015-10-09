@@ -99,6 +99,7 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
                     "usi"           -> player.gunType = "assaultRiffle"
                     "shotgun"       -> player.gunType = "usi"
                     "assaultRiffle" -> player.gunType = "shotgun"
+                    "plasmagun" -> player.gunType = "assaultRiffle"
                 }
             }
         })
@@ -112,7 +113,8 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
                 when (player.gunType) {
                     "usi"           -> player.gunType = "shotgun"
                     "shotgun"       -> player.gunType = "assaultRiffle"
-                    "assaultRiffle" -> player.gunType = "usi"
+                    "assaultRiffle" -> player.gunType = "plasmagun"
+                    "plasmagun"     -> player.gunType = "usi"
                 }
             }
         })

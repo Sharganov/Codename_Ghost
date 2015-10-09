@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.Screens.LevelsScreen
 import com.cypress.codenameghost.CGGame
-import com.cypress.GameObjects.Gun
 
 /** Contains definition of player. */
 public class Player(val assets : AssetLoader, val game : CGGame, private var x : Float, private var y : Float,

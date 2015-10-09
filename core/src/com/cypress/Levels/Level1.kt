@@ -22,9 +22,10 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
     private val fence   = TextureRegion(assets.level1FP, 30, 446, 207, 344)
     private var gunIcon =
             when (player.gunType) {
-                "shotgun" -> TextureRegion(assets.guns, 405, 175, 80, 55)
+                "shotgun"       -> TextureRegion(assets.guns, 405, 175, 80, 55)
                 "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                else -> TextureRegion(assets.guns, 410, 87, 80, 55)
+                "plasmagun"     -> TextureRegion(assets.guns, 415, 261, 80, 55)
+                else            -> TextureRegion(assets.guns, 410, 87, 80, 55)
             }
 
     //private val screenWidth  = Gdx.graphics.width;
@@ -49,7 +50,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         batcher.begin()
         batcher.disableBlending()
         //if (player.getX() > -(4096f - 800f))
-        batcher.draw(assets.level1BG, player.getX(), player.getY() - 80f, 4096f, 730f)
+        batcher.draw(assets.level1BG, player.getX(), player.getY() - 80f, 4096f, 1024f)
         //else
             //batcher.draw(assets.level1BG, player.getX() + 4096f - 800f, 0f, 4096f, 730f)
         batcher.end()
@@ -62,9 +63,10 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         batcher.enableBlending()
         gunIcon =
                 when (player.gunType) {
-                    "shotgun" -> TextureRegion(assets.guns, 405, 175, 80, 55)
+                    "shotgun"       -> TextureRegion(assets.guns, 405, 175, 80, 55)
                     "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                    else -> TextureRegion(assets.guns, 410, 87, 80, 55)
+                    "plasmagun"     -> TextureRegion(assets.guns, 415, 261, 80, 55)
+                    else            -> TextureRegion(assets.guns, 410, 87, 80, 55)
                 }
         batcher.draw(gunIcon, 80f, 400f, 80f, 55f)
         batcher.draw(spruce, 300f + player.getX(), player.getY() - 80f, 221f, 417f)
