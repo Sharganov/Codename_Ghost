@@ -74,6 +74,20 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                val bullet = com.cypress.GameObjects.Bullet(assets, game, player)
+                player.bulletsList.add(bullet)
+
+                when(player.gunType) {
+                    "plasmagun" -> {
+                        if (assets.shotFromUzi?.isPlaying ?: false) assets.shotFromPlasmagun?.stop()
+                        if (assets.musicOn) assets.shotFromPlasmagun?.play()
+                    }
+                    else        -> {
+                        if (assets.shotFromUzi?.isPlaying ?: false) assets.shotFromUzi?.stop()
+                        if (assets.musicOn) assets.shotFromUzi?.play()
+                    }
+
+                }
             }
         })
 
@@ -83,7 +97,7 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
+                if (assets.activeMusic?.isPlaying ?: false) assets.activeMusic?.stop()
                 game.screen = MenuScreen(assets, game, player)
                 dispose()
             }
@@ -96,10 +110,10 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (player.gunType) {
-                    "usi"           -> player.gunType = "assaultRiffle"
-                    "shotgun"       -> player.gunType = "usi"
+                    "uzi"           -> player.gunType = "plasmagun"
+                    "shotgun"       -> player.gunType = "uzi"
                     "assaultRiffle" -> player.gunType = "shotgun"
-                    "plasmagun" -> player.gunType = "assaultRiffle"
+                    "plasmagun"     -> player.gunType = "assaultRiffle"
                 }
             }
         })
@@ -111,10 +125,10 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (player.gunType) {
-                    "usi"           -> player.gunType = "shotgun"
+                    "uzi"           -> player.gunType = "shotgun"
                     "shotgun"       -> player.gunType = "assaultRiffle"
                     "assaultRiffle" -> player.gunType = "plasmagun"
-                    "plasmagun"     -> player.gunType = "usi"
+                    "plasmagun"     -> player.gunType = "uzi"
                 }
             }
         })

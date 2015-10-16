@@ -8,9 +8,10 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.Screens.LevelsScreen
 import com.cypress.codenameghost.CGGame
+import java.util.*
 
 /** Contains definition of player. */
-public class Player(val assets : AssetLoader, val game : CGGame, private var x : Float, private var y : Float,
+public class Player(private val assets : AssetLoader, private val game : CGGame, var x : Float, var y : Float,
                     private val width : Int, private val height : Int, val maxMapLength : Float) {
 
     public var health          = 100
@@ -20,7 +21,8 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
     public var stayRight       = true
     public var shouldJump      = false
     public var onGround        = true
-    public var gunType         = "usi"
+    public var gunType         = "uzi"
+    public var bulletsList     = LinkedList<Bullet>()
 
     private var position     = Vector2(x, y)
     private var velocity     = Vector2(3f, 10f)
@@ -32,7 +34,7 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
-    private var playerJump      =  Animation(0.2f, Array<TextureRegion>())
+    private var playerJump      = Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
@@ -125,6 +127,8 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
 
     /** Draws player. */
     public fun draw(delta : Float) {
+
+        // drawing gun
         gun.update(gunType, x, y)
         gun.draw(delta)
 
@@ -203,14 +207,16 @@ public class Player(val assets : AssetLoader, val game : CGGame, private var x :
     }
 
     /** Returns position of player on Ox axis. */
-    public fun getX() : Float {
-        return position.x
-    }
+    public val getX: Float
+        get() {
+            return position.x
+        }
 
     /** Returns position of player on Oy axis. */
-    public fun getY() : Float {
-        return position.y
-    }
+    public val getY: Float
+        get() {
+            return position.y
+        }
 
     /** Returns width of player. */
     public fun getWidth() : Float {

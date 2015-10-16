@@ -24,14 +24,17 @@ public class AssetLoader {
     public var about    : Texture? = null
     public var player   : Texture? = null
     public var guns     : Texture? = null
+    public var bullets  : Texture? = null
     public var levels   : Texture? = null
     public var level1BG : Texture? = null
     public var level1FP : Texture? = null
 
-    public var activeMusic : Music? = null
-    public var mainTheme   : Music? = null
-    public var level1Music : Music? = null
-    public var level1Snow  : Music? = null
+    public var activeMusic       : Music? = null
+    public var mainTheme         : Music? = null
+    public var shotFromUzi       : Music? = null
+    public var shotFromPlasmagun : Music? = null
+    public var level1Music       : Music? = null
+    public var level1Snow        : Music? = null
 
     public var musicOn  = true
     public var language = "english"
@@ -46,10 +49,13 @@ public class AssetLoader {
         manager.load("data/images/about.png", Texture::class.java)
         manager.load("data/images/Panda.png", Texture::class.java)
         manager.load("data/images/guns.png", Texture::class.java)
+        manager.load("data/images/bullets.png", Texture::class.java)
         manager.load("data/images/levels.png", Texture::class.java)
 
         // loading of sounds
         //manager.load("data/sounds/MainTheme.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/uzi.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/plasmagun.ogg", Music::class.java)
 
         manager.finishLoading()
 
@@ -60,9 +66,12 @@ public class AssetLoader {
         about    = manager.get("data/images/about.png")
         player   = manager.get("data/images/Panda.png")
         guns     = manager.get("data/images/guns.png")
+        bullets  = manager.get("data/images/bullets.png")
         levels   = manager.get("data/images/levels.png")
 
         //mainTheme = manager.get("data/sounds/MainTheme.ogg")
+        shotFromUzi       = manager.get("data/sounds/weapons/uzi.ogg")
+        shotFromPlasmagun = manager.get("data/sounds/weapons/plasmagun.ogg")
     }
 
     /** Generates font with given parameters. */
