@@ -10,21 +10,23 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.GameObjects.Player
 import com.cypress.codenameghost.CGGame
 import com.cypress.Screens.MenuScreen
+import com.cypress.GameObjects.Bullet
 
 /** Contains definition of controls. */
 public class Controls(val assets : AssetLoader, val game : CGGame, val player : Player) {
 
-    private val stage  = Stage()
+    private val stage   = Stage()
+    private var gunIcon = TextureRegion()
 
     init {
         // initializing buttons
-        val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65))
-        val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65))
-        val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65))
-        val shoot    = ImageButton(assets.getImageButtonStyle(264, 376, 263, 442, 65, 65))
-        val pause    = ImageButton(assets.getImageButtonStyle(350, 370, 349, 437, 67, 67))
-        val leftGun  = ImageButton(assets.getImageButtonStyle(458, 376, 457, 443, 40, 55))
-        val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 443, 40, 55))
+        val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
+        val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
+        val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))
+        val shoot    = ImageButton(assets.getImageButtonStyle(264, 376, 263, 442, 65, 65, false))
+        val pause    = ImageButton(assets.getImageButtonStyle(350, 370, 349, 437, 67, 67, false))
+        val leftGun  = ImageButton(assets.getImageButtonStyle(458, 376, 457, 443, 40, 55, false))
+        val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 443, 40, 55, false))
 
         // initializing label
         val labelStyle = Label.LabelStyle()
@@ -32,8 +34,16 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
         val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
 
-        // initializing image
+        // initializing images
         val heart   = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
+        gunIcon =
+            when (player.gunType) {
+                "shotgun"       -> TextureRegion(assets.guns, 412, 177, 80, 55)
+                "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
+                "lasergun"      -> TextureRegion(assets.guns, 415, 261, 80, 55)
+                "laser2gun"     -> TextureRegion(assets.guns, 418, 358, 80, 55)
+                else            -> TextureRegion(assets.guns, 410, 87, 80, 55)
+            }
 
         left.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -74,15 +84,27 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                val bullet = com.cypress.GameObjects.Bullet(assets, game, player)
+                val bullet = Bullet(assets, player)
                 player.bulletsList.add(bullet)
 
-                when(player.gunType) {
-                    "plasmagun" -> {
-                        if (assets.shotFromUzi?.isPlaying ?: false) assets.shotFromPlasmagun?.stop()
-                        if (assets.musicOn) assets.shotFromPlasmagun?.play()
+                when (player.gunType) {
+                    "shotgun" -> {
+                        if (assets.shotFromShotgun?.isPlaying ?: false) assets.shotFromShotgun?.stop()
+                        if (assets.musicOn) assets.shotFromShotgun?.play()
                     }
-                    else        -> {
+                    "lasergun" -> {
+                        if (assets.shotFromLasergun?.isPlaying ?: false) assets.shotFromLasergun?.stop()
+                        if (assets.musicOn) assets.shotFromLasergun?.play()
+                    }
+                    "laser2gun" -> {
+                        if (assets.shotFromLasergun?.isPlaying ?: false) assets.shotFromLasergun?.stop()
+                        if (assets.musicOn) assets.shotFromLasergun?.play()
+                    }
+                    "rocketLauncher" -> {
+                        if (assets.rocket?.isPlaying ?: false) assets.rocket?.stop()
+                        if (assets.musicOn) assets.rocket?.play()
+                    }
+                    else -> {
                         if (assets.shotFromUzi?.isPlaying ?: false) assets.shotFromUzi?.stop()
                         if (assets.musicOn) assets.shotFromUzi?.play()
                     }
@@ -97,7 +119,7 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                if (assets.activeMusic?.isPlaying ?: false) assets.activeMusic?.stop()
+                //if (assets.activeMusic?.isPlaying ?: false) assets.activeMusic?.stop()
                 game.screen = MenuScreen(assets, game, player)
                 dispose()
             }
@@ -110,11 +132,23 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (player.gunType) {
-                    "uzi"           -> player.gunType = "plasmagun"
-                    "shotgun"       -> player.gunType = "uzi"
-                    "assaultRiffle" -> player.gunType = "shotgun"
-                    "plasmagun"     -> player.gunType = "assaultRiffle"
+                    "uzi"            -> player.gunType = "rocketLauncher"
+                    "shotgun"        -> player.gunType = "uzi"
+                    "assaultRiffle"  -> player.gunType = "shotgun"
+                    "lasergun"       -> player.gunType = "assaultRiffle"
+                    "laser2gun"      -> player.gunType = "lasergun"
+                    "rocketLauncher" -> player.gunType = "laser2gun"
                 }
+
+                gunIcon =
+                    when (player.gunType) {
+                        "shotgun"        -> TextureRegion(assets.guns, 412, 177, 80, 55)
+                        "assaultRiffle"  -> TextureRegion(assets.guns, 409, 17, 80, 55)
+                        "lasergun"       -> TextureRegion(assets.guns, 415, 261, 80, 55)
+                        "laser2gun"      -> TextureRegion(assets.guns, 418, 358, 80, 55)
+                        "rocketLauncher" -> TextureRegion(assets.guns, 424, 450, 80, 55)
+                        else             -> TextureRegion(assets.guns, 410, 87, 80, 55)
+                    }
             }
         })
 
@@ -125,11 +159,23 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (player.gunType) {
-                    "uzi"           -> player.gunType = "shotgun"
-                    "shotgun"       -> player.gunType = "assaultRiffle"
-                    "assaultRiffle" -> player.gunType = "plasmagun"
-                    "plasmagun"     -> player.gunType = "uzi"
+                    "uzi"            -> player.gunType = "shotgun"
+                    "shotgun"        -> player.gunType = "assaultRiffle"
+                    "assaultRiffle"  -> player.gunType = "lasergun"
+                    "lasergun"       -> player.gunType = "laser2gun"
+                    "laser2gun"      -> player.gunType = "rocketLauncher"
+                    "rocketLauncher" -> player.gunType = "uzi"
                 }
+
+                gunIcon =
+                    when (player.gunType) {
+                        "shotgun"        -> TextureRegion(assets.guns, 412, 177, 80, 55)
+                        "assaultRiffle"  -> TextureRegion(assets.guns, 409, 17, 80, 55)
+                        "lasergun"       -> TextureRegion(assets.guns, 415, 261, 80, 55)
+                        "laser2gun"      -> TextureRegion(assets.guns, 418, 358, 80, 55)
+                        "rocketLauncher" -> TextureRegion(assets.guns, 424, 450, 80, 55)
+                        else             -> TextureRegion(assets.guns, 410, 87, 80, 55)
+                    }
             }
         })
 
@@ -169,6 +215,11 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
     /** Returns stage. */
     public fun getStage() : Stage {
         return stage
+    }
+
+    /** Returns gun icon. */
+    public fun getIcon() : TextureRegion {
+        return gunIcon
     }
 
     /** Dispose stage. */

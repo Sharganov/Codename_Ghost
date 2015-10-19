@@ -10,14 +10,18 @@ public class Gun(val assets : AssetLoader, val player : Player, private var type
 
     private val batcher  = SpriteBatch()
 
-    private val assaultRiffleRight = TextureRegion(assets.guns, 11, 6, 187, 80)
-    private val assaultRiffleLeft  = TextureRegion(assets.guns, 202, 6, 187, 80)
-    private val uziRight           = TextureRegion(assets.guns, 23, 95, 90, 58)
-    private val uziLeft            = TextureRegion(assets.guns, 281, 95, 90, 58)
-    private val shotgunRight       = TextureRegion(assets.guns, 19, 176, 124, 65)
-    private val shotgunLeft        = TextureRegion(assets.guns, 264, 172, 124, 65)
-    private val plasmagunRight     = TextureRegion(assets.guns, 9, 250, 178, 86)
-    private val plasmagunLeft      = TextureRegion(assets.guns, 223, 250, 178, 86)
+    private val assaultRiffleRight  = TextureRegion(assets.guns, 11, 6, 187, 80)
+    private val assaultRiffleLeft   = TextureRegion(assets.guns, 202, 6, 187, 80)
+    private val uziRight            = TextureRegion(assets.guns, 23, 95, 90, 58)
+    private val uziLeft             = TextureRegion(assets.guns, 281, 95, 90, 58)
+    private val shotgunRight        = TextureRegion(assets.guns, 29, 176, 138, 55)
+    private val shotgunLeft         = TextureRegion(assets.guns, 248, 176, 138, 55)
+    private val lasergunRight       = TextureRegion(assets.guns, 9, 250, 178, 86)
+    private val lasergunLeft        = TextureRegion(assets.guns, 223, 250, 178, 86)
+    private val laser2gunRight      = TextureRegion(assets.guns, 7, 348, 183, 93)
+    private val laser2gunLeft       = TextureRegion(assets.guns, 221, 348, 183, 93)
+    private val rocketLauncherRight = TextureRegion(assets.guns, 7, 456, 188, 73)
+    private val rocketLauncherLeft  = TextureRegion(assets.guns, 222, 456, 188, 73)
 
     /** Updates gun. */
     public fun update(newType : String, newX : Float, newY : Float) {
@@ -38,9 +42,9 @@ public class Gun(val assets : AssetLoader, val player : Player, private var type
             }
             "shotgun" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(shotgunRight, x + 50, y + 30, 124f, 65f)
+                    batcher.draw(shotgunRight, x + 45, y + 35, 138f, 55f)
                 else
-                    batcher.draw(shotgunLeft, x - 45, y + 30, 124f, 65f)
+                    batcher.draw(shotgunLeft, x - 45, y + 30, 138f, 55f)
             }
             "assaultRiffle" -> {
                 if (player.shouldGoToRight || player.stayRight)
@@ -48,11 +52,23 @@ public class Gun(val assets : AssetLoader, val player : Player, private var type
                 else
                     batcher.draw(assaultRiffleLeft, x - 75, y + 30, 187f, 80f)
             }
-            "plasmagun" -> {
+            "lasergun" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(plasmagunRight, x + 20, y + 25, 178f, 86f)
+                    batcher.draw(lasergunRight, x + 20, y + 25, 178f, 86f)
                 else
-                    batcher.draw(plasmagunLeft, x - 55, y + 25, 178f, 86f)
+                    batcher.draw(lasergunLeft, x - 55, y + 25, 178f, 86f)
+            }
+            "laser2gun" -> {
+                if (player.shouldGoToRight || player.stayRight)
+                    batcher.draw(laser2gunRight, x + 10, y + 20, 183f, 93f)
+                else
+                    batcher.draw(laser2gunLeft, x - 55, y + 25, 183f, 93f)
+            }
+            "rocketLauncher" -> {
+                if (player.shouldGoToRight || player.stayRight)
+                    batcher.draw(rocketLauncherRight, x - 5, y + 50, 188f, 73f)
+                else
+                    batcher.draw(rocketLauncherLeft, x - 65, y + 50, 188f, 73f)
             }
         }
         batcher.end()

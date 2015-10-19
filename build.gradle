@@ -9,7 +9,7 @@ task wrapper(type: Wrapper) {
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-defaultTasks 'test'//, 'run'
+defaultTasks 'build'
 
 mainClassName = 'com.cypress.codenameghost'
 
@@ -25,7 +25,7 @@ sourceSets {
 }
 
 buildscript {
-    ext.kotlin_version = '0.13.1514'
+    ext.kotlin_version = '0.14.449'
 
     repositories {
         mavenCentral()
@@ -69,7 +69,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     }
 }
-/*
+
 project(":android") {
     apply plugin: "android"
 
@@ -87,7 +87,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
     }
 }
-/*
+
 project(":ios") {
     apply plugin: "java"
     apply plugin: "robovm"
@@ -101,7 +101,7 @@ project(":ios") {
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
     }
 }
-*/
+
 project(":core") {
     apply plugin: "java"
 

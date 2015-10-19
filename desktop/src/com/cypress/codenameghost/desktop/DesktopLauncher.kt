@@ -4,10 +4,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.cypress.codenameghost.CGGame
 
-public class DesktopLauncher {
-
-}
-
 fun main (args : Array<String>) {
     val config = LwjglApplicationConfiguration()
     config.title = "Codename: Ghost"

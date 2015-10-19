@@ -65,7 +65,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
     }
 
     /** Updates player position. */
-    public fun update(delta : Float) {
+    public fun update() {
         if(position.y >= 80f ) {
             onGround = true
             position.y     = 80f
@@ -116,6 +116,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
             shouldJump     = false
         }
 
+        // level completed
         if (position.x == -3296f && x > 650f) {
             if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
             shouldGoToLeft  = false
@@ -133,8 +134,8 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
         gun.draw(delta)
 
         batcher.begin()
+        update()
 
-        update(delta)
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
@@ -172,7 +173,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
 
             if (!onGround) batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
             else batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
-            update(delta)
+            update()
         }
 
         // player should go to right
@@ -192,7 +193,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
 
             if (!onGround) batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
             else batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
-            update(delta)
+            update()
         }
 
         // player should jump
@@ -200,7 +201,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
         {
             onGround = false
             batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
-            update(delta)
+            update()
         }
 
         batcher.end()
@@ -217,15 +218,4 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
         get() {
             return position.y
         }
-
-    /** Returns width of player. */
-    public fun getWidth() : Float {
-        return width.toFloat()
-    }
-
-    /** Returns height of player. */
-    public fun getHeight() : Float {
-        return height.toFloat()
-    }
-
 }

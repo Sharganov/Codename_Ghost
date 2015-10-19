@@ -14,19 +14,13 @@ import com.cypress.codenameghost.CGGame
 /** Contains definition of first level. */
 public class Level1(val assets : AssetLoader, val game : CGGame, val player : Player) : Screen {
 
-    private val batcher = SpriteBatch()
-    private var runTime = 0f
-    private var stage   = Stage()
+    private val batcher  = SpriteBatch()
+    private var runTime  = 0f
+    private val controls = Controls(assets, game, player)
+    private var stage    = Stage()
 
     private val spruce  = TextureRegion(assets.level1FP, 19, 0, 221, 417)
     private val fence   = TextureRegion(assets.level1FP, 30, 446, 207, 344)
-    private var gunIcon =
-            when (player.gunType) {
-                "shotgun"       -> TextureRegion(assets.guns, 405, 175, 80, 55)
-                "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                "plasmagun"     -> TextureRegion(assets.guns, 415, 261, 80, 55)
-                else            -> TextureRegion(assets.guns, 410, 87, 80, 55)
-            }
 
     //private val screenWidth  = Gdx.graphics.width;
     //private val screenHeight = Gdx.graphics.height;
@@ -34,7 +28,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
     //private val gameHeight   = screenHeight / (screenWidth / gameWidth);
 
     init {
-        stage = Controls(assets, game, player).getStage()
+        stage = controls.getStage()
         assets.activeMusic = assets.level1Music
     }
 
@@ -59,7 +53,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         if (player.bulletsList.isNotEmpty() && player.bulletsList[0].distance() > 650)
             player.bulletsList.removeFirst()
         for (b in player.bulletsList) {
-            b.update(player.gunType, player.getY)
+            b.update(player.getY)
             b.draw(delta)
         }
 
@@ -69,14 +63,7 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
-        gunIcon =
-                when (player.gunType) {
-                    "shotgun"       -> TextureRegion(assets.guns, 405, 175, 80, 55)
-                    "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                    "plasmagun"     -> TextureRegion(assets.guns, 415, 261, 80, 55)
-                    else            -> TextureRegion(assets.guns, 410, 87, 80, 55)
-                }
-        batcher.draw(gunIcon, 80f, 400f, 80f, 55f)
+        batcher.draw(controls.getIcon(), 80f, 400f, 80f, 55f)
         batcher.draw(spruce, 300f + player.getX, player.getY - 80f, 221f, 417f)
         batcher.draw(fence, 3885f + player.getX, player.getY - 30f, 212f, 344f)
 

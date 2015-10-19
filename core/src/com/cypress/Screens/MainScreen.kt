@@ -24,7 +24,7 @@ public class MainScreen(val assets : AssetLoader, val game : CGGame) : Screen {
         val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
         // style of settings button
-        var settingsStyle = assets.getImageButtonStyle(517, 194, 596, 194, 70, 70)
+        var settingsStyle = assets.getImageButtonStyle(517, 194, 596, 194, 70, 70, false)
 
         // style of labels
         var titleStyle  = Label.LabelStyle()
@@ -69,16 +69,6 @@ public class MainScreen(val assets : AssetLoader, val game : CGGame) : Screen {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                //val skin = Skin()
-                //skin.add("background", assets.dialogBackground)
-                //val dialogStyle = Window.WindowStyle()
-                //dialogStyle.titleFont = assets.settingsScreenFont
-                //dialogStyle.background = skin.getDrawable("background")
-                //
-                //val dialog = Dialog("Are you really want to exit?", dialogStyle)
-                //
-                //dialog.setPosition(50f, 20f)
-                //stage.addActor(dialog)
                 game.dispose()
                 Gdx.app.exit()
             }

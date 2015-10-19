@@ -22,13 +22,13 @@ public class LevelsScreen(val assets : AssetLoader, val game : CGGame) : Screen 
     init {
         // style of available buttons
         val x = arrayOf(0, 6, 102, 201, 299, 396, 494, 592, 691)
-        var buttonStyle  = Array(9, { i -> assets.getImageButtonStyle(x[i], 15, x[i], 272, 90, 90)})
+        var buttonStyle  = Array(9, { i -> assets.getImageButtonStyle(x[i], 15, x[i], 272, 90, 90, false)})
 
         // style of locked buttons
-        var lockedStyle  = assets.getImageButtonStyle(804, 5, 804, 259, 75, 100)
+        var lockedStyle  = assets.getImageButtonStyle(804, 5, 804, 259, 75, 100, false)
 
         // initializing buttons
-        var back  = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
+        var back  = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
         var level = Array(9, { i -> if (i == 1) ImageButton(buttonStyle[i]) else ImageButton(lockedStyle)})
 
 

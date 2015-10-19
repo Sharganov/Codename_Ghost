@@ -28,18 +28,22 @@ public class SettingsScreen(val assets : AssetLoader, val game : CGGame) : Scree
         table.setFillParent(true)
 
         // initializing buttons
-        var sounds   = ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100))
+        var sounds =
+                when (assets.musicOn) {
+                    true  -> ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100, true))
+                    false -> ImageButton(assets.getImageButtonStyle(767, 156, 667, 156, 100, 100, true))
+                }
         var language =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
                     else      -> TextButton("язык:\n" + assets.language, textButtonStyle)
                 }
-        var about    =
+        var about =
                 when (assets.language) {
                     "english" -> TextButton("About", textButtonStyle)
                     else      -> TextButton("ќб игре", textButtonStyle)
                 }
-        var back     = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
+        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
 
         language.addListener(object : ClickListener() {
