@@ -2,8 +2,11 @@
 *.jar
 *.iml
 .idea
-build
 .gradle
-!gradle-wrapper.jar
+build
 */build
+android/libs
+android/gen
 local.properties
+
+!gradle-wrapper.jar

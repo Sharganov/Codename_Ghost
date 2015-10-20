@@ -3,7 +3,7 @@ package com.cypress.Locale.ru
 /** Returns string with info on Russian. */
 public fun info() : String {
     val text =
-            "                                     Версия 0.1\n" +
+            "                                     Версия 0.1.2\n" +
             "                                Powered by libGDX\n" +
             "\n" +
             "Игра создана командой Cypress:\n" +
@@ -11,7 +11,7 @@ public fun info() : String {
             "Артем Шарганов\n" +
             "\n" +
             "Следите за нашим проектом на сайте\n" +
-            "http://github.com/MaKToff/Codename_Ghost\n" +
+            "https://github.com/MaKToff/Codename_Ghost\n" +
             "\n" +
             "\n" +
             "Мы хотим сказать отдельное спасибо команде Penguin DT за разрешение\n" +
