@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/MaKToff/Codename_Ghost.svg)](https://travis-ci.org/MaKToff/Codename_Ghost)
-# Codename: Ghost 
+# Codename: Ghost  [![Build Status](https://travis-ci.org/MaKToff/Codename_Ghost.svg)](https://travis-ci.org/MaKToff/Codename_Ghost)
 Codename: Ghost is a 2D [shoot 'em up](https://en.wikipedia.org/wiki/Shoot_%27em_up) platformer.
 
 ## Getting started
@@ -33,7 +32,7 @@ $ echo "sdk.dir=home/android-sdk-linux" > local.properties
 2. After downloading extract files into `C:/Users/%username%/`
 3. Execute file `C:/Users/%username%/android-sdk-windows/SDK Manager.exe`
 4. Install Android API 20 and Build-tools 20.0.0
-5. Create file `local.properties` in the root folder of project. This file should contain following text:
+5. Create file `local.properties` in the root folder of the project. This file should contain following text:
 
 ```
 sdk.dir=C:/Users/%username%/android-sdk-windows
