@@ -28,7 +28,7 @@ task dist(type: Jar) {
 
 dist.dependsOn classes
 buildscript {
-    ext.kotlin_version = '0.13.1514'
+    ext.kotlin_version = '1.0.0-beta-1038'
     repositories {
         mavenCentral()
     }
