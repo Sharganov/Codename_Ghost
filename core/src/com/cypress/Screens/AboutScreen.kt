@@ -38,7 +38,7 @@ public class AboutScreen(val assets : AssetLoader, val game : CGGame) : Screen {
         val textPanel = ScrollPane(info)
 
         // initializing button
-        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
+        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
 
         back.addListener(object : ClickListener() {

@@ -6,36 +6,42 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
+import com.cypress.Screens.LevelsScreen
+import com.cypress.codenameghost.CGGame
+import java.util.*
 
 /** Contains definition of player. */
-public class Player(val assets : AssetLoader, private var x : Float, private var y : Float,
-                    private val width : Int, private val height : Int) {
+public class Player(private val assets : AssetLoader, private val game : CGGame, var x : Float, var y : Float,
+                    private val width : Int, private val height : Int, val maxMapLength : Float) {
 
     public var health          = 100
+    public var lives           = 2
     public var shouldGoToLeft  = false
     public var shouldGoToRight = false
+    public var stayRight       = true
     public var shouldJump      = false
-    private var onGround       = true
+    public var onGround        = true
+    public var gunType         = "uzi"
+    public var bulletsList     = LinkedList<Bullet>()
 
     private var position     = Vector2(x, y)
-    private var velocity     = Vector2(5f, 15f)
-    private val acceleration = Vector2(0f, 0.5f)
-    private val maxMapLength = 5000f
-    private var stayRight    = true
+    private var velocity     = Vector2(3f, 10f)
+    private val acceleration = Vector2(0f, 0.15f)
+    private val gun          = Gun(assets, this, gunType, x, y)
 
     private val batcher         = SpriteBatch()
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
-    private var playerJump      =  Animation(0.2f, Array<TextureRegion>())
+    private var playerJump      = Animation(0.2f, Array<TextureRegion>())
 
     init {
-        val playerRight1 = TextureRegion(assets.player, 218, 802, width, height)
+        val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
         val playerRight2 = TextureRegion(assets.player, 47, 802, width, height)
-        val playerRight3 = TextureRegion(assets.player, 387, 802, width, height)
-        val playerLeft1  = TextureRegion(assets.player, 712, 802, width, height)
-        val playerLeft2  = TextureRegion(assets.player, 883, 802, width, height)
+        val playerRight3 = TextureRegion(assets.player, 391, 802, width, height)
+        val playerLeft1  = TextureRegion(assets.player, 707, 802, width, height)
+        val playerLeft2  = TextureRegion(assets.player, 880, 802, width, height)
         val playerLeft3  = TextureRegion(assets.player, 540, 802, width, height)
 
         val playersRight = Array<TextureRegion>()
@@ -59,17 +65,15 @@ public class Player(val assets : AssetLoader, private var x : Float, private var
     }
 
     /** Updates player position. */
-    public fun update(delta : Float) {
+    public fun update() {
         if(position.y >= 80f ) {
             onGround = true
-            position.y = 80f
-            velocity.y = 15f
-            acceleration.y = 0.5f
-
-println("ok")
+            position.y     = 80f
+            velocity.y     = 10f
+            acceleration.y = 0.15f
         }
         else {
-            println("fuck")
+            onGround    = false
             position.y -= velocity.y
             velocity.y -= acceleration.y
         }
@@ -77,6 +81,12 @@ println("ok")
         if (shouldGoToRight) {
             // player goes right
             position.x -= velocity.x
+
+            // if he should jump
+            if (shouldJump) {
+                position.y -= velocity.y
+                shouldJump = false
+            }
 
             // if he reaches right end of map, camera stops
             if (position.x < -(maxMapLength - 800f)) {
@@ -86,7 +96,13 @@ println("ok")
         }
         else if (shouldGoToLeft){
             // player goes left
-            position = Vector2(position.x + velocity.x, position.y)
+            position.x += velocity.x
+
+            // if he should jump
+            if (shouldJump) {
+                position.y -= velocity.y
+                shouldJump = false
+            }
 
             // if he reaches left end of map, camera stops
             if (position.x > 0f) {
@@ -94,19 +110,32 @@ println("ok")
                 x -= velocity.x
             }
         }
-        else if(shouldJump)
-        {
-            position = Vector2(position.x, position.y - velocity.y)
-            onGround = false
-            shouldJump = false
+        else if (shouldJump) {
+            position.y     = 20f
+            acceleration.y = 0.3f
+            shouldJump     = false
+        }
+
+        // level completed
+        if (position.x == -3296f && x > 650f) {
+            if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
+            shouldGoToLeft  = false
+            shouldGoToRight = false
+            assets.activeMusic = assets.mainTheme
+            game.screen = LevelsScreen(assets, game)
         }
     }
 
     /** Draws player. */
     public fun draw(delta : Float) {
-        batcher.begin()
 
-        update(delta)
+        // drawing gun
+        gun.update(gunType, x, y)
+        gun.draw(delta)
+
+        batcher.begin()
+        update()
+
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
@@ -115,14 +144,14 @@ println("ok")
                 true  -> {
                     if (x > 678f) x = 678f
                     if (x < 2f)   x = 2f
-                    batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+                    batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
                 }
 
                 // ... turning to the left side
                 false -> {
                     if (x > 678f) x = 678f
-                    if (x < 2f) x = 2f
-                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
+                    if (x < 2f)   x = 2f
+                    batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
                 }
             }
         }
@@ -137,14 +166,17 @@ println("ok")
             }
 
             if (x > 678f) x = 678f
-            if (x < 2f) x = 2f
+            if (x < 2f)   x = 2f
             stayRight = false
 
-            batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
-            update(delta)
+            if (shouldJump) onGround = false
+
+            if (!onGround) batcher.draw(playerStayLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            else batcher.draw(playerGoToLeft.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            update()
         }
 
-        // player should go to left
+        // player should go to right
         if (shouldGoToRight) {
 
             // the camera follows player
@@ -154,38 +186,36 @@ println("ok")
             }
 
             if (x > 678f) x = 678f
-            if (x < 2f) x = 2f
+            if (x < 2f)   x = 2f
             stayRight = true
-            batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
-            update(delta)
+
+            if (shouldJump) onGround = false
+
+            if (!onGround) batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            else batcher.draw(playerGoToRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            update()
         }
-        if(shouldJump)
+
+        // player should jump
+        if (shouldJump)
         {
-            batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), (health * 1.5).toFloat())
-            update(delta)
+            onGround = false
+            batcher.draw(playerStayRight.getKeyFrame(delta), x, y, width.toFloat(), height.toFloat())
+            update()
         }
 
         batcher.end()
     }
 
     /** Returns position of player on Ox axis. */
-    public fun getX() : Float {
-        return position.x
-    }
+    public val getX: Float
+        get() {
+            return position.x
+        }
 
     /** Returns position of player on Oy axis. */
-    public fun getY() : Float {
-        return position.y
-    }
-
-    /** Returns width of player. */
-    public fun getWidth() : Float {
-        return width.toFloat()
-    }
-
-    /** Returns height of player. */
-    public fun getHeight() : Float {
-        return height.toFloat()
-    }
-
+    public val getY: Float
+        get() {
+            return position.y
+        }
 }

@@ -30,7 +30,7 @@ public class LogoScreen(assets : AssetLoader, var game : CGGame) : Screen {
             batcher.end()
         }
         else {
-            if (!(assets.mainTheme?.isPlaying ?: false)) assets.mainTheme?.play()
+            if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
             if (runTime > 4.5f) {
                 game.screen = MainScreen(assets, game)
                 dispose()

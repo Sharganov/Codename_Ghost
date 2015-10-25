@@ -30,8 +30,12 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
         table.setFillParent(true)
 
         // initializing buttons
-        var sounds     = ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100))
-        var language   =
+        var sounds =
+                when (assets.musicOn) {
+                    true  -> ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100, true))
+                    false -> ImageButton(assets.getImageButtonStyle(767, 156, 667, 156, 100, 100, true))
+                }
+        var language =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
                     else      -> TextButton("язык:\n" + assets.language, textButtonStyle)
@@ -41,7 +45,7 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
                     "english" -> TextButton("Back to \nmain menu", textButtonStyle)
                     else      -> TextButton("¬ главное \nменю", textButtonStyle)
                 }
-        var back       = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70))
+        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
 
         language.addListener(object : ClickListener() {
@@ -73,11 +77,11 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 if (assets.musicOn) {
                     assets.musicOn = false
-                    assets.mainTheme?.stop()
+                    assets.activeMusic?.stop()
                 }
                 else {
                     assets.musicOn = true
-                    assets.mainTheme?.play()
+                    assets.activeMusic?.play()
                 }
             }
         })
@@ -88,6 +92,7 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                assets.activeMusic?.stop()
                 game.screen = MainScreen(assets, game)
                 dispose()
             }
@@ -132,8 +137,8 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
         batcher.draw(assets.settings, 0f, 0f, 800f, 480f)
         batcher.end()
 
-        // playing main theme
-        if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
+        // playing music
+        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing stage
         stage.act(delta)

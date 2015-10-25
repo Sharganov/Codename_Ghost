@@ -23,14 +23,20 @@ public class AssetLoader {
     public var settings : Texture? = null
     public var about    : Texture? = null
     public var player   : Texture? = null
+    public var guns     : Texture? = null
+    public var bullets  : Texture? = null
     public var levels   : Texture? = null
     public var level1BG : Texture? = null
     public var level1FP : Texture? = null
 
-    public var activeMusic : Music? = null
-    public var mainTheme   : Music? = null
-    public var level1Music : Music? = null
-    public var level1Snow  : Music? = null
+    public var activeMusic      : Music? = null
+    public var mainTheme        : Music? = null
+    public var shotFromUzi      : Music? = null
+    public var shotFromShotgun  : Music? = null
+    public var shotFromLasergun : Music? = null
+    public var rocket           : Music? = null
+    public var level1Music      : Music? = null
+    public var level1Snow       : Music? = null
 
     public var musicOn  = true
     public var language = "english"
@@ -43,11 +49,17 @@ public class AssetLoader {
         manager.load("data/images/buttons.png", Texture::class.java)
         manager.load("data/images/settings.png", Texture::class.java)
         manager.load("data/images/about.png", Texture::class.java)
-        manager.load("data/images/levels.png", Texture::class.java)
         manager.load("data/images/Panda.png", Texture::class.java)
+        manager.load("data/images/guns.png", Texture::class.java)
+        manager.load("data/images/bullets.png", Texture::class.java)
+        manager.load("data/images/levels.png", Texture::class.java)
 
         // loading of sounds
-        //manager.load("data/sounds/MainTheme.ogg", Music::class.java)
+        manager.load("data/sounds/MainTheme.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/uzi.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/shotgun.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/lasergun.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/rocket.ogg", Music::class.java)
 
         manager.finishLoading()
 
@@ -56,10 +68,16 @@ public class AssetLoader {
         buttons  = manager.get("data/images/buttons.png")
         settings = manager.get("data/images/settings.png")
         about    = manager.get("data/images/about.png")
-        levels   = manager.get("data/images/levels.png")
         player   = manager.get("data/images/Panda.png")
+        guns     = manager.get("data/images/guns.png")
+        bullets  = manager.get("data/images/bullets.png")
+        levels   = manager.get("data/images/levels.png")
 
-        //mainTheme = manager.get("data/sounds/MainTheme.ogg")
+        mainTheme        = manager.get("data/sounds/MainTheme.ogg")
+        shotFromUzi      = manager.get("data/sounds/weapons/uzi.ogg")
+        shotFromShotgun  = manager.get("data/sounds/weapons/shotgun.ogg")
+        shotFromLasergun = manager.get("data/sounds/weapons/lasergun.ogg")
+        rocket           = manager.get("data/sounds/weapons/rocket.ogg")
     }
 
     /** Generates font with given parameters. */
@@ -82,8 +100,8 @@ public class AssetLoader {
     }
 
     /** Returns image button style with given parameters. */
-    fun getImageButtonStyle(x1 : Int, y1 : Int, x2 : Int, y2 : Int, height : Int, width : Int)
-            : ImageButton.ImageButtonStyle {
+    fun getImageButtonStyle(x1 : Int, y1 : Int, x2 : Int, y2 : Int, height : Int, width : Int,
+                            checkedRequired : Boolean) : ImageButton.ImageButtonStyle {
         // skin for button
         val skin = Skin()
         skin.add("button-up", TextureRegion(buttons, x1, y1, height, width))
@@ -92,12 +110,13 @@ public class AssetLoader {
         val style  = ImageButton.ImageButtonStyle()
         style.up   = skin.getDrawable("button-up")
         style.down = skin.getDrawable("button-down")
+        if (checkedRequired) style.checked = skin.getDrawable("button-down")
         return style
     }
 
     /** Returns text button style with given parameters. */
-    fun getTextButtonStyle(x1 : Int, y1 : Int, x2 : Int, y2 : Int, height : Int, width : Int, font : BitmapFont)
-            : TextButton.TextButtonStyle {
+    fun getTextButtonStyle(x1 : Int, y1 : Int, x2 : Int, y2 : Int, height : Int, width : Int,
+                           font : BitmapFont) : TextButton.TextButtonStyle {
         // skin for button
         val skin = Skin()
         skin.add("button-up", TextureRegion(buttons, x1, y1, height, width))
@@ -117,13 +136,15 @@ public class AssetLoader {
         manager.load("data/images/level1/firstplan.png", Texture::class.java)
 
         // loading of music
-        //manager.load("data/sounds/Level1.ogg", Music::class.java)
+        manager.load("data/sounds/Level1.ogg", Music::class.java)
+        manager.load("data/sounds/Snow.ogg", Music::class.java)
 
         manager.finishLoading()
 
         level1BG = manager.get("data/images/level1/background.png")
         level1FP = manager.get("data/images/level1/firstplan.png")
 
-        //level1Music = manager.get("data/sounds/Level1.ogg")
+        level1Music = manager.get("data/sounds/Level1.ogg")
+        level1Snow  = manager.get("data/sounds/Snow.ogg")
     }
 }
