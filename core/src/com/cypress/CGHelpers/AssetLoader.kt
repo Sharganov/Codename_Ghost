@@ -40,6 +40,7 @@ public class AssetLoader {
 
     public var musicOn  = true
     public var language = "english"
+    public var zoom = 1.2f
 
     /** Loads main resources to AssetManager. */
     public fun load() {
