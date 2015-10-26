@@ -15,15 +15,14 @@ import com.cypress.codenameghost.CGGame
 /** Contains definition of first level. */
 public class Level1(val assets : AssetLoader, val game : CGGame, val player : Player) : Screen {
 
-    private val batcher = SpriteBatch()
-    private var runTime = 0f
+    private val batcher  = SpriteBatch()
+    private var runTime  = 0f
     private val controls = Controls(assets, game, player)
-    private var stage = Stage()
+    private var stage    = Stage()
 
     private val spruce = TextureRegion(assets.level1FP, 19, 0, 221, 417)
-    private val fence = TextureRegion(assets.level1FP, 30, 446, 207, 344)
-
-    private val cam = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private val fence  = TextureRegion(assets.level1FP, 30, 446, 207, 344)
+    private val cam    = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     init {
         stage = controls.getStage()
@@ -38,10 +37,9 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        player.update()
-
-        cam.position.set(player.getPositionX() + 50, player.getPositionY() + 200, 0f)
-        cam.zoom = 1.2f
+        // setting camera
+        cam.position.set(player.getPositionX() + 100, player.getPositionY() + 220, 0f)
+        cam.zoom = assets.zoom
         batcher.projectionMatrix = cam.combined
         cam.update()
 
@@ -49,8 +47,6 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
         batcher.begin()
         batcher.draw(assets.level1BG, -400f, 0f, 4096f, 1024f)
         batcher.end()
-        //drawing player
-        player.draw(runTime, batcher)
 
         // drawing bullets
         if (player.bulletsList.isNotEmpty() && player.bulletsList[0].distance() > 650)
@@ -60,13 +56,15 @@ public class Level1(val assets : AssetLoader, val game : CGGame, val player : Pl
             b.draw(delta)
         }
 
+        //drawing player
+        player.update()
+        player.draw(runTime, batcher)
+
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
-        batcher.draw(controls.getIcon(), player.getPositionX() - 330f, player.getPositionY() + 400f, 80f, 55f)
         batcher.draw(spruce, 300f, 0f, 221f, 417f)
-        batcher.draw(fence, 3090f, 50f, 212f, 344f)
-
+        batcher.draw(fence, 3085f, 52f, 212f, 344f)
         batcher.end()
 
         // playing level1 music and sounds
