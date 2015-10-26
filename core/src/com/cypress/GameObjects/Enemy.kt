@@ -11,6 +11,7 @@ import java.util.*
 class Enemy(private val assets : AssetLoader,  val position: Vector2, private val width : Int,
             private val height : Int, private val batcher : SpriteBatch, private val player : Player) {
 
+    // code for future using
     public var health = 100
     public var lives = 2
     public var shouldGoToLeft = false
@@ -25,6 +26,7 @@ class Enemy(private val assets : AssetLoader,  val position: Vector2, private va
     private var velocity = Vector2(3f, 10f)
     private val acceleration = Vector2(0f, 0.15f)
 
+    //private val batcher = SpriteBatch()
     private var playerGoToLeft = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
@@ -61,6 +63,7 @@ class Enemy(private val assets : AssetLoader,  val position: Vector2, private va
 
     /** Updates player position. */
     public fun update() {
+        if (player.getPositionX() > position.x)
             position.x += 1
         else position.x -= 1
     }
@@ -75,7 +78,12 @@ class Enemy(private val assets : AssetLoader,  val position: Vector2, private va
     }
 
     /** Returns position of player on Ox axis. */
+    public fun getPositionX(): Float {
         return position.x
+    }
 
     /** Returns position of player on Oy axis. */
+    public fun getPostionY(): Float {
+        return position.y
+    }
 }
