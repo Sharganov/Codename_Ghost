@@ -11,7 +11,7 @@ import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of player. */
-public class Player(private val assets : AssetLoader, private val game : CGGame, var x : Float, var y : Float,
+public class Player(private val assets : AssetLoader, private val game : CGGame, val x : Float, val y : Float,
                     private val width : Int, private val height : Int, val maxMapLength : Float) {
 
     public var health = 100
@@ -30,11 +30,11 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
     private val gun = Gun(assets, this, gunType, x, y)
 
     // private val batcher         = SpriteBatch()
-    private var playerGoToLeft = Animation(0.2f, Array<TextureRegion>())
+    private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
-    private var playerStayLeft = Animation(0.2f, Array<TextureRegion>())
-    private var playerJump = Animation(0.2f, Array<TextureRegion>())
+    private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
+    private var playerJump      = Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
@@ -71,7 +71,8 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
             position.y = 80f
             velocity.y = 10f
             acceleration.y = 0.15f
-        } else {
+        }
+        else {
             onGround = false
             position.y += velocity.y
             velocity.y -= acceleration.y
@@ -96,19 +97,21 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
                 position.y += velocity.y
                 shouldJump = false
             }
-        } else if (shouldJump) {
+        }
+        else if (shouldJump) {
             position.y = 140f
             acceleration.y = 0.3f
             shouldJump = false
         }
 
         //if reach right side
-        if (position.x > maxMapLength - 800) position.x = maxMapLength - 800 // with the offset
+        if (position.x > maxMapLength - 1000) position.x = maxMapLength - 1000 // with the offset
+
         // if reach left side
         if (position.x < 2f) position.x = 2f
 
         // level completed
-        if (position.x == -3296f && x > 650f) {
+        if (position.x == 3096f) {
             if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
             shouldGoToLeft = false
             shouldGoToRight = false
@@ -119,7 +122,6 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
 
     /** Draws player. */
     public fun draw(delta: Float, batcher: SpriteBatch) {
-
         // drawing gun
         gun.update(gunType)
         gun.draw(delta)
@@ -130,20 +132,17 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
-            // ... turning to the right side
-                true -> {
+                // ... turning to the right side
+                true ->
                     batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-                }
-            // ... turning to the left side
-                false -> {
+                // ... turning to the left side
+                false ->
                     batcher.draw(playerStayLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-                }
             }
         }
 
         // player should go to left
         if (shouldGoToLeft) {
-
             stayRight = false
             if (shouldJump) onGround = false
 
@@ -154,7 +153,6 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
 
         // player should go to right
         if (shouldGoToRight) {
-
             stayRight = true
             if (shouldJump) onGround = false
 

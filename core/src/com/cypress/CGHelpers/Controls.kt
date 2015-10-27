@@ -16,16 +16,15 @@ import com.cypress.GameObjects.Bullet
 public class Controls(val assets : AssetLoader, val game : CGGame, val player : Player) {
 
     private val stage = Stage()
-    private var gunIcon = TextureRegion()
 
     init {
         // initializing buttons
-        val left = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
-        val right = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
-        val jump = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))
-        val shoot = ImageButton(assets.getImageButtonStyle(264, 376, 263, 442, 65, 65, false))
-        val pause = ImageButton(assets.getImageButtonStyle(350, 370, 349, 437, 67, 67, false))
-        val leftGun = ImageButton(assets.getImageButtonStyle(458, 376, 457, 443, 40, 55, false))
+        val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
+        val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
+        val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))
+        val shoot    = ImageButton(assets.getImageButtonStyle(264, 376, 263, 442, 65, 65, false))
+        val pause    = ImageButton(assets.getImageButtonStyle(350, 370, 349, 437, 67, 67, false))
+        val leftGun  = ImageButton(assets.getImageButtonStyle(458, 376, 457, 443, 40, 55, false))
         val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 443, 40, 55, false))
 
         // initializing label
@@ -36,14 +35,7 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
         // initializing images
         val heart = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
-        gunIcon =
-                when (player.gunType) {
-                    "shotgun" -> TextureRegion(assets.guns, 412, 177, 80, 55)
-                    "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                    "lasergun" -> TextureRegion(assets.guns, 415, 261, 80, 55)
-                    "laser2gun" -> TextureRegion(assets.guns, 418, 358, 80, 55)
-                    else -> TextureRegion(assets.guns, 410, 87, 80, 55)
-                }
+        val icon  = Image(TextureRegion(assets.guns, 410, 87, 80, 55))
 
         left.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -132,23 +124,14 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (player.gunType) {
-                    "uzi" -> player.gunType = "rocketLauncher"
-                    "shotgun" -> player.gunType = "uzi"
-                    "assaultRiffle" -> player.gunType = "shotgun"
-                    "lasergun" -> player.gunType = "assaultRiffle"
-                    "laser2gun" -> player.gunType = "lasergun"
+                    "uzi"            -> player.gunType = "rocketLauncher"
+                    "shotgun"        -> player.gunType = "uzi"
+                    "assaultRiffle"  -> player.gunType = "shotgun"
+                    "lasergun"       -> player.gunType = "assaultRiffle"
+                    "laser2gun"      -> player.gunType = "lasergun"
                     "rocketLauncher" -> player.gunType = "laser2gun"
                 }
-
-                gunIcon =
-                        when (player.gunType) {
-                            "shotgun" -> TextureRegion(assets.guns, 412, 177, 80, 55)
-                            "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                            "lasergun" -> TextureRegion(assets.guns, 415, 261, 80, 55)
-                            "laser2gun" -> TextureRegion(assets.guns, 418, 358, 80, 55)
-                            "rocketLauncher" -> TextureRegion(assets.guns, 424, 450, 80, 55)
-                            else -> TextureRegion(assets.guns, 410, 87, 80, 55)
-                        }
+                setIcon()
             }
         })
 
@@ -159,26 +142,16 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (player.gunType) {
-                    "uzi" -> player.gunType = "shotgun"
-                    "shotgun" -> player.gunType = "assaultRiffle"
-                    "assaultRiffle" -> player.gunType = "lasergun"
-                    "lasergun" -> player.gunType = "laser2gun"
-                    "laser2gun" -> player.gunType = "rocketLauncher"
+                    "uzi"            -> player.gunType = "shotgun"
+                    "shotgun"        -> player.gunType = "assaultRiffle"
+                    "assaultRiffle"  -> player.gunType = "lasergun"
+                    "lasergun"       -> player.gunType = "laser2gun"
+                    "laser2gun"      -> player.gunType = "rocketLauncher"
                     "rocketLauncher" -> player.gunType = "uzi"
                 }
-
-                gunIcon =
-                        when (player.gunType) {
-                            "shotgun" -> TextureRegion(assets.guns, 412, 177, 80, 55)
-                            "assaultRiffle" -> TextureRegion(assets.guns, 409, 17, 80, 55)
-                            "lasergun" -> TextureRegion(assets.guns, 415, 261, 80, 55)
-                            "laser2gun" -> TextureRegion(assets.guns, 418, 358, 80, 55)
-                            "rocketLauncher" -> TextureRegion(assets.guns, 424, 450, 80, 55)
-                            else -> TextureRegion(assets.guns, 410, 87, 80, 55)
-                        }
+                setIcon()
             }
         })
-
 
         left.setPosition(20f, 0f)
         left.sizeBy(25f, 25f)
@@ -194,6 +167,8 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
         leftGun.sizeBy(20f, 35f)
         rightGun.setPosition(150f, 380f)
         rightGun.sizeBy(20f, 35f)
+        icon.setPosition(70f, 385f)
+        icon.sizeBy(5f, 9f)
         heart.setPosition(250f, 395f)
         heart.sizeBy(20f, 20f)
         health.setPosition(263f, 414f)
@@ -207,19 +182,31 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
         stage.addActor(rightGun)
         stage.addActor(heart)
         stage.addActor(health)
+        stage.addActor(icon)
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
     }
 
+    /** Sets gun icon. */
+    private fun setIcon() {
+        val gunIcon =
+            when (player.gunType) {
+                "shotgun"        -> Image(TextureRegion(assets.guns, 412, 177, 80, 55))
+                "assaultRiffle"  -> Image(TextureRegion(assets.guns, 409, 17, 80, 55))
+                "lasergun"       -> Image(TextureRegion(assets.guns, 415, 261, 80, 55))
+                "laser2gun"      -> Image(TextureRegion(assets.guns, 418, 358, 80, 55))
+                "rocketLauncher" -> Image(TextureRegion(assets.guns, 424, 452, 80, 55))
+                else             -> Image(TextureRegion(assets.guns, 410, 87, 80, 55))
+            }
+        gunIcon.setPosition(75f, 390f)
+        gunIcon.sizeBy(5f, 9f)
+        stage.actors[9] = gunIcon
+    }
+
     /** Returns stage. */
     public fun getStage(): Stage {
         return stage
-    }
-
-    /** Returns gun icon. */
-    public fun getIcon(): TextureRegion {
-        return gunIcon
     }
 
     /** Dispose stage. */
