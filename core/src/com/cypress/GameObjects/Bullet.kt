@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.cypress.CGHelpers.AssetLoader
 
-class Bullet(private val assets : AssetLoader, private var player : Player) {
-
+class Bullet( private var player : Player) {
+    
+    private val assets = AssetLoader.getInstance()
     private var batcher = SpriteBatch()
     private val type = player.gunType
     private var startPos = Vector2(0f, 0f)

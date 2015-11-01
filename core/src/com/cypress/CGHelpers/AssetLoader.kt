@@ -42,6 +42,14 @@ public class AssetLoader {
     public var language = "english"
     public var zoom = 1.25f
 
+
+    companion object {
+
+        private var _instance: AssetLoader = AssetLoader()
+
+        fun getInstance(): AssetLoader = _instance
+    }
+
     /** Loads main resources to AssetManager. */
     public fun load() {
         // loaing of images

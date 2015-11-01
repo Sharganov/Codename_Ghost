@@ -9,11 +9,18 @@ import com.cypress.Screens.LogoScreen
 public class CGGame : Game() {
 
     /** Creates game. */
+    companion object {
+
+        private var _instance: CGGame = CGGame()
+        fun getInstance(): CGGame = _instance
+    }
+
+
     public override fun create() {
         Gdx.app.log("CGGame", "created")
-        val assets = AssetLoader()
+        val assets = AssetLoader.getInstance()
         assets.load()
-        setScreen(LogoScreen(assets, this))
+        setScreen(LogoScreen(this))
     }
 
     /** Dispose game. */

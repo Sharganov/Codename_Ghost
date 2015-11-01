@@ -13,11 +13,12 @@ import com.cypress.GameObjects.Player
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of first level. */
-public class Level1(val assets : AssetLoader, val game : CGGame, val player : Player) : Screen {
+public class Level1(val game : CGGame, val player : Player) : Screen {
 
+    private val assets = AssetLoader.getInstance()
     private val batcher  = SpriteBatch()
     private var runTime  = 0f
-    private val controls = Controls(assets, game, player)
+    private val controls = Controls(game, player)
     private var stage    = Stage()
 
     private val spruce = TextureRegion(assets.level1FP, 19, 0, 221, 417)

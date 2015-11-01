@@ -15,8 +15,8 @@ import com.cypress.codenameghost.CGGame
 import com.cypress.Levels.Level1
 
 /** Contains definition of pause menu. */
-public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player : Player) : Screen {
-
+public class MenuScreen( val game : CGGame, val player : Player) : Screen {
+    val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -93,7 +93,7 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 assets.activeMusic?.stop()
-                game.screen = MainScreen(assets, game)
+                game.screen = MainScreen(game)
                 dispose()
             }
         })
@@ -104,7 +104,7 @@ public class MenuScreen(val assets : AssetLoader, val game : CGGame, val player 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = Level1(assets, game, player)
+                game.screen = Level1(game, player)
                 dispose()
             }
         })
