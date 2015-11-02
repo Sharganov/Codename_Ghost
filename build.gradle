@@ -2,7 +2,7 @@ group 'assingments'
 version '1.0-SNAPSHOT'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2'
+    gradleVersion = '2.7'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
@@ -21,18 +21,13 @@ defaultTasks 'build', 'copyFiles'
 
 mainClassName = 'com.cypress.codenameghost'
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
 }
 
 buildscript {
     ext {
-        kotlin_version = '1.0.0-beta-1038'
+        kotlin_version = '1.0.0-beta-1103'
     }
 
     repositories {
