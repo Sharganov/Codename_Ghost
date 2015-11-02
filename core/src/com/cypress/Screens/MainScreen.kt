@@ -13,8 +13,9 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of main screen. */
-public class MainScreen(val assets : AssetLoader, val game : CGGame) : Screen {
+public class MainScreen(val game : CGGame) : Screen {
 
+    val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -58,7 +59,7 @@ public class MainScreen(val assets : AssetLoader, val game : CGGame) : Screen {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = LevelsScreen(assets, game)
+                game.screen = LevelsScreen(game)
                 dispose()
             }
         })
@@ -80,7 +81,7 @@ public class MainScreen(val assets : AssetLoader, val game : CGGame) : Screen {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = SettingsScreen(assets, game)
+                game.screen = SettingsScreen(game)
                 dispose()
             }
         })

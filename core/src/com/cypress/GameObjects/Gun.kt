@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.cypress.CGHelpers.AssetLoader
 
 /** Contains definition of player. */
-public class Gun(val assets : AssetLoader, val player : Player, private var type : String,
+public class Gun(val player : Player, private var type : String,
                  private var x : Float, private var y : Float) {
+
+    private val assets = AssetLoader.getInstance()
 
     private val batcher = SpriteBatch()
 

@@ -11,9 +11,10 @@ import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of player. */
-public class Player(private val assets : AssetLoader, private val game : CGGame, val x : Float, val y : Float,
+public class Player(private val game : CGGame, val x : Float, val y : Float,
                     private val width : Int, private val height : Int, val maxMapLength : Float) {
 
+    private val assets = AssetLoader.getInstance()
     public var health = 100
     public var lives = 2
     public var shouldGoToLeft = false
@@ -27,7 +28,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
     private var position = Vector2(x, y)
     private var velocity = Vector2(3f, 10f)
     private val acceleration = Vector2(0f, 0.15f)
-    private val gun = Gun(assets, this, gunType, x, y)
+    private val gun = Gun(this, gunType, x, y)
 
     // private val batcher         = SpriteBatch()
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
@@ -116,7 +117,7 @@ public class Player(private val assets : AssetLoader, private val game : CGGame,
             shouldGoToLeft = false
             shouldGoToRight = false
             assets.activeMusic = assets.mainTheme
-            game.screen = LevelsScreen(assets, game)
+            game.screen = LevelsScreen(game)
         }
     }
 

@@ -14,8 +14,9 @@ import com.cypress.Levels.*
 import com.cypress.GameObjects.Player
 
 /** Contains definition of screen of level selection. */
-public class LevelsScreen(val assets : AssetLoader, val game : CGGame) : Screen {
+public class LevelsScreen(val game : CGGame) : Screen {
 
+    private val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -41,8 +42,8 @@ public class LevelsScreen(val assets : AssetLoader, val game : CGGame) : Screen 
                 if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
 
                 assets.loadLevel1()
-                val player  = Player(assets, game, 2f, 80f, 120, 177, 4096f)
-                game.screen = Level1(assets, game, player)
+                val player  = Player(game, 2f, 80f, 120, 177, 4096f)
+                game.screen = Level1(game, player)
                 dispose()
             }
         })
@@ -53,7 +54,7 @@ public class LevelsScreen(val assets : AssetLoader, val game : CGGame) : Screen 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = MainScreen(assets, game)
+                game.screen = MainScreen(game)
                 dispose()
             }
         })

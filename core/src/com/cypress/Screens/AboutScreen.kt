@@ -13,8 +13,9 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of about screen. */
-public class AboutScreen(val assets : AssetLoader, val game : CGGame) : Screen {
+public class AboutScreen( val game : CGGame) : Screen {
 
+    private val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -47,7 +48,7 @@ public class AboutScreen(val assets : AssetLoader, val game : CGGame) : Screen {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = SettingsScreen(assets, game)
+                game.screen = SettingsScreen(game)
                 dispose()
             }
         })

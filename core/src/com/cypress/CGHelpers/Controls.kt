@@ -13,12 +13,14 @@ import com.cypress.Screens.MenuScreen
 import com.cypress.GameObjects.Bullet
 
 /** Contains definition of controls. */
-public class Controls(val assets : AssetLoader, val game : CGGame, val player : Player) {
+public class Controls(val game : CGGame, val player : Player) {
 
+    private val assets = AssetLoader.getInstance()
     private val stage = Stage()
 
     init {
         // initializing buttons
+
         val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
         val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
         val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))
@@ -76,7 +78,7 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                val bullet = Bullet(assets, player)
+                val bullet = Bullet(player)
                 player.bulletsList.add(bullet)
 
                 when (player.gunType) {
@@ -112,7 +114,7 @@ public class Controls(val assets : AssetLoader, val game : CGGame, val player : 
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 //if (assets.activeMusic?.isPlaying ?: false) assets.activeMusic?.stop()
-                game.screen = MenuScreen(assets, game, player)
+                game.screen = MenuScreen(game, player)
                 dispose()
             }
         })

@@ -8,11 +8,11 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of screen with logo. */
-public class LogoScreen(assets : AssetLoader, var game : CGGame) : Screen {
+public class LogoScreen(var game : CGGame) : Screen {
 
     private var runTime = 0f
     private val batcher = SpriteBatch()
-    private val assets  = assets
+    private val assets  = AssetLoader.getInstance()
 
     /** Draws screen with logo. */
     public override fun render(delta : Float) {
@@ -32,7 +32,7 @@ public class LogoScreen(assets : AssetLoader, var game : CGGame) : Screen {
         else {
             if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
             if (runTime > 4.5f) {
-                game.screen = MainScreen(assets, game)
+                game.screen = MainScreen(game)
                 dispose()
             }
         }

@@ -8,8 +8,10 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import java.util.*
 
-class Enemy(private val assets : AssetLoader,  val position: Vector2, private val width : Int,
+class Enemy(val position: Vector2, private val width : Int,
             private val height : Int, private val batcher : SpriteBatch, private val player : Player) {
+
+    private val assets = AssetLoader.getInstance()
 
     // code for future using
     public var health = 100
