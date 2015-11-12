@@ -15,7 +15,7 @@ import com.cypress.codenameghost.CGGame
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets = AssetLoader.getInstance()
+    private val assets   = AssetLoader.getInstance()
     private val batcher  = SpriteBatch()
     private var runTime  = 0f
     private val controls = Controls(game, player)

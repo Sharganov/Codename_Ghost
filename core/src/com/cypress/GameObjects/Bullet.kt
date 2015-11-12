@@ -7,19 +7,19 @@ import com.cypress.CGHelpers.AssetLoader
 
 class Bullet( private var player : Player) {
     
-    private val assets = AssetLoader.getInstance()
-    private var batcher = SpriteBatch()
-    private val type = player.gunType
-    private var startPos = Vector2(0f, 0f)
-    private var position = Vector2(0f, 0f)
+    private val assets    = AssetLoader.getInstance()
+    private var batcher   = SpriteBatch()
+    private val type      = player.gunType
+    private var startPos  = Vector2(0f, 0f)
+    private var position  = Vector2(0f, 0f)
     private var direction = 0f
 
-    private var uziBullet = TextureRegion()
-    private var shotgunBullet = TextureRegion()
-    private var rifleBullet = TextureRegion()
-    private var lasergunBullet = TextureRegion()
+    private var uziBullet       = TextureRegion()
+    private var shotgunBullet   = TextureRegion()
+    private var rifleBullet     = TextureRegion()
+    private var lasergunBullet  = TextureRegion()
     private var laser2gunBullet = TextureRegion()
-    private var rocket = TextureRegion()
+    private var rocket          = TextureRegion()
 
     //private var correction = if (Math.random() mod 2 > 0.5) (Math.random() mod 50).toFloat()
     //                         else -(Math.random() mod 50).toFloat()

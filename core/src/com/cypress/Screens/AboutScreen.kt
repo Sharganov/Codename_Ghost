@@ -13,7 +13,7 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of about screen. */
-public class AboutScreen( val game : CGGame) : Screen {
+public class AboutScreen(val game : CGGame) : Screen {
 
     private val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
@@ -55,7 +55,6 @@ public class AboutScreen( val game : CGGame) : Screen {
 
 
         title.setPosition(100f, 350f)
-
         textPanel.setPosition(10f, 90f)
         textPanel.sizeBy(800f, 120f)
         textPanel.scrollTo(10f, 120f, 100f, 100f)

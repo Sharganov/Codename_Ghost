@@ -3,7 +3,7 @@ package com.cypress.Locale.en
 /** Returns string with info on English. */
 public fun info() : String {
     val text =
-            "                                     Version 0.1.2\n" +
+            "                                     Version 0.1.3\n" +
             "                                Powered by libGDX\n" +
             "\n" +
             "Made by the Cypress team composed of:\n" +
@@ -27,6 +27,6 @@ public fun info() : String {
             "4) http://gcup.ru/\n" +
             "5) https://icons8.com/\n" +
             "\n" +
-            "2015 - 2016"
+            "Cypress (c) 2015"
     return text
 }
