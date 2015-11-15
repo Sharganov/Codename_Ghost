@@ -9,7 +9,7 @@ import com.cypress.CGHelpers.AssetLoader
 import java.util.*
 
 class Enemy(val position: Vector2, private val width : Int,
-            private val height : Int, private val batcher : SpriteBatch, private val player : Player) {
+            private val height : Int, private val player : Player) {
 
     private val assets = AssetLoader.getInstance()
 
@@ -71,7 +71,7 @@ class Enemy(val position: Vector2, private val width : Int,
     }
 
     /** Draws player. */
-    public fun draw(delta: Float) {
+    public fun draw(delta: Float, batcher : SpriteBatch) {
 
         batcher.begin()
         update()

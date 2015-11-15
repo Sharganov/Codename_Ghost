@@ -3,6 +3,7 @@ package com.cypress.GameObjects
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
@@ -23,6 +24,9 @@ public class Player(private val game : CGGame, private val position : Vector2,
     public var onGround        = true
     public var gunType         = "uzi"
     public var bulletsList     = LinkedList<Bullet>()
+    public var delta = 0f
+
+    private val bounds = Rectangle(position.x, position.y, width.toFloat(), height.toFloat())
 
     private val assets       = AssetLoader.getInstance()
     private var velocity     = Vector2(4f, 12f)
@@ -64,7 +68,10 @@ public class Player(private val game : CGGame, private val position : Vector2,
     }
 
     /** Updates player position. */
-    public fun update() {
+    public fun update(){
+        val oldY = position.y
+        bounds.setPosition(position.x, position.y)
+
         if (position.y <= 80f) {
             onGround   = true
             position.y = 80f
@@ -72,30 +79,21 @@ public class Player(private val game : CGGame, private val position : Vector2,
             acceleration.y = 0.2f
         }
         else {
-            onGround = false
             position.y += velocity.y
             velocity.y -= acceleration.y
         }
 
-        if (shouldGoToRight) {
-            position.x += velocity.x
-            if (shouldJump) {
-                position.y = 140f
-                shouldJump = false
-            }
-            if (!onGround) velocity.y += acceleration.y / 10f
-        }
-        else if (shouldGoToLeft) {
-            position.x -= velocity.x
-            if (shouldJump) {
-                position.y = 140f
-                shouldJump = false
-            }
-            if (!onGround) velocity.y += acceleration.y / 10f
-        }
-        else if (shouldJump) {
-            position.y = 140f
+        if (shouldGoToRight) position.x += velocity.x
+
+        if (shouldGoToLeft) position.x -= velocity.x
+
+        if (shouldJump) {
+            //need to change because of collision
+            velocity.y = 12f
+            //
+            position.y += 60f
             shouldJump = false
+            onGround=false
         }
 
         //if player reach right side
@@ -112,6 +110,8 @@ public class Player(private val game : CGGame, private val position : Vector2,
             assets.activeMusic = assets.mainTheme
             game.screen = LevelsScreen(game)
         }
+        delta = position.y - oldY
+
     }
 
     /** Draws player. */
@@ -165,12 +165,23 @@ public class Player(private val game : CGGame, private val position : Vector2,
     }
 
     /** Returns position of player on Ox axis. */
-    public fun getX(): Float {
-        return position.x
-    }
+    public fun getX(): Float = position.x
 
     /** Returns position of player on Oy axis. */
-    public fun getY(): Float {
-        return position.y
+    public fun getY(): Float = position.y
+
+    public fun setX(value : Float){position.x = value}
+
+    public fun setY(value : Float){ position.y = value}
+
+    public fun getBounds() : Rectangle = bounds
+
+    public fun getWidth() : Int = width
+
+    public fun getHeight() : Int = height
+
+    public fun setVelocity(value : Float)
+    {
+        velocity.y = value
     }
 }
