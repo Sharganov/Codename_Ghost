@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import java.util.*
 
 /** Loads assets of project. */
 public class AssetLoader {
@@ -26,8 +27,9 @@ public class AssetLoader {
     public var guns     : Texture? = null
     public var bullets  : Texture? = null
     public var levels   : Texture? = null
-    public var level1BG : Texture? = null
-    public var level1FP : Texture? = null
+
+    public val levelsBG = Array(9, { LinkedList<Texture?>() })
+    public val levelsFP = Array(9, { LinkedList<Texture?>() })
 
     public var activeMusic      : Music? = null
     public var mainTheme        : Music? = null
@@ -139,6 +141,7 @@ public class AssetLoader {
     public fun loadLevel1() {
         // loading of images
         manager.load("data/images/level1/background.png", Texture::class.java)
+        manager.load("data/images/level1/background2.png", Texture::class.java)
         manager.load("data/images/level1/firstplan.png", Texture::class.java)
 
         // loading of music
@@ -147,8 +150,9 @@ public class AssetLoader {
 
         manager.finishLoading()
 
-        level1BG = manager.get("data/images/level1/background.png")
-        level1FP = manager.get("data/images/level1/firstplan.png")
+        levelsBG[1].add(manager.get("data/images/level1/background.png"))
+        levelsBG[1].add(manager.get("data/images/level1/background2.png"))
+        levelsFP[1].add(manager.get("data/images/level1/firstplan.png"))
 
         level1Music = manager.get("data/sounds/Level1.ogg")
         level1Snow  = manager.get("data/sounds/Snow.ogg")

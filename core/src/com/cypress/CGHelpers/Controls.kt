@@ -20,7 +20,6 @@ public class Controls(val game : CGGame, val player : Player) {
 
     init {
         // initializing buttons
-
         val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
         val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
         val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))

@@ -13,34 +13,38 @@ import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.Block
 import com.cypress.GameObjects.Enemy
 import com.cypress.GameObjects.Player
+import com.cypress.Screens.LevelsScreen
 import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets   = AssetLoader.getInstance()
-    private val batcher  = SpriteBatch()
-    private var runTime  = 0f
-    private val controls = Controls(game, player)
-    private var stage    = Stage()
-
-    private val spruce = TextureRegion(assets.level1FP, 19, 0, 221, 417)
-    private val fence  = TextureRegion(assets.level1FP, 30, 446, 207, 344)
-    private val block1 = Block(Vector2(250f, 300f), 600f, 80f, fence)
-    private val block2 = Block(Vector2(850f, 300f), 600f, 80f, fence)
-    private val block3 = Block(Vector2(1450f, 400f), 600f, 80f,fence)
+    private val assets    = AssetLoader.getInstance()
+    private val batcher   = SpriteBatch()
+    private var runTime   = 0f
+    private val controls  = Controls(game, player)
+    private val spruce    = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
+    private val fence     = TextureRegion(assets.levelsFP[1][0], 30, 446, 207, 344)
+    private val roof      = TextureRegion(assets.levelsFP[1][0], 315, 382, 128, 128)
+    private val crate     = TextureRegion(assets.levelsFP[1][0], 316, 46, 256, 128)
     private val blockList = ArrayList<Block>()
+    private val cam       = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-    private val cam    = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private var stage = Stage()
 
     init {
         stage = controls.getStage()
         assets.activeMusic = assets.level1Music
-        blockList.add(block1)
-        blockList.add(block2)
-        blockList.add(block3)
 
+        for (i in 0 .. 2)
+            blockList.add(Block(Vector2(857f + i * 128, 655f), 128f, 85f, roof))
+        for (i in 0 .. 2)
+            blockList.add(Block(Vector2(1274f + i * 128, 358f), 128f, 85f, roof))
+        for (i in 0 .. 1)
+            blockList.add(Block(Vector2(1861f + i * 128, 373f), 128f, 85f, roof))
+
+        blockList.add(Block(Vector2(626f, 51f), 256f, 128f, crate))
     }
 
     /** Draws level. */
@@ -59,7 +63,8 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
 
         // drawing background
         batcher.begin()
-        batcher.draw(assets.level1BG, -400f, 0f, 4096f, 1024f)
+        if (player.getX() < 3096f) batcher.draw(assets.levelsBG[1][0], -400f, 0f, 4096f, 1024f)
+        else batcher.draw(assets.levelsBG[1][1], 2696f, 0f, 4096f, 2048f)
         batcher.end()
 
         // drawing bullets
@@ -72,36 +77,36 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         player.update()
         player.draw(runTime, batcher)
 
-
-        for(block in blockList) {
-            // drawing first plan object
+        for (block in blockList) {
             block.draw(batcher)
-            var col = false
-            //detecting collision
+            var collision = false
+
+            // detecting collision
             if (player.getBounds().overlaps(block.getBounds())) {
                 if (player.getX() + player.getWidth() - 10f < block.getPosition().x) {
                     player.setX(block.getPosition().x - player.getWidth())
-                    col = true
+                    collision = true
                 }
                 if (player.getX() > block.getPosition().x + block.getWidth() - 10) {
                     player.setX(block.getPosition().x + block.getWidth())
-                    col = true
+                    collision = true
                 }
-                println(col)
-                if(!col) {
 
-
+                if (!collision) {
                     if (player.getY() > block.getPosition().y) {
                         player.setVelocity(0f)
                         player.onGround = true
                         player.setY(block.getPosition().y + block.getHeight())
-                    } else {
+                    }
+                    else {
                         player.setY(block.getPosition().y - player.getHeight() - 5)
                         player.setVelocity(0f)
                     }
                 }
             }
         }
+
+        // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
         batcher.draw(spruce, 300f, 0f, 221f, 417f)
@@ -118,22 +123,25 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         // drawing stage
         stage.act(delta)
         stage.draw()
+
+        // if level completed
+        if (player.getX() >= player.maxMapLength) {
+            if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
+            if ((assets.level1Snow?.isPlaying ?: false) && assets.musicOn) assets.level1Snow?.stop()
+            assets.activeMusic = assets.mainTheme
+            game.screen = LevelsScreen(game)
+        }
     }
 
-    public override fun resize(width: Int, height: Int) {
-    }
+    public override fun resize(width: Int, height: Int) {}
 
-    public override fun show() {
-    }
+    public override fun show() {}
 
-    public override fun hide() {
-    }
+    public override fun hide() {}
 
-    public override fun pause() {
-    }
+    public override fun pause() {}
 
-    public override fun resume() {
-    }
+    public override fun resume() {}
 
     /** Dispose level 1. */
     public override fun dispose() {
