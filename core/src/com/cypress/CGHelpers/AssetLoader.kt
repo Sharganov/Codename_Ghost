@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 /** Loads assets of project. */
 public class AssetLoader {
 
-    public var manager: AssetManager = AssetManager()
+    public var manager : AssetManager = AssetManager()
 
     public var logo     : Texture? = null
     public var main     : Texture? = null
@@ -43,7 +43,6 @@ public class AssetLoader {
     public var zoom = 1.25f
 
     companion object {
-
         private var _instance : AssetLoader = AssetLoader()
         fun getInstance() : AssetLoader = _instance
     }
@@ -56,7 +55,7 @@ public class AssetLoader {
         manager.load("data/images/buttons.png", Texture::class.java)
         manager.load("data/images/settings.png", Texture::class.java)
         manager.load("data/images/about.png", Texture::class.java)
-        manager.load("data/images/Panda.png", Texture::class.java)
+        manager.load("data/images/player.png", Texture::class.java)
         manager.load("data/images/guns.png", Texture::class.java)
         manager.load("data/images/bullets.png", Texture::class.java)
         manager.load("data/images/levels.png", Texture::class.java)
@@ -75,7 +74,7 @@ public class AssetLoader {
         buttons  = manager.get("data/images/buttons.png")
         settings = manager.get("data/images/settings.png")
         about    = manager.get("data/images/about.png")
-        player   = manager.get("data/images/Panda.png")
+        player   = manager.get("data/images/player.png")
         guns     = manager.get("data/images/guns.png")
         bullets  = manager.get("data/images/bullets.png")
         levels   = manager.get("data/images/levels.png")
@@ -95,7 +94,7 @@ public class AssetLoader {
         param.size  = size
         param.color = color
 
-        val RUS_CHARACTERS     = "àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß"
+        val RUS_CHARACTERS     = "Ğ°Ğ±Ğ²Ğ³Ğ´ĞµÑ‘Ğ¶Ğ·Ğ¸Ğ¹ĞºĞ»Ğ¼Ğ½Ğ¾Ğ¿Ñ€ÑÑ‚ÑƒÑ„Ñ…Ñ†Ñ‡ÑˆÑ‰ÑŠÑ‹ÑŒÑÑÑĞĞ‘Ğ’Ğ“Ğ”Ğ•ĞĞ–Ğ—Ğ˜Ğ™ĞšĞ›ĞœĞĞĞŸĞ Ğ¡Ğ¢Ğ£Ğ¤Ğ¥Ğ¦Ğ§Ğ¨Ğ©ĞªĞ«Ğ¬Ğ­Ğ®Ğ¯"
         val ENG_CHARACTERS     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         val DIGITS_AND_SYMBOLS = "0123456789][_!$%#@|\\/?-+=()*&.:;,{}\"?`'<>"
         param.characters = RUS_CHARACTERS + ENG_CHARACTERS + DIGITS_AND_SYMBOLS

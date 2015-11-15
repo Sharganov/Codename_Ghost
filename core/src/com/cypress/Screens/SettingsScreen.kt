@@ -13,7 +13,7 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of screen of settings. */
-public class SettingsScreen( val game : CGGame) : Screen {
+public class SettingsScreen(val game : CGGame) : Screen {
 
     val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
@@ -37,12 +37,12 @@ public class SettingsScreen( val game : CGGame) : Screen {
         var language =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
-                    else      -> TextButton("ßçûê:\n" + assets.language, textButtonStyle)
+                    else      -> TextButton("Ğ¯Ğ·Ñ‹Ğº:\n" + assets.language, textButtonStyle)
                 }
         var about =
                 when (assets.language) {
                     "english" -> TextButton("About", textButtonStyle)
-                    else      -> TextButton("Îá èãğå", textButtonStyle)
+                    else      -> TextButton("ĞĞ± Ğ¸Ğ³Ñ€Ğµ", textButtonStyle)
                 }
         var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
@@ -55,9 +55,9 @@ public class SettingsScreen( val game : CGGame) : Screen {
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (assets.language) {
                     "english" -> {
-                        assets.language = "ğóññêèé"
-                        language.setText("ßçûê:\n" + assets.language)
-                        about.setText("Îá èãğå")
+                        assets.language = "Ñ€ÑƒÑÑĞºĞ¸Ğ¹"
+                        language.setText("Ğ¯Ğ·Ñ‹Ğº:\n" + assets.language)
+                        about.setText("ĞĞ± Ğ¸Ğ³Ñ€Ğµ")
                     }
                     else      -> {
                         assets.language = "english"

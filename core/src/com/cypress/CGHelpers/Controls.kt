@@ -63,7 +63,7 @@ public class Controls(val game : CGGame, val player : Player) {
 
         jump.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                player.shouldJump = true
+                if (player.onGround) player.shouldJump = true
                 return true
             }
 

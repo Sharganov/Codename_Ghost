@@ -15,7 +15,7 @@ import com.cypress.codenameghost.CGGame
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets = AssetLoader.getInstance()
+    private val assets   = AssetLoader.getInstance()
     private val batcher  = SpriteBatch()
     private var runTime  = 0f
     private val controls = Controls(game, player)
@@ -39,7 +39,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // setting camera
-        cam.position.set(player.getPositionX() + 100, player.getPositionY() + 220, 0f)
+        cam.position.set(player.getX() + 100, player.getY() + 220, 0f)
         cam.zoom = assets.zoom
         batcher.projectionMatrix = cam.combined
         cam.update()
@@ -50,12 +50,10 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         batcher.end()
 
         // drawing bullets
-        if (player.bulletsList.isNotEmpty() && player.bulletsList[0].distance() > 650)
+        if (player.bulletsList.isNotEmpty() && player.bulletsList[0].distance() > 600)
             player.bulletsList.removeFirst()
-        for (b in player.bulletsList) {
-            b.update(player.getPositionY())
-            b.draw(delta)
-        }
+        for (b in player.bulletsList)
+            b.draw(delta, batcher)
 
         //drawing player
         player.update()

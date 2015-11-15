@@ -15,7 +15,7 @@ import com.cypress.codenameghost.CGGame
 import com.cypress.Levels.Level1
 
 /** Contains definition of pause menu. */
-public class MenuScreen( val game : CGGame, val player : Player) : Screen {
+public class MenuScreen(val game : CGGame, val player : Player) : Screen {
     val assets = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
@@ -38,12 +38,12 @@ public class MenuScreen( val game : CGGame, val player : Player) : Screen {
         var language =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
-                    else      -> TextButton("ßçûê:\n" + assets.language, textButtonStyle)
+                    else      -> TextButton("Ğ¯Ğ·Ñ‹Ğº:\n" + assets.language, textButtonStyle)
                 }
         var backToMain =
                 when (assets.language) {
                     "english" -> TextButton("Back to \nmain menu", textButtonStyle)
-                    else      -> TextButton("Â ãëàâíîå \nìåíş", textButtonStyle)
+                    else      -> TextButton("Ğ’ Ğ³Ğ»Ğ°Ğ²Ğ½Ğ¾Ğµ \nĞ¼ĞµĞ½Ñ", textButtonStyle)
                 }
         var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
@@ -56,9 +56,9 @@ public class MenuScreen( val game : CGGame, val player : Player) : Screen {
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 when (assets.language) {
                     "english" -> {
-                        assets.language = "ğóññêèé"
-                        language.setText("ßçûê:\n" + assets.language)
-                        backToMain.setText("Â ãëàâíîå \nìåíş")
+                        assets.language = "Ñ€ÑƒÑÑĞºĞ¸Ğ¹"
+                        language.setText("Ğ¯Ğ·Ñ‹Ğº:\n" + assets.language)
+                        backToMain.setText("Ğ’ Ğ³Ğ»Ğ°Ğ²Ğ½Ğ¾Ğµ \nĞ¼ĞµĞ½Ñ")
                     }
                     else      -> {
                         assets.language = "english"

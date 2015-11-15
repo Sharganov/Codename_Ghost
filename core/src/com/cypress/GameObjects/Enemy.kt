@@ -65,7 +65,7 @@ class Enemy(val position: Vector2, private val width : Int,
 
     /** Updates player position. */
     public fun update() {
-        if (player.getPositionX() > position.x)
+        if (player.getX() > position.x)
             position.x += 1
         else position.x -= 1
     }

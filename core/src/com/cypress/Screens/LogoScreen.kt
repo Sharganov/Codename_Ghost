@@ -22,7 +22,7 @@ public class LogoScreen(var game : CGGame) : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        if (runTime < 3f) {
+        if (runTime < 4f) {
             // drawing logo
             batcher.begin()
             batcher.disableBlending()
@@ -31,7 +31,7 @@ public class LogoScreen(var game : CGGame) : Screen {
         }
         else {
             if (!(assets.mainTheme?.isPlaying ?: false) && assets.musicOn) assets.mainTheme?.play()
-            if (runTime > 4.5f) {
+            if (runTime > 5.5f) {
                 game.screen = MainScreen(game)
                 dispose()
             }

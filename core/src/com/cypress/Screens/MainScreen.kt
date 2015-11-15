@@ -40,12 +40,12 @@ public class MainScreen(val game : CGGame) : Screen {
         var play =
                 when (assets.language) {
                     "english" -> TextButton("Play", textButtonStyle)
-                    else      -> TextButton("Èãðàòü", textButtonStyle)
+                    else      -> TextButton("Ð˜Ð³Ñ€Ð°Ñ‚ÑŒ", textButtonStyle)
                 }
         var exit =
                 when (assets.language) {
                     "english" -> TextButton("Exit", textButtonStyle)
-                    else      -> TextButton("Âûõîä", textButtonStyle)
+                    else      -> TextButton("Ð’Ñ‹Ñ…Ð¾Ð´", textButtonStyle)
                 }
         var settings = ImageButton(settingsStyle)
 
