@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.math.Vector2
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 import com.cypress.Levels.*
@@ -16,7 +17,7 @@ import com.cypress.GameObjects.Player
 /** Contains definition of screen of level selection. */
 public class LevelsScreen(val game : CGGame) : Screen {
 
-    private val assets = AssetLoader.getInstance()
+    private val assets  = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -42,7 +43,7 @@ public class LevelsScreen(val game : CGGame) : Screen {
                 if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
 
                 assets.loadLevel1()
-                val player  = Player(game, 2f, 80f, 120, 177, 4096f)
+                val player  = Player(game, Vector2(2f, 80f), 120, 177, 4096f)
                 game.screen = Level1(game, player)
                 dispose()
             }

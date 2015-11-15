@@ -5,11 +5,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.cypress.CGHelpers.AssetLoader
 
 /** Contains definition of player. */
-public class Gun(val player : Player, private var type : String,
-                 private var x : Float, private var y : Float) {
+public class Gun(private val player : Player, private var type : String) {
 
     private val assets  = AssetLoader.getInstance()
-    private val batcher = SpriteBatch()
 
     private val assaultRiffleRight  = TextureRegion(assets.guns, 11, 6, 187, 80)
     private val assaultRiffleLeft   = TextureRegion(assets.guns, 202, 6, 187, 80)
@@ -30,44 +28,47 @@ public class Gun(val player : Player, private var type : String,
     }
 
     /** Draws gun. */
-    public fun draw(delta: Float) {
+    public fun draw(delta: Float, batcher : SpriteBatch) {
+        val x = player.getX()
+        val y = player.getY()
+
         batcher.begin()
         when (type) {
             "uzi" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(uziRight, x + 375, y + 20, 90f / assets.zoom, 58f / assets.zoom)
+                    batcher.draw(uziRight, x + 65, y + 40, 90f, 58f)
                 else
-                    batcher.draw(uziLeft, x + 275, y + 15, 90f / assets.zoom, 58f / assets.zoom)
+                    batcher.draw(uziLeft, x - 45, y + 35, 90f, 58f)
             }
             "shotgun" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(shotgunRight, x + 360, y + 20, 138f / assets.zoom, 55f / assets.zoom)
+                    batcher.draw(shotgunRight, x + 50, y + 40, 138f, 55f)
                 else
-                    batcher.draw(shotgunLeft, x + 280, y + 15, 138f / assets.zoom, 55f / assets.zoom)
+                    batcher.draw(shotgunLeft, x - 40, y + 35, 138f, 55f)
             }
             "assaultRiffle" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(assaultRiffleRight, x + 350, y + 15, 187f / assets.zoom, 80f / assets.zoom)
+                    batcher.draw(assaultRiffleRight, x + 35, y + 40, 187f, 80f)
                 else
-                    batcher.draw(assaultRiffleLeft, x + 225, y + 15, 187f / assets.zoom, 80f / assets.zoom)
+                    batcher.draw(assaultRiffleLeft, x - 75, y + 35, 187f, 80f)
             }
             "lasergun" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(lasergunRight, x + 335, y + 10, 178f / assets.zoom, 86f / assets.zoom)
+                    batcher.draw(lasergunRight, x + 23, y + 30, 178f, 86f)
                 else
-                    batcher.draw(lasergunLeft, x + 260, y + 10, 178f / assets.zoom, 86f / assets.zoom)
+                    batcher.draw(lasergunLeft, x - 50, y + 25, 178f, 86f)
             }
             "laser2gun" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(laser2gunRight, x + 325, y + 5, 183f / assets.zoom, 93f / assets.zoom)
+                    batcher.draw(laser2gunRight, x + 10, y + 25, 183f, 93f)
                 else
-                    batcher.draw(laser2gunLeft, x + 275, y + 10, 183f / assets.zoom, 93f / assets.zoom)
+                    batcher.draw(laser2gunLeft, x - 50, y + 20, 183f, 93f)
             }
             "rocketLauncher" -> {
                 if (player.shouldGoToRight || player.stayRight)
-                    batcher.draw(rocketLauncherRight, x + 315, y + 30, 188f / assets.zoom, 73f / assets.zoom)
+                    batcher.draw(rocketLauncherRight, x - 5, y + 50, 188f, 73f)
                 else
-                    batcher.draw(rocketLauncherLeft, x + 265, y + 30, 188f / assets.zoom, 73f / assets.zoom)
+                    batcher.draw(rocketLauncherLeft, x - 65, y + 45, 188f, 73f)
             }
         }
         batcher.end()

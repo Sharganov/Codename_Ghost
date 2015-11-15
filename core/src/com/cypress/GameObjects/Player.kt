@@ -11,7 +11,7 @@ import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of player. */
-public class Player(private val game : CGGame, val x : Float, val y : Float,
+public class Player(private val game : CGGame, private val position : Vector2,
                     private val width : Int, private val height : Int, val maxMapLength : Float) {
 
     public var health          = 100
@@ -25,12 +25,10 @@ public class Player(private val game : CGGame, val x : Float, val y : Float,
     public var bulletsList     = LinkedList<Bullet>()
 
     private val assets       = AssetLoader.getInstance()
-    private var position     = Vector2(x, y)
-    private var velocity     = Vector2(3f, 10f)
-    private val acceleration = Vector2(0f, 0.15f)
-    private val gun          = Gun(this, gunType, x, y)
+    private var velocity     = Vector2(4f, 12f)
+    private val acceleration = Vector2(0f, 0.2f)
+    private val gun          = Gun(this, gunType)
 
-    // private val batcher         = SpriteBatch()
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
@@ -67,11 +65,11 @@ public class Player(private val game : CGGame, val x : Float, val y : Float,
 
     /** Updates player position. */
     public fun update() {
-        if (position.y <= 80f ) {
+        if (position.y <= 80f) {
             onGround   = true
             position.y = 80f
-            velocity.y = 10f
-            acceleration.y = 0.15f
+            velocity.y = 12f
+            acceleration.y = 0.2f
         }
         else {
             onGround = false
@@ -80,35 +78,30 @@ public class Player(private val game : CGGame, val x : Float, val y : Float,
         }
 
         if (shouldGoToRight) {
-            // player goes right
             position.x += velocity.x
-
-            // if he should jump
             if (shouldJump) {
-                position.y += velocity.y
+                position.y = 140f
                 shouldJump = false
             }
-
-        } else if (shouldGoToLeft) {
-            // player goes left
+            if (!onGround) velocity.y += acceleration.y / 10f
+        }
+        else if (shouldGoToLeft) {
             position.x -= velocity.x
-
-            // if he should jump
             if (shouldJump) {
-                position.y += velocity.y
+                position.y = 140f
                 shouldJump = false
             }
+            if (!onGround) velocity.y += acceleration.y / 10f
         }
         else if (shouldJump) {
             position.y = 140f
-            acceleration.y = 0.3f
             shouldJump = false
         }
 
-        //if reach right side
+        //if player reach right side
         if (position.x > maxMapLength - 1000) position.x = maxMapLength - 1000 // with the offset
 
-        // if reach left side
+        // if player reach left side
         if (position.x < 2f) position.x = 2f
 
         // level completed
@@ -122,13 +115,12 @@ public class Player(private val game : CGGame, val x : Float, val y : Float,
     }
 
     /** Draws player. */
-    public fun draw(delta: Float, batcher: SpriteBatch) {
+    public fun draw(delta: Float, batcher : SpriteBatch) {
         // drawing gun
         gun.update(gunType)
-        gun.draw(delta)
+        gun.draw(delta, batcher)
 
         batcher.begin()
-        //update()
 
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
@@ -143,43 +135,42 @@ public class Player(private val game : CGGame, val x : Float, val y : Float,
         }
 
         // player should go to left
-        if (shouldGoToLeft) {
+        else if (shouldGoToLeft) {
             stayRight = false
             if (shouldJump) onGround = false
 
-            if (!onGround) batcher.draw(playerStayLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            if (!onGround)
+                batcher.draw(playerStayLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
             else batcher.draw(playerGoToLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-            update()
         }
 
         // player should go to right
-        if (shouldGoToRight) {
+        else if (shouldGoToRight) {
             stayRight = true
             if (shouldJump) onGround = false
 
-            if (!onGround) batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            if (!onGround)
+                batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
             else batcher.draw(playerGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-            update()
         }
 
         // player should jump
-        if (shouldJump) {
+        else if (shouldJump) {
             onGround = false
             batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-            update()
         }
 
+        update()
         batcher.end()
     }
 
     /** Returns position of player on Ox axis. */
-    public fun getPositionX(): Float {
-
+    public fun getX(): Float {
         return position.x
     }
 
     /** Returns position of player on Oy axis. */
-    public fun getPositionY(): Float {
+    public fun getY(): Float {
         return position.y
     }
 }
