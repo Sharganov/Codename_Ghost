@@ -7,12 +7,11 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
-import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of player. */
-public class Player(private val game : CGGame, private val position : Vector2,
-                    private val width : Int, private val height : Int, val maxMapLength : Float)  : Character() {
+public class Player(private val position : Vector2, private val width : Int,
+                    private val height : Int, val mapLength: Float)  : Character() {
 
     public override var health          = 100
     public override var shouldGoToLeft  = false
@@ -36,7 +35,6 @@ public class Player(private val game : CGGame, private val position : Vector2,
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
-    private var playerJump      = Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
@@ -48,7 +46,6 @@ public class Player(private val game : CGGame, private val position : Vector2,
 
         val playersRight = Array<TextureRegion>()
         val playersLeft  = Array<TextureRegion>()
-        val playersJump  = Array<TextureRegion>()
 
         playersRight.addAll(playerRight1, playerRight2, playerRight3)
         playersLeft.addAll(playerLeft1, playerLeft2, playerLeft3)
@@ -61,9 +58,6 @@ public class Player(private val game : CGGame, private val position : Vector2,
 
         playerGoToLeft = Animation(0.2f, playersLeft)
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
-
-        playerJump = Animation(0.2f, playersJump)
-        playerJump.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
     /** Updates player position. */
@@ -95,7 +89,7 @@ public class Player(private val game : CGGame, private val position : Vector2,
         }
 
         //if player reach right side
-        if (position.x > maxMapLength) position.x = maxMapLength
+        if (position.x > mapLength) position.x = mapLength
 
         // if player reach left side
         if (position.x < 2f) position.x = 2f

@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.Block
@@ -25,31 +27,85 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
     private var runTime   = 0f
     private val controls  = Controls(game, player)
     private val spruce    = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence     = TextureRegion(assets.levelsFP[1][0], 30, 446, 207, 344)
-    private val roof      = TextureRegion(assets.levelsFP[1][0], 315, 382, 128, 128)
-    private val crate     = TextureRegion(assets.levelsFP[1][0], 316, 46, 256, 128)
+    private val fence     = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
     private val blockList = ArrayList<Block>()
     private val cam       = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-    private var stage = Stage()
+    private var stage     = Stage()
+    private var fan       = Animation(0.02f, Array<TextureRegion>())
+    private var isPlaying = false
 
     init {
         stage = controls.getStage()
-        assets.activeMusic = assets.level1Music
+        assets.activeMusic = assets.levelsMusic[1]
 
-        for (i in 0 .. 2)
-            blockList.add(Block(Vector2(857f + i * 128, 655f), 128f, 85f, roof))
-        for (i in 0 .. 2)
-            blockList.add(Block(Vector2(1274f + i * 128, 358f), 128f, 85f, roof))
-        for (i in 0 .. 1)
-            blockList.add(Block(Vector2(1861f + i * 128, 373f), 128f, 85f, roof))
+        val crate = TextureRegion(assets.levelsFP[1][0], 316, 46, 256, 128)
+        val roof  = TextureRegion(assets.levelsFP[1][0], 314, 348, 386, 73)
+        val roof1 = TextureRegion(assets.levelsFP[1][0], 311, 451, 214, 46)
+        val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416, 24)
+        val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201, 25, 225)
 
-        blockList.add(Block(Vector2(626f, 51f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(626f, 41f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(3230f, 403f), 386f, 73f, roof))
+        blockList.add(Block(Vector2(4376f, 929f), 386f, 73f, roof))
+        blockList.add(Block(Vector2(4763f, 616f), 386f, 73f, roof))
+        blockList.add(Block(Vector2(4559f, 357f), 214f, 46f, roof1))
+        blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2))
+        blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
+
+
+        // animation of fan
+        val fan1 = TextureRegion(assets.levelsFP[1][0], 582, 12, 141, 132)
+        val fan2 = TextureRegion(assets.levelsFP[1][0], 732, 12, 141, 132)
+        val fan3 = TextureRegion(assets.levelsFP[1][0], 877, 12, 141, 132)
+
+        val fanArray = Array<TextureRegion>()
+        fanArray.addAll(fan1, fan2, fan3)
+
+        fan = Animation(0.02f, fanArray)
+        fan.playMode = Animation.PlayMode.LOOP_PINGPONG
+    }
+
+    /** Updates level information. */
+    private fun update() {
+        // if level completed
+        if (player.getX() >= player.mapLength) {
+            if (assets.musicOn) {
+                if ((assets.activeMusic?.isPlaying ?: false)) assets.activeMusic?.stop()
+                assets.snow?.stop()
+                assets.fan?.stop()
+            }
+            assets.activeMusic = assets.mainTheme
+            game.screen = LevelsScreen(game)
+        }
+
+        // playing level1 music and sounds
+        if (assets.musicOn) {
+            if (!(assets.activeMusic?.isPlaying ?: false)) {
+                assets.activeMusic?.volume = 0.5f
+                assets.activeMusic?.play()
+            }
+            if ((player.shouldGoToLeft || player.shouldGoToRight) && player.onGround && player.getX() < 3096f)
+                assets.snow?.play()
+            else assets.snow?.stop()
+
+            if (player.getX() > 5345f && player.getX() < 6197f) {
+                if (!isPlaying) {
+                    assets.fan?.loop()
+                    isPlaying = true
+                }
+            }
+            else {
+                assets.fan?.stop()
+                isPlaying = false
+            }
+        }
     }
 
     /** Draws level. */
     public override fun render(delta: Float) {
         runTime += delta
+        update()
 
         // drawing background color
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
@@ -63,7 +119,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
 
         // drawing background
         batcher.begin()
-        if (player.getX() < 3096f) batcher.draw(assets.levelsBG[1][0], -400f, 0f, 4096f, 1024f)
+        if (player.getX() < 3096f) batcher.draw(assets.levelsBG[1][0], -400f, 0f, 4096f, 2048f)
         else batcher.draw(assets.levelsBG[1][1], 2696f, 0f, 4096f, 2048f)
         batcher.end()
 
@@ -77,6 +133,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         player.update()
         player.draw(runTime, batcher)
 
+        // drawing blocks
         for (block in blockList) {
             block.draw(batcher)
             var collision = false
@@ -110,27 +167,13 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         batcher.begin()
         batcher.enableBlending()
         batcher.draw(spruce, 300f, 0f, 221f, 417f)
-        batcher.draw(fence, 3085f, 52f, 212f, 344f)
+        batcher.draw(fence, 6151f, 77f, 236f, 356f)
+        batcher.draw(fan.getKeyFrame(runTime), 5885f, 527f, 141f, 132f)
         batcher.end()
 
-        // playing level1 music and sounds
-        if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
-        if ((player.shouldGoToLeft || player.shouldGoToRight) && player.onGround && assets.musicOn)
-            assets.level1Snow?.play()
-        else
-            assets.level1Snow?.stop()
-
         // drawing stage
-        stage.act(delta)
+        stage.act(runTime)
         stage.draw()
-
-        // if level completed
-        if (player.getX() >= player.maxMapLength) {
-            if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
-            if ((assets.level1Snow?.isPlaying ?: false) && assets.musicOn) assets.level1Snow?.stop()
-            assets.activeMusic = assets.mainTheme
-            game.screen = LevelsScreen(game)
-        }
     }
 
     public override fun resize(width: Int, height: Int) {}
