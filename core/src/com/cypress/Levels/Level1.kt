@@ -39,18 +39,36 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         stage = controls.getStage()
         assets.activeMusic = assets.levelsMusic[1]
 
+        val hSnow = TextureRegion(assets.levelsFP[1][0], 28, 834, 911, 73)
+        val vSnow = TextureRegion(assets.levelsFP[1][0], 907, 174, 100, 618)
         val crate = TextureRegion(assets.levelsFP[1][0], 316, 46, 256, 128)
         val roof  = TextureRegion(assets.levelsFP[1][0], 314, 348, 386, 73)
         val roof1 = TextureRegion(assets.levelsFP[1][0], 311, 451, 214, 46)
         val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416, 24)
         val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201, 25, 225)
 
-        blockList.add(Block(Vector2(626f, 41f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(86f, 950f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2(86f, 656f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2(997f, 950f), 125f, 73f, hSnow))
+        blockList.add(Block(Vector2(520f, 390f), 470f, 73f, hSnow))
+        blockList.add(Block(Vector2(1330f, 374f), 880f, 73f, hSnow))
+
+        blockList.add(Block(Vector2(-166f, 68f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(080f, 68f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(-110f, 190f), 256f, 128f, crate))
+
+        blockList.add(Block(Vector2(664f, 448f), 100f, 550f, vSnow))
+        blockList.add(Block(Vector2(897f, 448f), 100f, 550f, vSnow))
+        blockList.add(Block(Vector2(1317f, 892f), 100f, 618f, vSnow))
+        blockList.add(Block(Vector2(1317f, 413f), 100f, 618f, vSnow))
+        blockList.add(Block(Vector2(2129f, 380f), 100f, 370f, vSnow))
+
         blockList.add(Block(Vector2(3230f, 403f), 386f, 73f, roof))
         blockList.add(Block(Vector2(4376f, 929f), 386f, 73f, roof))
         blockList.add(Block(Vector2(4763f, 616f), 386f, 73f, roof))
         blockList.add(Block(Vector2(4559f, 357f), 214f, 46f, roof1))
         blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2))
+        //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
 
 
@@ -166,7 +184,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
-        batcher.draw(spruce, 300f, 0f, 221f, 417f)
+        batcher.draw(spruce, 350f, 980f, 221f, 417f)
         batcher.draw(fence, 6151f, 77f, 236f, 356f)
         batcher.draw(fan.getKeyFrame(runTime), 5885f, 527f, 141f, 132f)
         batcher.end()
