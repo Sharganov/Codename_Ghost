@@ -34,37 +34,37 @@ public class Gun(private val character : Character, private var type : String) {
 
         batcher.begin()
         when (type) {
-            "uzi" -> {
+            assets.gunsNames[0] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(uziRight, x + 65, y + 40, 90f, 58f)
                 else
                     batcher.draw(uziLeft, x - 45, y + 35, 90f, 58f)
             }
-            "shotgun" -> {
+            assets.gunsNames[1] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(shotgunRight, x + 50, y + 40, 138f, 55f)
                 else
                     batcher.draw(shotgunLeft, x - 40, y + 35, 138f, 55f)
             }
-            "assaultRiffle" -> {
+            assets.gunsNames[2] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(assaultRiffleRight, x + 35, y + 40, 187f, 80f)
                 else
                     batcher.draw(assaultRiffleLeft, x - 75, y + 35, 187f, 80f)
             }
-            "lasergun" -> {
+            assets.gunsNames[3] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(lasergunRight, x + 23, y + 30, 178f, 86f)
                 else
                     batcher.draw(lasergunLeft, x - 50, y + 25, 178f, 86f)
             }
-            "laser2gun" -> {
+            assets.gunsNames[4] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(laser2gunRight, x + 10, y + 25, 183f, 93f)
                 else
                     batcher.draw(laser2gunLeft, x - 50, y + 20, 183f, 93f)
             }
-            "rocketLauncher" -> {
+            assets.gunsNames[5] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(rocketLauncherRight, x - 5, y + 50, 188f, 73f)
                 else

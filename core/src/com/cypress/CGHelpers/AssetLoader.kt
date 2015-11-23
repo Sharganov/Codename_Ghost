@@ -29,20 +29,22 @@ public class AssetLoader {
     public var bullets  : Texture? = null
     public var levels   : Texture? = null
 
-    public val levelsBG = Array(9, { LinkedList<Texture?>() })
-    public val levelsFP = Array(9, { LinkedList<Texture?>() })
+    public val levelsBG    = Array(9, { LinkedList<Texture?>() })
+    public val levelsFP    = Array(9, { LinkedList<Texture?>() })
+    public val gunsNames   = arrayOf("uzi", "shotgun", "assaultRiffle", "lasergun", "laser2gun", "rocketLauncher")
+    public val maxCapacity = arrayOf(30, 8, 45, 25, 20, 1)
 
     public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
     public var snow        : Music? = null
     public var fan         : Sound? = null
+    public var reload      : Sound? = null
 
     public var levelsMusic = Array<Music?>(9, { null })
     public var shot        = Array<Sound?>(6, { null })
-
-    public var musicOn  = true
-    public var language = "english"
-    public var zoom     = 1.25f
+    public var musicOn     = true
+    public var language    = "english"
+    public var zoom        = 1.25f
 
     companion object {
         private var _instance : AssetLoader = AssetLoader()
@@ -68,6 +70,7 @@ public class AssetLoader {
         manager.load("data/sounds/weapons/shotgun.ogg", Sound::class.java)
         manager.load("data/sounds/weapons/lasergun.ogg", Sound::class.java)
         manager.load("data/sounds/weapons/rocket.ogg", Sound::class.java)
+        manager.load("data/sounds/weapons/reload.ogg", Sound::class.java)
 
         manager.finishLoading()
 
@@ -84,9 +87,11 @@ public class AssetLoader {
         mainTheme = manager.get("data/sounds/music/MainTheme.ogg")
         shot[0]   = manager.get("data/sounds/weapons/uzi.ogg")
         shot[1]   = manager.get("data/sounds/weapons/shotgun.ogg")
+        shot[2]   = manager.get("data/sounds/weapons/uzi.ogg")
         shot[3]   = manager.get("data/sounds/weapons/lasergun.ogg")
         shot[4]   = manager.get("data/sounds/weapons/lasergun.ogg")
         shot[5]   = manager.get("data/sounds/weapons/rocket.ogg")
+        reload    = manager.get("data/sounds/weapons/reload.ogg")
     }
 
     /** Generates font with given parameters. */
