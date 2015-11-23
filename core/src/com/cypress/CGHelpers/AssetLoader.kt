@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import java.util.*
 
 /** Loads assets of project. */
 public class AssetLoader {
@@ -26,21 +28,21 @@ public class AssetLoader {
     public var guns     : Texture? = null
     public var bullets  : Texture? = null
     public var levels   : Texture? = null
-    public var level1BG : Texture? = null
-    public var level1FP : Texture? = null
 
-    public var activeMusic      : Music? = null
-    public var mainTheme        : Music? = null
-    public var shotFromUzi      : Music? = null
-    public var shotFromShotgun  : Music? = null
-    public var shotFromLasergun : Music? = null
-    public var rocket           : Music? = null
-    public var level1Music      : Music? = null
-    public var level1Snow       : Music? = null
+    public val levelsBG = Array(9, { LinkedList<Texture?>() })
+    public val levelsFP = Array(9, { LinkedList<Texture?>() })
+
+    public var activeMusic : Music? = null
+    public var mainTheme   : Music? = null
+    public var snow        : Music? = null
+    public var fan         : Sound? = null
+
+    public var levelsMusic = Array<Music?>(9, { null })
+    public var shot        = Array<Sound?>(6, { null })
 
     public var musicOn  = true
     public var language = "english"
-    public var zoom = 1.25f
+    public var zoom     = 1.25f
 
     companion object {
         private var _instance : AssetLoader = AssetLoader()
@@ -49,7 +51,7 @@ public class AssetLoader {
 
     /** Loads main resources to AssetManager. */
     public fun load() {
-        // loaing of images
+        // loading of images
         manager.load("data/images/logo.png", Texture::class.java)
         manager.load("data/images/main.png", Texture::class.java)
         manager.load("data/images/buttons.png", Texture::class.java)
@@ -60,12 +62,12 @@ public class AssetLoader {
         manager.load("data/images/bullets.png", Texture::class.java)
         manager.load("data/images/levels.png", Texture::class.java)
 
-        // loading of sounds
-        manager.load("data/sounds/MainTheme.ogg", Music::class.java)
-        manager.load("data/sounds/weapons/uzi.ogg", Music::class.java)
-        manager.load("data/sounds/weapons/shotgun.ogg", Music::class.java)
-        manager.load("data/sounds/weapons/lasergun.ogg", Music::class.java)
-        manager.load("data/sounds/weapons/rocket.ogg", Music::class.java)
+        // loading of music and sounds
+        manager.load("data/sounds/music/MainTheme.ogg", Music::class.java)
+        manager.load("data/sounds/weapons/uzi.ogg", Sound::class.java)
+        manager.load("data/sounds/weapons/shotgun.ogg", Sound::class.java)
+        manager.load("data/sounds/weapons/lasergun.ogg", Sound::class.java)
+        manager.load("data/sounds/weapons/rocket.ogg", Sound::class.java)
 
         manager.finishLoading()
 
@@ -79,11 +81,12 @@ public class AssetLoader {
         bullets  = manager.get("data/images/bullets.png")
         levels   = manager.get("data/images/levels.png")
 
-        mainTheme        = manager.get("data/sounds/MainTheme.ogg")
-        shotFromUzi      = manager.get("data/sounds/weapons/uzi.ogg")
-        shotFromShotgun  = manager.get("data/sounds/weapons/shotgun.ogg")
-        shotFromLasergun = manager.get("data/sounds/weapons/lasergun.ogg")
-        rocket           = manager.get("data/sounds/weapons/rocket.ogg")
+        mainTheme = manager.get("data/sounds/music/MainTheme.ogg")
+        shot[0]   = manager.get("data/sounds/weapons/uzi.ogg")
+        shot[1]   = manager.get("data/sounds/weapons/shotgun.ogg")
+        shot[3]   = manager.get("data/sounds/weapons/lasergun.ogg")
+        shot[4]   = manager.get("data/sounds/weapons/lasergun.ogg")
+        shot[5]   = manager.get("data/sounds/weapons/rocket.ogg")
     }
 
     /** Generates font with given parameters. */
@@ -139,18 +142,22 @@ public class AssetLoader {
     public fun loadLevel1() {
         // loading of images
         manager.load("data/images/level1/background.png", Texture::class.java)
+        manager.load("data/images/level1/background2.png", Texture::class.java)
         manager.load("data/images/level1/firstplan.png", Texture::class.java)
 
-        // loading of music
-        manager.load("data/sounds/Level1.ogg", Music::class.java)
-        manager.load("data/sounds/Snow.ogg", Music::class.java)
+        // loading of music and sounds
+        manager.load("data/sounds/music/Level1.ogg", Music::class.java)
+        manager.load("data/sounds/events/snow.ogg", Music::class.java)
+        manager.load("data/sounds/events/fan.ogg", Sound::class.java)
 
         manager.finishLoading()
 
-        level1BG = manager.get("data/images/level1/background.png")
-        level1FP = manager.get("data/images/level1/firstplan.png")
+        levelsBG[1].add(manager.get("data/images/level1/background.png"))
+        levelsBG[1].add(manager.get("data/images/level1/background2.png"))
+        levelsFP[1].add(manager.get("data/images/level1/firstplan.png"))
 
-        level1Music = manager.get("data/sounds/Level1.ogg")
-        level1Snow  = manager.get("data/sounds/Snow.ogg")
+        levelsMusic[1] = manager.get("data/sounds/music/Level1.ogg")
+        snow           = manager.get("data/sounds/events/snow.ogg")
+        fan            = manager.get("data/sounds/events/fan.ogg")
     }
 }

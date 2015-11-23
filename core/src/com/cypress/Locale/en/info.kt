@@ -20,11 +20,12 @@ public fun info() : String {
             "\n" +
             "All the other resources are free and was found in a free access in the Internet.\n" +
             "Our game uses materials from websites:\n" +
-            "1) http://www.freesound.org/\n" +
-            "2) http://opengameart.org/\n" +
-            "3) http://fontslab.ru/\n" +
-            "4) http://gcup.ru/\n" +
-            "5) https://icons8.com/\n" +
+            "1) http://opengameart.org/\n" +
+            "2) http://freesound.org/\n" +
+            "3) http://textures.com/\n" +
+            "4) https://icons8.com/\n" +
+            "5) http://fontslab.ru/\n" +
+            "6) http://gcup.ru/\n" +
             "\n" +
             "\n" +
             "Powered by libGDX.\n" +

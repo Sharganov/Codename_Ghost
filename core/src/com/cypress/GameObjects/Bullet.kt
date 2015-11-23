@@ -5,11 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.cypress.CGHelpers.AssetLoader
 
-public class Bullet(private val player : Player) {
+/** Contains definition of bullet. */
+public class Bullet(private val character : Character) {
     
     private val assets    = AssetLoader.getInstance()
-    private val type      = player.gunType
-    private var startPos  = Vector2(player.getX(), player.getY())
+    private val type      = character.gunType
+    private var startPos  = Vector2(character.getX(), character.getY())
     private var position  = Vector2(0f, 0f)
     private var direction = 0f
 
@@ -33,7 +34,7 @@ public class Bullet(private val player : Player) {
             "rocketLauncher" -> startPos.y += 85
         }
 
-        if (player.shouldGoToRight || player.stayRight) {
+        if (character.shouldGoToRight || character.stayRight) {
             when (type) {
                 "uzi"            -> startPos.x += 145
                 "shotgun"        -> startPos.x += 165
@@ -78,8 +79,8 @@ public class Bullet(private val player : Player) {
     /** Draws bullet. */
     public fun draw(delta: Float, batcher : SpriteBatch) {
         position.x += direction
-        if (player.shouldGoToLeft) position.x -= 4
-        else if (player.shouldGoToRight) position.x += 4
+        if (character.shouldGoToLeft) position.x -= 4
+        else if (character.shouldGoToRight) position.x += 4
 
         // drawing bullet
         batcher.begin()

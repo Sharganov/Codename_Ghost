@@ -20,7 +20,6 @@ public class Controls(val game : CGGame, val player : Player) {
 
     init {
         // initializing buttons
-
         val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
         val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
         val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))
@@ -83,24 +82,24 @@ public class Controls(val game : CGGame, val player : Player) {
 
                 when (player.gunType) {
                     "shotgun" -> {
-                        if (assets.shotFromShotgun?.isPlaying ?: false) assets.shotFromShotgun?.stop()
-                        if (assets.musicOn) assets.shotFromShotgun?.play()
+                        assets.shot[1]?.stop()
+                        if (assets.musicOn) assets.shot[1]?.play()
                     }
                     "lasergun" -> {
-                        if (assets.shotFromLasergun?.isPlaying ?: false) assets.shotFromLasergun?.stop()
-                        if (assets.musicOn) assets.shotFromLasergun?.play()
+                        assets.shot[3]?.stop()
+                        if (assets.musicOn) assets.shot[3]?.play()
                     }
                     "laser2gun" -> {
-                        if (assets.shotFromLasergun?.isPlaying ?: false) assets.shotFromLasergun?.stop()
-                        if (assets.musicOn) assets.shotFromLasergun?.play()
+                        assets.shot[4]?.stop()
+                        if (assets.musicOn) assets.shot[4]?.play()
                     }
                     "rocketLauncher" -> {
-                        if (assets.rocket?.isPlaying ?: false) assets.rocket?.stop()
-                        if (assets.musicOn) assets.rocket?.play()
+                        assets.shot[5]?.stop()
+                        if (assets.musicOn) assets.shot[5]?.play()
                     }
                     else -> {
-                        if (assets.shotFromUzi?.isPlaying ?: false) assets.shotFromUzi?.stop()
-                        if (assets.musicOn) assets.shotFromUzi?.play()
+                        assets.shot[0]?.stop()
+                        if (assets.musicOn) assets.shot[0]?.play()
                     }
 
                 }

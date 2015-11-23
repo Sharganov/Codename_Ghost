@@ -7,27 +7,25 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
-import com.cypress.Screens.LevelsScreen
-import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of player. */
-public class Player(private val game : CGGame, private val position : Vector2,
-                    private val width : Int, private val height : Int, val maxMapLength : Float) {
+public class Player(private val position : Vector2, private val width : Int,
+                    private val height : Int, val mapLength: Float)  : Character() {
 
-    public var health          = 100
-    public var lives           = 2
-    public var shouldGoToLeft  = false
-    public var shouldGoToRight = false
-    public var stayRight       = true
-    public var shouldJump      = false
-    public var onGround        = true
-    public var gunType         = "uzi"
-    public var bulletsList     = LinkedList<Bullet>()
-    public var delta = 0f
+    public override var health          = 100
+    public override var shouldGoToLeft  = false
+    public override var shouldGoToRight = false
+    public override var stayRight       = true
+    public override var shouldJump      = false
+    public override var onGround        = true
+    public override var gunType         = "uzi"
 
-    private val bounds = Rectangle(position.x, position.y, width.toFloat(), height.toFloat())
+    public var lives       = 2
+    public var bulletsList = LinkedList<Bullet>()
+    public var delta       = 0f
 
+    private val bounds       = Rectangle(position.x, position.y, width.toFloat(), height.toFloat())
     private val assets       = AssetLoader.getInstance()
     private var velocity     = Vector2(4f, 12f)
     private val acceleration = Vector2(0f, 0.2f)
@@ -37,7 +35,6 @@ public class Player(private val game : CGGame, private val position : Vector2,
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
-    private var playerJump      = Animation(0.2f, Array<TextureRegion>())
 
     init {
         val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
@@ -49,7 +46,6 @@ public class Player(private val game : CGGame, private val position : Vector2,
 
         val playersRight = Array<TextureRegion>()
         val playersLeft  = Array<TextureRegion>()
-        val playersJump  = Array<TextureRegion>()
 
         playersRight.addAll(playerRight1, playerRight2, playerRight3)
         playersLeft.addAll(playerLeft1, playerLeft2, playerLeft3)
@@ -62,9 +58,6 @@ public class Player(private val game : CGGame, private val position : Vector2,
 
         playerGoToLeft = Animation(0.2f, playersLeft)
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
-
-        playerJump = Animation(0.2f, playersJump)
-        playerJump.playMode = Animation.PlayMode.LOOP_PINGPONG
     }
 
     /** Updates player position. */
@@ -90,28 +83,18 @@ public class Player(private val game : CGGame, private val position : Vector2,
         if (shouldJump) {
             //need to change because of collision
             velocity.y = 12f
-            //
             position.y += 60f
             shouldJump = false
-            onGround=false
+            onGround   = false
         }
 
         //if player reach right side
-        if (position.x > maxMapLength - 1000) position.x = maxMapLength - 1000 // with the offset
+        if (position.x > mapLength) position.x = mapLength
 
         // if player reach left side
         if (position.x < 2f) position.x = 2f
 
-        // level completed
-        if (position.x == 3096f) {
-            if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
-            shouldGoToLeft = false
-            shouldGoToRight = false
-            assets.activeMusic = assets.mainTheme
-            game.screen = LevelsScreen(game)
-        }
         delta = position.y - oldY
-
     }
 
     /** Draws player. */
@@ -165,14 +148,18 @@ public class Player(private val game : CGGame, private val position : Vector2,
     }
 
     /** Returns position of player on Ox axis. */
-    public fun getX(): Float = position.x
+    public override fun  getX() : Float = position.x
 
     /** Returns position of player on Oy axis. */
-    public fun getY(): Float = position.y
+    public override fun getY() : Float = position.y
 
-    public fun setX(value : Float){position.x = value}
+    public fun setX(value : Float) {
+        position.x = value
+    }
 
-    public fun setY(value : Float){ position.y = value}
+    public fun setY(value : Float){
+        position.y = value
+    }
 
     public fun getBounds() : Rectangle = bounds
 
