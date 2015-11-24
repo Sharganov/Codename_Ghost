@@ -23,39 +23,32 @@ public class Player(private val position : Vector2, private val width : Int,
     public override var shouldGoToLeft  = false
     public override var shouldGoToRight = false
     public override var stayRight       = true
-    public override var shouldJump      = false
-    public override var onGround        = true
+    public override var onGround        = false
     public override var gunType         = assets.gunsNames[0]
 
-    public var lives = 2
-    public var delta = 0f
+    public var lives      = 2
+    public var delta      = 0f
+    public var shouldJump = false
 
     public val bulletsList   = LinkedList<Bullet>()
     public val availableGuns = Array(6, { false })
-    public val ammoCouner    = Array(6, { Pair(0, 0) })
+    public val ammoCounter   = Array(6, { Pair(0, 0) })
 
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
-    private var playerStayRight = Animation(0.2f, Array<TextureRegion>())
-    private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
+    private var playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
+    private var playerStayLeft  = TextureRegion(assets.player, 880, 802, width, height)
 
     init {
         // setting animation
-        val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
-        val playerRight2 = TextureRegion(assets.player, 47, 802, width, height)
-        val playerRight3 = TextureRegion(assets.player, 391, 802, width, height)
-        val playerLeft1  = TextureRegion(assets.player, 707, 802, width, height)
-        val playerLeft2  = TextureRegion(assets.player, 880, 802, width, height)
-        val playerLeft3  = TextureRegion(assets.player, 540, 802, width, height)
+        val rightPos = arrayOf(219, 47, 391, 219)
+        val leftPos  = arrayOf(707, 880, 540, 707)
 
         val playersRight = Array<TextureRegion>()
         val playersLeft  = Array<TextureRegion>()
 
-        playersRight.addAll(playerRight1, playerRight2, playerRight3)
-        playersLeft.addAll(playerLeft1, playerLeft2, playerLeft3)
-
-        playerStayRight = Animation(0.2f, playerRight2)
-        playerStayLeft  = Animation(0.2f, playerLeft2)
+        playersRight.addAll(Array(4, {i -> TextureRegion(assets.player, rightPos[i], 802, width, height)}), 0, 3)
+        playersLeft.addAll(Array(4, {i -> TextureRegion(assets.player, leftPos[i], 802, width, height)}), 0, 3)
 
         playerGoToRight = Animation(0.2f, playersRight)
         playerGoToRight.playMode = Animation.PlayMode.LOOP_PINGPONG
@@ -63,16 +56,15 @@ public class Player(private val position : Vector2, private val width : Int,
         playerGoToLeft = Animation(0.2f, playersLeft)
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
 
-
         availableGuns[0] = true
         availableGuns[2] = true
         availableGuns[4] = true
-        ammoCouner[0] = Pair(assets.maxCapacity[0], 30)
-        ammoCouner[2] = Pair(assets.maxCapacity[0], 300)
-        ammoCouner[4] = Pair(assets.maxCapacity[0], 15)
+        ammoCounter[0] = Pair(assets.maxCapacity[0], 30)
+        ammoCounter[2] = Pair(assets.maxCapacity[0], 300)
+        ammoCounter[4] = Pair(assets.maxCapacity[0], 15)
     }
 
-    /** Updates player position. */
+    /** Updates position of player. */
     public fun update(){
         val oldY = position.y
         bounds.setPosition(position.x, position.y)
@@ -89,8 +81,7 @@ public class Player(private val position : Vector2, private val width : Int,
         }
 
         if (shouldGoToRight) position.x += velocity.x
-
-        if (shouldGoToLeft) position.x -= velocity.x
+        if (shouldGoToLeft)  position.x -= velocity.x
 
         if (shouldJump) {
             //need to change because of collision
@@ -120,12 +111,12 @@ public class Player(private val position : Vector2, private val width : Int,
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
-                // ... turning to the right side
+            // ... turning to the right side
                 true ->
-                    batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-                // ... turning to the left side
+                    batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+            // ... turning to the left side
                 false ->
-                    batcher.draw(playerStayLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+                    batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
             }
         }
 
@@ -135,7 +126,7 @@ public class Player(private val position : Vector2, private val width : Int,
             if (shouldJump) onGround = false
 
             if (!onGround)
-                batcher.draw(playerStayLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+                batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
             else batcher.draw(playerGoToLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
         }
 
@@ -145,14 +136,14 @@ public class Player(private val position : Vector2, private val width : Int,
             if (shouldJump) onGround = false
 
             if (!onGround)
-                batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+                batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
             else batcher.draw(playerGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
         }
 
         // player should jump
         else if (shouldJump) {
             onGround = false
-            batcher.draw(playerStayRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
         }
 
         update()

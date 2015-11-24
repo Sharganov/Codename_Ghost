@@ -17,8 +17,8 @@ public class Bullet(private val character : Character) {
     private var uziBullet       = TextureRegion()
     private var shotgunBullet   = TextureRegion()
     private var rifleBullet     = TextureRegion()
-    private var lasergunBullet  = TextureRegion()
-    private var laser2gunBullet = TextureRegion()
+    private var plasmagunBullet = TextureRegion()
+    private var lasergunBullet = TextureRegion()
     private var rocket          = TextureRegion()
 
     //private var correction = if (Math.random() mod 2 > 0.5) (Math.random() mod 50).toFloat()
@@ -48,8 +48,8 @@ public class Bullet(private val character : Character) {
             uziBullet       = TextureRegion(assets.bullets, 0, 6, 45, 25)
             shotgunBullet   = TextureRegion(assets.bullets, 0, 37, 50, 42)
             rifleBullet     = TextureRegion(assets.bullets, 0, 88, 50, 26)
-            lasergunBullet  = TextureRegion(assets.bullets, 0, 121, 52, 16)
-            laser2gunBullet = TextureRegion(assets.bullets, 0, 145, 52, 38)
+            plasmagunBullet = TextureRegion(assets.bullets, 0, 121, 52, 16)
+            lasergunBullet = TextureRegion(assets.bullets, 0, 145, 52, 38)
             rocket          = TextureRegion(assets.bullets, 0, 188, 128, 32)
         }
         else {
@@ -67,8 +67,8 @@ public class Bullet(private val character : Character) {
             uziBullet       = TextureRegion(assets.bullets, 83, 6, 45, 25)
             shotgunBullet   = TextureRegion(assets.bullets, 78, 37, 50, 42)
             rifleBullet     = TextureRegion(assets.bullets, 78, 88, 50, 26)
-            lasergunBullet  = TextureRegion(assets.bullets, 76, 121, 52, 16)
-            laser2gunBullet = TextureRegion(assets.bullets, 76, 145, 52, 38)
+            plasmagunBullet = TextureRegion(assets.bullets, 76, 121, 52, 16)
+            lasergunBullet = TextureRegion(assets.bullets, 76, 145, 52, 38)
             rocket          = TextureRegion(assets.bullets, 0, 224, 128, 32)
         }
 
@@ -88,8 +88,8 @@ public class Bullet(private val character : Character) {
             assets.gunsNames[0] -> batcher.draw(uziBullet, position.x, position.y, 23f, 13f)
             assets.gunsNames[1] -> batcher.draw(shotgunBullet, position.x, position.y, 25f, 21f)
             assets.gunsNames[2] -> batcher.draw(rifleBullet, position.x, position.y, 25f, 13f)
-            assets.gunsNames[3] -> batcher.draw(lasergunBullet, position.x, position.y, 26f, 8f)
-            assets.gunsNames[4] -> batcher.draw(laser2gunBullet, position.x, position.y, 26f, 16f)
+            assets.gunsNames[3] -> batcher.draw(plasmagunBullet, position.x, position.y, 26f, 8f)
+            assets.gunsNames[4] -> batcher.draw(lasergunBullet, position.x, position.y, 26f, 16f)
             assets.gunsNames[5] -> batcher.draw(rocket, position.x, position.y, 85f, 21f)
         }
         batcher.end()

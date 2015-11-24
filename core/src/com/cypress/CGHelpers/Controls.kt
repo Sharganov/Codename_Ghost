@@ -15,8 +15,9 @@ import com.cypress.GameObjects.Bullet
 /** Contains definition of controls. */
 public class Controls(val game : CGGame, val player : Player) {
 
-    private val assets = AssetLoader.getInstance()
-    private val stage = Stage()
+    private val assets     = AssetLoader.getInstance()
+    private val stage      = Stage()
+    private val labelStyle = Label.LabelStyle()
 
     init {
         // initializing buttons
@@ -29,16 +30,15 @@ public class Controls(val game : CGGame, val player : Player) {
         val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 443, 40, 55, false))
 
         // initializing labels
-        val labelStyle = Label.LabelStyle()
         labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
 
-        var health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
-
+        val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
         val index  = assets.gunsNames.indexOf(player.gunType)
-        val b      = player.ammoCouner[index]
+        val ac     = player.ammoCounter[index]
         var ammo   =
-                if (index == 0) Label(b.first.toString()  + " / inf", labelStyle)
-                else Label(b.first.toString()  + " / " + b.second.toString(), labelStyle)
+                if (index == 0) Label(ac.first.toString()  + " / inf", labelStyle)
+                else Label(ac.first.toString()  + " / " + ac.second.toString(), labelStyle)
+
 
         // initializing images
         val heart = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
@@ -79,11 +79,11 @@ public class Controls(val game : CGGame, val player : Player) {
 
         shoot.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                var index  = assets.gunsNames.indexOf(player.gunType)
-                var b      = player.ammoCouner[index]
+                val index = assets.gunsNames.indexOf(player.gunType)
+                val ac    = player.ammoCounter
 
                 // ammo run out
-                if (b.first == 0 && b.second == 0 && index != 0) {
+                if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
                     player.availableGuns[index] = false
                     nextGun(index)
                 }
@@ -92,35 +92,34 @@ public class Controls(val game : CGGame, val player : Player) {
                     player.bulletsList.add(bullet)
 
                     assets.shot[index]?.stop()
-                    if (assets.musicOn) assets.shot[1]?.play()
+                    if (assets.musicOn) assets.shot[index]?.play()
 
-                    player.ammoCouner[index] = Pair(b.first - 1, b.second)
+                    ac[index] = Pair(ac[index].first - 1, ac[index].second)
 
                     // reloading
-                    if (b.first == 0) {
+                    if (ac[index].first == 0) {
                         assets.reload?.play()
                         if (index == 0)
-                            player.ammoCouner[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
+                            ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
                         else {
                             val max = assets.maxCapacity[index]
-                            if (b.second >= max)
-                                player.ammoCouner[index] = Pair(max, b.second - max)
+                            if (ac[index].second >= max)
+                                ac[index] = Pair(max, ac[index].second - max)
                             else
-                                player.ammoCouner[index] = Pair(b.second, 0)
+                                ac[index] = Pair(ac[index].second, 0)
                         }
                     }
                     // ammo run out
-                    if (b.first == 0 && b.second == 0 && index != 0) {
+                    if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
                         player.availableGuns[index] = false
                         nextGun(index)
                     }
                 }
-                update()
                 return true
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-
+                update()
             }
         })
 
@@ -142,8 +141,7 @@ public class Controls(val game : CGGame, val player : Player) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                val index = assets.gunsNames.indexOf(player.gunType)
-                prevGun(index)
+                prevGun(assets.gunsNames.indexOf(player.gunType))
                 update()
             }
         })
@@ -154,8 +152,7 @@ public class Controls(val game : CGGame, val player : Player) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                val index = assets.gunsNames.indexOf(player.gunType)
-                nextGun(index)
+                nextGun(assets.gunsNames.indexOf(player.gunType))
                 update()
             }
         })
@@ -189,30 +186,27 @@ public class Controls(val game : CGGame, val player : Player) {
         stage.addActor(leftGun)
         stage.addActor(rightGun)
         stage.addActor(heart)
-        stage.addActor(health)
         stage.addActor(icon)
+        stage.addActor(health)
         stage.addActor(ammo)
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
     }
 
-    /** */
+    /** Changes information about player's health and ammo. */
     private fun update() {
-        val labelStyle = Label.LabelStyle()
-        labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
-
         val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
         val index  = assets.gunsNames.indexOf(player.gunType)
-        val b      = player.ammoCouner[index]
+        val ac     = player.ammoCounter[index]
         var ammo   =
-                if (index == 0) Label(b.first.toString()  + " / inf", labelStyle)
-                else Label(b.first.toString()  + " / " + b.second.toString(), labelStyle)
+                if (index == 0) Label(ac.first.toString()  + " / inf", labelStyle)
+                else Label(ac.first.toString()  + " / " + ac.second.toString(), labelStyle)
 
         health.setPosition(263f, 414f)
         ammo.setPosition(85f, 350f)
 
-        stage.actors[8]  = health
+        stage.actors[9]  = health
         stage.actors[10] = ammo
     }
 
@@ -229,10 +223,10 @@ public class Controls(val game : CGGame, val player : Player) {
             }
         gunIcon.setPosition(75f, 390f)
         gunIcon.sizeBy(5f, 9f)
-        stage.actors[9] = gunIcon
+        stage.actors[8] = gunIcon
     }
 
-    /** */
+    /** Sets next gun type. */
     private fun nextGun(index : Int) {
         var temp = 0
         for (i in 1 .. 5) {
@@ -245,7 +239,7 @@ public class Controls(val game : CGGame, val player : Player) {
         setIcon()
     }
 
-    /** */
+    /** Sets previous gun type. */
     private fun prevGun(index : Int) {
         var temp = 0
         for (i in 1 .. 5) {
