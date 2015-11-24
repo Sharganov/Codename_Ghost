@@ -13,23 +13,26 @@ import java.util.*
 public class Player(private val position : Vector2, private val width : Int,
                     private val height : Int, val mapLength: Float)  : Character() {
 
+    private val bounds       = Rectangle(position.x, position.y, width.toFloat(), height.toFloat())
+    private val assets       = AssetLoader.getInstance()
+    private var velocity     = Vector2(4f, 12f)
+    private val acceleration = Vector2(0f, 0.2f)
+    private val gun          = Gun(this, assets.gunsNames[0])
+
     public override var health          = 100
     public override var shouldGoToLeft  = false
     public override var shouldGoToRight = false
     public override var stayRight       = true
     public override var shouldJump      = false
     public override var onGround        = true
-    public override var gunType         = "uzi"
+    public override var gunType         = assets.gunsNames[0]
 
-    public var lives       = 2
-    public var bulletsList = LinkedList<Bullet>()
-    public var delta       = 0f
+    public var lives = 2
+    public var delta = 0f
 
-    private val bounds       = Rectangle(position.x, position.y, width.toFloat(), height.toFloat())
-    private val assets       = AssetLoader.getInstance()
-    private var velocity     = Vector2(4f, 12f)
-    private val acceleration = Vector2(0f, 0.2f)
-    private val gun          = Gun(this, gunType)
+    public val bulletsList   = LinkedList<Bullet>()
+    public val availableGuns = Array(6, { false })
+    public val ammoCouner    = Array(6, { Pair(0, 0) })
 
     private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
@@ -37,6 +40,7 @@ public class Player(private val position : Vector2, private val width : Int,
     private var playerStayLeft  = Animation(0.2f, Array<TextureRegion>())
 
     init {
+        // setting animation
         val playerRight1 = TextureRegion(assets.player, 219, 802, width, height)
         val playerRight2 = TextureRegion(assets.player, 47, 802, width, height)
         val playerRight3 = TextureRegion(assets.player, 391, 802, width, height)
@@ -58,6 +62,14 @@ public class Player(private val position : Vector2, private val width : Int,
 
         playerGoToLeft = Animation(0.2f, playersLeft)
         playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+
+
+        availableGuns[0] = true
+        availableGuns[2] = true
+        availableGuns[4] = true
+        ammoCouner[0] = Pair(assets.maxCapacity[0], 30)
+        ammoCouner[2] = Pair(assets.maxCapacity[0], 300)
+        ammoCouner[4] = Pair(assets.maxCapacity[0], 15)
     }
 
     /** Updates player position. */

@@ -28,11 +28,17 @@ public class Controls(val game : CGGame, val player : Player) {
         val leftGun  = ImageButton(assets.getImageButtonStyle(458, 376, 457, 443, 40, 55, false))
         val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 443, 40, 55, false))
 
-        // initializing label
+        // initializing labels
         val labelStyle = Label.LabelStyle()
         labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
 
-        val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
+        var health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
+
+        val index  = assets.gunsNames.indexOf(player.gunType)
+        val b      = player.ammoCouner[index]
+        var ammo   =
+                if (index == 0) Label(b.first.toString()  + " / inf", labelStyle)
+                else Label(b.first.toString()  + " / " + b.second.toString(), labelStyle)
 
         // initializing images
         val heart = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
@@ -73,36 +79,48 @@ public class Controls(val game : CGGame, val player : Player) {
 
         shoot.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                var index  = assets.gunsNames.indexOf(player.gunType)
+                var b      = player.ammoCouner[index]
+
+                // ammo run out
+                if (b.first == 0 && b.second == 0 && index != 0) {
+                    player.availableGuns[index] = false
+                    nextGun(index)
+                }
+                else {
+                    val bullet = Bullet(player)
+                    player.bulletsList.add(bullet)
+
+                    assets.shot[index]?.stop()
+                    if (assets.musicOn) assets.shot[1]?.play()
+
+                    player.ammoCouner[index] = Pair(b.first - 1, b.second)
+
+                    // reloading
+                    if (b.first == 0) {
+                        assets.reload?.play()
+                        if (index == 0)
+                            player.ammoCouner[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
+                        else {
+                            val max = assets.maxCapacity[index]
+                            if (b.second >= max)
+                                player.ammoCouner[index] = Pair(max, b.second - max)
+                            else
+                                player.ammoCouner[index] = Pair(b.second, 0)
+                        }
+                    }
+                    // ammo run out
+                    if (b.first == 0 && b.second == 0 && index != 0) {
+                        player.availableGuns[index] = false
+                        nextGun(index)
+                    }
+                }
+                update()
                 return true
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                val bullet = Bullet(player)
-                player.bulletsList.add(bullet)
 
-                when (player.gunType) {
-                    "shotgun" -> {
-                        assets.shot[1]?.stop()
-                        if (assets.musicOn) assets.shot[1]?.play()
-                    }
-                    "lasergun" -> {
-                        assets.shot[3]?.stop()
-                        if (assets.musicOn) assets.shot[3]?.play()
-                    }
-                    "laser2gun" -> {
-                        assets.shot[4]?.stop()
-                        if (assets.musicOn) assets.shot[4]?.play()
-                    }
-                    "rocketLauncher" -> {
-                        assets.shot[5]?.stop()
-                        if (assets.musicOn) assets.shot[5]?.play()
-                    }
-                    else -> {
-                        assets.shot[0]?.stop()
-                        if (assets.musicOn) assets.shot[0]?.play()
-                    }
-
-                }
             }
         })
 
@@ -124,15 +142,9 @@ public class Controls(val game : CGGame, val player : Player) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                when (player.gunType) {
-                    "uzi"            -> player.gunType = "rocketLauncher"
-                    "shotgun"        -> player.gunType = "uzi"
-                    "assaultRiffle"  -> player.gunType = "shotgun"
-                    "lasergun"       -> player.gunType = "assaultRiffle"
-                    "laser2gun"      -> player.gunType = "lasergun"
-                    "rocketLauncher" -> player.gunType = "laser2gun"
-                }
-                setIcon()
+                val index = assets.gunsNames.indexOf(player.gunType)
+                prevGun(index)
+                update()
             }
         })
 
@@ -142,15 +154,9 @@ public class Controls(val game : CGGame, val player : Player) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                when (player.gunType) {
-                    "uzi"            -> player.gunType = "shotgun"
-                    "shotgun"        -> player.gunType = "assaultRiffle"
-                    "assaultRiffle"  -> player.gunType = "lasergun"
-                    "lasergun"       -> player.gunType = "laser2gun"
-                    "laser2gun"      -> player.gunType = "rocketLauncher"
-                    "rocketLauncher" -> player.gunType = "uzi"
-                }
-                setIcon()
+                val index = assets.gunsNames.indexOf(player.gunType)
+                nextGun(index)
+                update()
             }
         })
 
@@ -173,6 +179,7 @@ public class Controls(val game : CGGame, val player : Player) {
         heart.setPosition(250f, 395f)
         heart.sizeBy(20f, 20f)
         health.setPosition(263f, 414f)
+        ammo.setPosition(85f, 350f)
 
         stage.addActor(left)
         stage.addActor(right)
@@ -184,26 +191,74 @@ public class Controls(val game : CGGame, val player : Player) {
         stage.addActor(heart)
         stage.addActor(health)
         stage.addActor(icon)
+        stage.addActor(ammo)
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
+    }
+
+    /** */
+    private fun update() {
+        val labelStyle = Label.LabelStyle()
+        labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
+
+        val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
+        val index  = assets.gunsNames.indexOf(player.gunType)
+        val b      = player.ammoCouner[index]
+        var ammo   =
+                if (index == 0) Label(b.first.toString()  + " / inf", labelStyle)
+                else Label(b.first.toString()  + " / " + b.second.toString(), labelStyle)
+
+        health.setPosition(263f, 414f)
+        ammo.setPosition(85f, 350f)
+
+        stage.actors[8]  = health
+        stage.actors[10] = ammo
     }
 
     /** Sets gun icon. */
     private fun setIcon() {
         val gunIcon =
             when (player.gunType) {
-                "shotgun"        -> Image(TextureRegion(assets.guns, 412, 177, 80, 55))
-                "assaultRiffle"  -> Image(TextureRegion(assets.guns, 409, 17, 80, 55))
-                "lasergun"       -> Image(TextureRegion(assets.guns, 415, 261, 80, 55))
-                "laser2gun"      -> Image(TextureRegion(assets.guns, 418, 358, 80, 55))
-                "rocketLauncher" -> Image(TextureRegion(assets.guns, 424, 452, 80, 55))
-                else             -> Image(TextureRegion(assets.guns, 410, 87, 80, 55))
+                assets.gunsNames[1] -> Image(TextureRegion(assets.guns, 412, 177, 80, 55))
+                assets.gunsNames[2] -> Image(TextureRegion(assets.guns, 409, 17, 80, 55))
+                assets.gunsNames[3] -> Image(TextureRegion(assets.guns, 415, 261, 80, 55))
+                assets.gunsNames[4] -> Image(TextureRegion(assets.guns, 418, 358, 80, 55))
+                assets.gunsNames[5] -> Image(TextureRegion(assets.guns, 424, 452, 80, 55))
+                else                -> Image(TextureRegion(assets.guns, 410, 87, 80, 55))
             }
         gunIcon.setPosition(75f, 390f)
         gunIcon.sizeBy(5f, 9f)
         stage.actors[9] = gunIcon
     }
+
+    /** */
+    private fun nextGun(index : Int) {
+        var temp = 0
+        for (i in 1 .. 5) {
+            temp = (index + i) % 6
+            if (player.availableGuns[temp]) {
+                player.gunType = assets.gunsNames[temp]
+                break
+            }
+        }
+        setIcon()
+    }
+
+    /** */
+    private fun prevGun(index : Int) {
+        var temp = 0
+        for (i in 1 .. 5) {
+            temp = (index - i) % 6
+            if (temp < 0) temp += 6
+            if (player.availableGuns[temp]) {
+                player.gunType = assets.gunsNames[temp]
+                break
+            }
+        }
+        setIcon()
+    }
+
 
     /** Returns stage. */
     public fun getStage(): Stage {
