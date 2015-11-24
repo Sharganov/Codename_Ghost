@@ -28,10 +28,11 @@ public class AssetLoader {
     public var guns     : Texture? = null
     public var bullets  : Texture? = null
     public var levels   : Texture? = null
+    public var warrior  : Texture? = null
 
     public val levelsBG    = Array(9, { LinkedList<Texture?>() })
     public val levelsFP    = Array(9, { LinkedList<Texture?>() })
-    public val gunsNames   = arrayOf("uzi", "shotgun", "assaultRiffle", "lasergun", "laser2gun", "rocketLauncher")
+    public val gunsNames   = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun", "rocketLauncher")
     public val maxCapacity = arrayOf(30, 8, 45, 25, 20, 1)
 
     public var activeMusic : Music? = null
@@ -63,6 +64,7 @@ public class AssetLoader {
         manager.load("data/images/guns.png", Texture::class.java)
         manager.load("data/images/bullets.png", Texture::class.java)
         manager.load("data/images/levels.png", Texture::class.java)
+        manager.load("data/images/warrior.png", Texture::class.java)
 
         // loading of music and sounds
         manager.load("data/sounds/music/MainTheme.ogg", Music::class.java)
@@ -83,6 +85,7 @@ public class AssetLoader {
         guns     = manager.get("data/images/guns.png")
         bullets  = manager.get("data/images/bullets.png")
         levels   = manager.get("data/images/levels.png")
+        warrior  = manager.get("data/images/warrior.png")
 
         mainTheme = manager.get("data/sounds/music/MainTheme.ogg")
         shot[0]   = manager.get("data/sounds/weapons/uzi.ogg")

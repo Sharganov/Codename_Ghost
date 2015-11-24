@@ -15,10 +15,10 @@ public class Gun(private val character : Character, private var type : String) {
     private val uziLeft             = TextureRegion(assets.guns, 281, 95, 90, 58)
     private val shotgunRight        = TextureRegion(assets.guns, 29, 176, 138, 55)
     private val shotgunLeft         = TextureRegion(assets.guns, 248, 176, 138, 55)
-    private val lasergunRight       = TextureRegion(assets.guns, 9, 250, 178, 86)
-    private val lasergunLeft        = TextureRegion(assets.guns, 223, 250, 178, 86)
-    private val laser2gunRight      = TextureRegion(assets.guns, 7, 348, 183, 93)
-    private val laser2gunLeft       = TextureRegion(assets.guns, 221, 348, 183, 93)
+    private val plasmagunRight      = TextureRegion(assets.guns, 9, 250, 178, 86)
+    private val plasmagunLeft       = TextureRegion(assets.guns, 223, 250, 178, 86)
+    private val lasergunRight       = TextureRegion(assets.guns, 7, 348, 183, 93)
+    private val lasergunLeft        = TextureRegion(assets.guns, 221, 348, 183, 93)
     private val rocketLauncherRight = TextureRegion(assets.guns, 7, 456, 188, 73)
     private val rocketLauncherLeft  = TextureRegion(assets.guns, 222, 456, 188, 73)
 
@@ -54,15 +54,15 @@ public class Gun(private val character : Character, private var type : String) {
             }
             assets.gunsNames[3] -> {
                 if (character.shouldGoToRight || character.stayRight)
-                    batcher.draw(lasergunRight, x + 23, y + 30, 178f, 86f)
+                    batcher.draw(plasmagunRight, x + 23, y + 30, 178f, 86f)
                 else
-                    batcher.draw(lasergunLeft, x - 50, y + 25, 178f, 86f)
+                    batcher.draw(plasmagunLeft, x - 50, y + 25, 178f, 86f)
             }
             assets.gunsNames[4] -> {
                 if (character.shouldGoToRight || character.stayRight)
-                    batcher.draw(laser2gunRight, x + 10, y + 25, 183f, 93f)
+                    batcher.draw(lasergunRight, x + 10, y + 25, 183f, 93f)
                 else
-                    batcher.draw(laser2gunLeft, x - 50, y + 20, 183f, 93f)
+                    batcher.draw(lasergunLeft, x - 50, y + 20, 183f, 93f)
             }
             assets.gunsNames[5] -> {
                 if (character.shouldGoToRight || character.stayRight)

@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.Block
-import com.cypress.GameObjects.Enemy
 import com.cypress.GameObjects.Player
+import com.cypress.GameObjects.Warrior
 import com.cypress.Screens.LevelsScreen
 import com.cypress.codenameghost.CGGame
 import java.util.*
@@ -34,6 +34,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
     private var stage     = Stage()
     private var fan       = Animation(0.02f, Array<TextureRegion>())
     private var isPlaying = false
+    private var gameStart = false
 
     init {
         stage = controls.getStage()
@@ -70,7 +71,6 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2))
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
-
 
         // animation of fan
         val fan1 = TextureRegion(assets.levelsFP[1][0], 582, 12, 141, 132)
@@ -120,17 +120,21 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         }
     }
 
+    private val warrior = Warrior(Vector2(1500f, 100f), 115, 180, player)
+
     /** Draws level. */
     public override fun render(delta: Float) {
         runTime += delta
         update()
+        if (player.onGround) gameStart = true
 
         // drawing background color
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // setting camera
-        cam.position.set(player.getX() + 100, player.getY() + 220, 0f)
+        if (!gameStart) cam.position.set(120f, 1243f, 0f)
+        else cam.position.set(player.getX() + 100, player.getY() + 220, 0f)
         cam.zoom = assets.zoom
         batcher.projectionMatrix = cam.combined
         cam.update()
@@ -150,6 +154,9 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         //drawing player
         player.update()
         player.draw(runTime, batcher)
+
+        warrior.update(runTime)
+        warrior.draw(runTime, batcher)
 
         // drawing blocks
         for (block in blockList) {
@@ -190,8 +197,10 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         batcher.end()
 
         // drawing stage
-        stage.act(runTime)
-        stage.draw()
+        if (gameStart) {
+            stage.act(runTime)
+            stage.draw()
+        }
     }
 
     public override fun resize(width: Int, height: Int) {}
