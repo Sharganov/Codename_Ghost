@@ -23,15 +23,15 @@ import java.util.*
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets    = AssetLoader.getInstance()
-    private val batcher   = SpriteBatch()
-    private var runTime   = 0f
-    private val controls  = Controls(game, player)
-    private val spruce    = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence     = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
-    private val blockList = ArrayList<Block>()
-    private val bulletsToRemove = ArrayList<Bullet>()
-    private val cam       = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private val assets     = AssetLoader.getInstance()
+    private val batcher    = SpriteBatch()
+    private var runTime    = 0f
+    private val controls   = Controls(game, player)
+    private val spruce     = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
+    private val fence      = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
+    private val blockList  = ArrayList<Block>()
+    private val removeList = ArrayList<Bullet>()
+    private val camera     = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
     private var fan       = Animation(0.02f, Array<TextureRegion>())
@@ -135,11 +135,11 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // setting camera
-        if (!gameStart) cam.position.set(120f, 1243f, 0f)
-        else cam.position.set(player.getX() + 100, player.getY() + 220, 0f)
-        cam.zoom = assets.zoom
-        batcher.projectionMatrix = cam.combined
-        cam.update()
+        if (!gameStart) camera.position.set(120f, 1243f, 0f)
+        else camera.position.set(player.getX() + 100, player.getY() + 220, 0f)
+        camera.zoom = assets.zoom
+        batcher.projectionMatrix = camera.combined
+        camera.update()
 
         // drawing background
         batcher.begin()
@@ -157,11 +157,11 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         {
             if(bullet.getBounds().overlaps(warrior.getBound())){
                 warrior.health -= 10
-                bulletsToRemove.add(bullet)
+                removeList.add(bullet)
             }
         }
 
-        for(bullet in bulletsToRemove) player.bulletsList.remove(bullet)
+        for(bullet in removeList) player.bulletsList.remove(bullet)
         //drawing blocks
         for(block in blockList) block.draw(batcher)
 

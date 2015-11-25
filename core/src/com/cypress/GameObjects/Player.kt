@@ -18,8 +18,10 @@ public class Player(override val position : Vector2, override protected  val wid
     override val offsetY = 18f
     override val offsetX = 10f
 
+    override protected var velocity = Vector2(4f, 12f)
+    override public var shouldJump  = false
+
     private val assets       = AssetLoader.getInstance()
-    override protected  var velocity     = Vector2(4f, 12f)
     private val acceleration = Vector2(0f, 0.2f)
     private val gun          = Gun(this, assets.gunsNames[0])
 
@@ -30,15 +32,14 @@ public class Player(override val position : Vector2, override protected  val wid
     public override var onGround        = false
     public override var gunType         = assets.gunsNames[0]
 
-    public var lives      = 2
-    override public var shouldJump = false
+    public var lives = 2
 
     public val bulletsList   = LinkedList<Bullet>()
     public val availableGuns = Array(6, { false })
     public val ammoCounter   = Array(6, { Pair(0, 0) })
 
-    private var playerGoToLeft  = Animation(0.2f, Array<TextureRegion>())
-    private var playerGoToRight = Animation(0.2f, Array<TextureRegion>())
+    private var playerGoesLeft  = Animation(0.2f, Array<TextureRegion>())
+    private var playerGoesRight = Animation(0.2f, Array<TextureRegion>())
     private var playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
     private var playerStayLeft  = TextureRegion(assets.player, 880, 802, width, height)
 
@@ -53,11 +54,11 @@ public class Player(override val position : Vector2, override protected  val wid
         playersRight.addAll(Array(4, {i -> TextureRegion(assets.player, rightPos[i], 802, width, height)}), 0, 3)
         playersLeft.addAll(Array(4, {i -> TextureRegion(assets.player, leftPos[i], 802, width, height)}), 0, 3)
 
-        playerGoToRight = Animation(0.2f, playersRight)
-        playerGoToRight.playMode = Animation.PlayMode.LOOP_PINGPONG
+        playerGoesRight = Animation(0.2f, playersRight)
+        playerGoesRight.playMode = Animation.PlayMode.LOOP_PINGPONG
 
-        playerGoToLeft = Animation(0.2f, playersLeft)
-        playerGoToLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+        playerGoesLeft = Animation(0.2f, playersLeft)
+        playerGoesLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
 
         availableGuns[0] = true
         availableGuns[2] = true
@@ -132,7 +133,7 @@ public class Player(override val position : Vector2, override protected  val wid
 
             if (!onGround)
                 batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
-            else batcher.draw(playerGoToLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            else batcher.draw(playerGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
         }
 
         // player should go to right
@@ -142,7 +143,7 @@ public class Player(override val position : Vector2, override protected  val wid
 
             if (!onGround)
                 batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
-            else batcher.draw(playerGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            else batcher.draw(playerGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
         }
 
         // player should jump

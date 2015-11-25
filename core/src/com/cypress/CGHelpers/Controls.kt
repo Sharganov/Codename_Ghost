@@ -36,7 +36,7 @@ public class Controls(val game : CGGame, val player : Player) {
         val index  = assets.gunsNames.indexOf(player.gunType)
         val ac     = player.ammoCounter[index]
         var ammo   =
-                if (index == 0) Label(ac.first.toString()  + " / inf", labelStyle)
+                if (index == 0) Label(ac.first.toString()  + " / ∞", labelStyle)
                 else Label(ac.first.toString()  + " / " + ac.second.toString(), labelStyle)
 
 
@@ -98,7 +98,7 @@ public class Controls(val game : CGGame, val player : Player) {
 
                     // reloading
                     if (ac[index].first == 0) {
-                        assets.reload?.play()
+                        if (assets.musicOn) assets.reload?.play()
                         if (index == 0)
                             ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
                         else {
@@ -196,11 +196,12 @@ public class Controls(val game : CGGame, val player : Player) {
 
     /** Changes information about player's health and ammo. */
     private fun update() {
-        val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
+        val temp   = if (player.health < 100) "   x " else "  x "
+        val health = Label(player.health.toString() + temp + player.lives.toString(), labelStyle)
         val index  = assets.gunsNames.indexOf(player.gunType)
         val ac     = player.ammoCounter[index]
         var ammo   =
-                if (index == 0) Label(ac.first.toString()  + " / inf", labelStyle)
+                if (index == 0) Label(ac.first.toString()  + " / ∞", labelStyle)
                 else Label(ac.first.toString()  + " / " + ac.second.toString(), labelStyle)
 
         health.setPosition(263f, 414f)
