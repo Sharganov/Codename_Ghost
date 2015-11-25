@@ -12,10 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.CGHelpers.Controls
-import com.cypress.GameObjects.Block
-import com.cypress.GameObjects.Bullet
-import com.cypress.GameObjects.Player
-import com.cypress.GameObjects.Warrior
+import com.cypress.GameObjects.*
 import com.cypress.Screens.LevelsScreen
 import com.cypress.codenameghost.CGGame
 import java.util.*
@@ -23,16 +20,19 @@ import java.util.*
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets      = AssetLoader.getInstance()
-    private val batcher     = SpriteBatch()
-    private var runTime     = 0f
-    private val controls    = Controls(game, player)
-    private val spruce      = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence       = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
-    private val blockList   = ArrayList<Block>()
-    private val removeList  = ArrayList<Bullet>()
-    private val enemyList   = ArrayList<Warrior>()
-    private val deadEnemies = ArrayList<Warrior>()
+    private val assets          = AssetLoader.getInstance()
+    private val batcher         = SpriteBatch()
+    private var runTime         = 0f
+    private val controls        = Controls(game, player)
+    private val spruce          = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
+    private val fence           = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
+    private val blockList       = ArrayList<Block>()
+    private val enemyList       = ArrayList<Warrior>()
+    private val itemsList       = ArrayList<Item>()
+    private val bulletsToRemove = ArrayList<Bullet>()
+    private val deadEnemies     = ArrayList<Warrior>()
+    private val itemsToRemove   = ArrayList<Item>()
+
     private val camera      = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
@@ -79,6 +79,9 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         enemyList.add( Warrior(Vector2(4863f, 700f), 115, 180, player))
         enemyList.add( Warrior(Vector2(4163f, 700f), 115, 180, player))
         enemyList.add( Warrior(Vector2(3563f, 700f), 115, 180, player))
+
+        itemsList.add(Item(Vector2(2300f, 100f), "medicine"))
+        itemsList.add(Item(Vector2(3300f, 140f), assets.gunsNames[1] ))
 
         // animation of fan
         val fan1 = TextureRegion(assets.levelsFP[1][0], 582, 12, 141, 132)
@@ -132,7 +135,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
                 if (bullet.getBounds().overlaps(enemy.getBound())) {
                     if(!bullet.enemyBulllet) {
                         enemy.health -= 25
-                        removeList.add(bullet)
+                        bulletsToRemove.add(bullet)
                     }
                 }
                 if(enemy.health <= 0) deadEnemies.add(enemy)
@@ -148,25 +151,21 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
                         player.lives -= 1
                         if (player.lives < 0) println("Game Over")
                     }
-                    removeList.add(bullet)
+                    bulletsToRemove.add(bullet)
                 }
             }
         }
 
-        //delete dead enemy
+        // delete dead enemy
         for(enemy in deadEnemies) enemyList.remove(enemy)
 
-        //drawing blocks
-        for(block in blockList) block.draw(batcher)
-
-        //check collision of bullets with blocks
+        // check collision of bullets with blocks
         for(bullet in assets.bulletsList)
             for(block in blockList)
-                if(bullet.getBounds().overlaps(block.getBounds())) removeList.add(bullet)
+                if(bullet.getBounds().overlaps(block.getBounds())) bulletsToRemove.add(bullet)
 
-        //remove bullets, which hit player or block
-        for(bullet in removeList) assets.bulletsList.remove(bullet)
-
+        // remove bullets, which hit player or block
+        for(bullet in bulletsToRemove) assets.bulletsList.remove(bullet)
     }
 
     /** Draws level. */
@@ -197,11 +196,24 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
             assets.bulletsList.removeFirst()
         for (b in assets.bulletsList) b.draw(delta, batcher)
 
-        //drawing player
+        // drawing blocks
+        for(block in blockList) block.draw(batcher)
+
+        // drawing player
         player.update()
         player.checkCollision(blockList)
         player.draw(runTime, batcher)
 
+        // check collision with items(medicine, ammo...
+        for(item in itemsList) {
+            item.draw(batcher)
+            if (player.getBound().overlaps(item.getBounds())) {
+                item.activity(player)
+                itemsToRemove.add(item)
+            }
+        }
+        // remove picked up items
+        for(item in itemsToRemove) itemsList.remove(item)
         // drawing enemies
         for(enemy in enemyList) {
             enemy.update(runTime)
