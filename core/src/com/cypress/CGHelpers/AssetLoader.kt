@@ -22,6 +22,7 @@ public class AssetLoader {
     public val levelsFP     = Array(9, { LinkedList<Texture?>() })
     public val gunsNames    = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun",
                                       "lasergun", "minigun", "rocketLauncher")
+    public val ammoNames    = Array(7, {i-> gunsNames[i] + "_ammo"})
     public val bulletsList  = LinkedList<Bullet>()
     public val maxCapacity  = arrayOf(30, 8, 45, 25, 20, 100, 1)
     public val bulletDamage = arrayOf(10, 20, 15, 20, 30, 15, 40)
