@@ -7,36 +7,35 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
-import java.util.*
 
 /** Contains definition of player. */
 public class Player(override val position : Vector2, override protected  val width : Int,
                     override protected  val height : Int, val mapLength: Float)  : Character() {
-    override val isEnemy: Boolean = false
-    override val bounds = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
-    override var delta = 0f
-    override val offsetY = 18f
-    override val offsetX = 10f
 
-    override protected var velocity = Vector2(4f, 12f)
-    override public var shouldJump  = false
+    public override val isEnemy = false
+    public override val bounds  = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
+    public override val offsetY = 18f
+    public override val offsetX = 10f
+
+    protected override var velocity = Vector2(4f, 12f)
 
     private val assets       = AssetLoader.getInstance()
     private val acceleration = Vector2(0f, 0.2f)
     private val gun          = Gun(this, assets.gunsNames[0])
 
     public override var health          = 100
+    public override var delta           = 0f
+    public override var shouldJump      = false
     public override var shouldGoToLeft  = false
     public override var shouldGoToRight = false
     public override var stayRight       = true
     public override var onGround        = false
     public override var gunType         = assets.gunsNames[0]
 
-    public var lives = 2
-
-    //public val bulletsList   = LinkedList<Bullet>()
     public val availableGuns = Array(6, { false })
     public val ammoCounter   = Array(6, { Pair(0, 0) })
+
+    public var lives = 2
 
     private var playerGoesLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoesRight = Animation(0.2f, Array<TextureRegion>())
@@ -117,10 +116,10 @@ public class Player(override val position : Vector2, override protected  val wid
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
-            // ... turning to the right side
+                // ... turning to the right side
                 true ->
                     batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
-            // ... turning to the left side
+                // ... turning to the left side
                 false ->
                     batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
             }
@@ -163,5 +162,4 @@ public class Player(override val position : Vector2, override protected  val wid
     public override fun getY() : Float = position.y
 
     public fun getBound() : Rectangle = bounds
-
 }

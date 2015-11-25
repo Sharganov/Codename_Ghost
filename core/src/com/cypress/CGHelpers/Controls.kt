@@ -39,7 +39,6 @@ public class Controls(val game : CGGame, val player : Player) {
                 if (index == 0) Label(ac.first.toString()  + " / ∞", labelStyle)
                 else Label(ac.first.toString()  + " / " + ac.second.toString(), labelStyle)
 
-
         // initializing images
         val heart = Image(TextureRegion(assets.buttons, 591, 389, 45, 41))
         val icon  = Image(TextureRegion(assets.guns, 410, 87, 80, 55))
@@ -128,7 +127,6 @@ public class Controls(val game : CGGame, val player : Player) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                //if (assets.activeMusic?.isPlaying ?: false) assets.activeMusic?.stop()
                 game.screen = MenuScreen(game, player)
                 dispose()
             }
@@ -193,8 +191,11 @@ public class Controls(val game : CGGame, val player : Player) {
 
     /** Changes information about player's health and ammo. */
     public fun update() {
-        val temp   = if (player.health < 100) "   x " else "  x "
-        val health = Label(player.health.toString() + temp + player.lives.toString(), labelStyle)
+        val temp   =
+                if (player.health >= 100) ""
+                else if (player.health < 10) "  "
+                else " "
+        val health = Label(temp + player.health.toString() + "  x " + player.lives.toString(), labelStyle)
         val index  = assets.gunsNames.indexOf(player.gunType)
         val ac     = player.ammoCounter[index]
         var ammo   =

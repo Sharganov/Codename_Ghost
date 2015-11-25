@@ -23,17 +23,17 @@ import java.util.*
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets     = AssetLoader.getInstance()
-    private val batcher    = SpriteBatch()
-    private var runTime    = 0f
-    private val controls   = Controls(game, player)
-    private val spruce     = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence      = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
-    private val blockList  = ArrayList<Block>()
-    private val removeList = ArrayList<Bullet>()
-    private val enemyList  = ArrayList<Warrior>()
-    private val enemyToRemove = ArrayList<Warrior>()
-    private val camera     = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private val assets      = AssetLoader.getInstance()
+    private val batcher     = SpriteBatch()
+    private var runTime     = 0f
+    private val controls    = Controls(game, player)
+    private val spruce      = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
+    private val fence       = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
+    private val blockList   = ArrayList<Block>()
+    private val removeList  = ArrayList<Bullet>()
+    private val enemyList   = ArrayList<Warrior>()
+    private val deadEnemies = ArrayList<Warrior>()
+    private val camera      = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
     private var fan       = Animation(0.02f, Array<TextureRegion>())
@@ -89,7 +89,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         fanArray.addAll(fan1, fan2, fan3)
 
         fan = Animation(0.02f, fanArray)
-        fan.playMode = Animation.PlayMode.LOOP_PINGPONG
+        fan.playMode = Animation.PlayMode.LOOP
     }
 
     /** Updates level information. */
@@ -126,13 +126,54 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
                 isPlaying = false
             }
         }
+
+        for (bullet in assets.bulletsList) {
+            for (enemy in enemyList) {
+                if (bullet.getBounds().overlaps(enemy.getBound())) {
+                    if(!bullet.enemyBulllet) {
+                        enemy.health -= 25
+                        removeList.add(bullet)
+                    }
+                }
+                if(enemy.health <= 0) deadEnemies.add(enemy)
+            }
+        }
+
+        for (bullet in assets.bulletsList) {
+            if (bullet.getBounds().overlaps(player.getBound())) {
+                if (bullet.enemyBulllet) {
+                    player.health -= 10
+                    if (player.health <= 0) {
+                        player.health = 100
+                        player.lives -= 1
+                        if (player.lives < 0) println("Game Over")
+                    }
+                    removeList.add(bullet)
+                }
+            }
+        }
+
+        //delete dead enemy
+        for(enemy in deadEnemies) enemyList.remove(enemy)
+
+        //drawing blocks
+        for(block in blockList) block.draw(batcher)
+
+        //check collision of bullets with blocks
+        for(bullet in assets.bulletsList)
+            for(block in blockList)
+                if(bullet.getBounds().overlaps(block.getBounds())) removeList.add(bullet)
+
+        //remove bullets, which hit player or block
+        for(bullet in removeList) assets.bulletsList.remove(bullet)
+
     }
 
     /** Draws level. */
     public override fun render(delta: Float) {
+        if (player.onGround) gameStart = true
         runTime += delta
         update()
-        if (player.onGround) gameStart = true
 
         // drawing background color
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
@@ -153,42 +194,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
 
         // drawing bullets
         if (assets.bulletsList.isNotEmpty() && assets.bulletsList[0].distance() > 600)
-                assets.bulletsList.removeFirst()
-
-        for (bullet in assets.bulletsList) {
-            for (enemy in enemyList) {
-                if (bullet.getBounds().overlaps(enemy.getBound())) {
-                    if(!bullet.enemyBulllet) {
-                        enemy.health -= 25
-                        removeList.add(bullet)
-                    }
-                }
-                if(enemy.health <= 0) enemyToRemove.add(enemy)
-            }
-        }
-
-        for (bullet in assets.bulletsList) {
-            if (bullet.getBounds().overlaps(player.getBound())) {
-                if (bullet.enemyBulllet) {
-                    println("@")
-                    player.health -= 10
-                    removeList.add(bullet)
-                }
-            }
-        }
-
-        //delete dead enemy
-        for(enemy in enemyToRemove) enemyList.remove(enemy)
-
-        //drawing blocks
-        for(block in blockList) block.draw(batcher)
-        //check collision of bullets with blocks
-        for(bullet in assets.bulletsList)
-            for(block in blockList)
-                if(bullet.getBounds().overlaps(block.getBounds()))
-                    removeList.add(bullet)
-        //remove bulletes, which hit player or block
-        for(bullet in removeList) assets.bulletsList.remove(bullet)
+            assets.bulletsList.removeFirst()
         for (b in assets.bulletsList) b.draw(delta, batcher)
 
         //drawing player
@@ -196,6 +202,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         player.checkCollision(blockList)
         player.draw(runTime, batcher)
 
+        // drawing enemies
         for(enemy in enemyList) {
             enemy.update(runTime)
             enemy.checkCollision(blockList)
