@@ -60,12 +60,10 @@ public class Player(override val position : Vector2, override protected  val wid
         playerGoesLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
 
         availableGuns[0] = true
-        availableGuns[1] = true
         availableGuns[2] = true
         availableGuns[4] = true
         availableGuns[5] = true
         ammoCounter[0] = Pair(assets.maxCapacity[0], 30)
-        ammoCounter[1] = Pair(assets.maxCapacity[1], 30)
         ammoCounter[2] = Pair(assets.maxCapacity[2], 300)
         ammoCounter[4] = Pair(assets.maxCapacity[4], 15)
         ammoCounter[5] = Pair(assets.maxCapacity[5], 50)
