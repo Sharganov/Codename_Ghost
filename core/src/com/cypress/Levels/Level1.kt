@@ -120,7 +120,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         }
     }
 
-    private val warrior = Warrior(Vector2(1500f, 100f), 115, 180, player)
+    private val warrior = Warrior(Vector2(4863f, 700f), 115, 180, player)
 
     /** Draws level. */
     public override fun render(delta: Float) {
@@ -151,42 +151,17 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         for (b in player.bulletsList)
             b.draw(delta, batcher)
 
+        //drawing blocks
+        for(block in blockList) block.draw(batcher)
+
         //drawing player
         player.update()
+        player.checkCollision(blockList)
         player.draw(runTime, batcher)
 
         warrior.update(runTime)
+        warrior.checkCollision(blockList)
         warrior.draw(runTime, batcher)
-
-        // drawing blocks
-        for (block in blockList) {
-            block.draw(batcher)
-            var collision = false
-
-            // detecting collision
-            if (player.getBounds().overlaps(block.getBounds())) {
-                if (player.getX() + player.getWidth() - 10f < block.getPosition().x) {
-                    player.setX(block.getPosition().x - player.getWidth())
-                    collision = true
-                }
-                if (player.getX() > block.getPosition().x + block.getWidth() - 10) {
-                    player.setX(block.getPosition().x + block.getWidth())
-                    collision = true
-                }
-
-                if (!collision) {
-                    if (player.getY() > block.getPosition().y) {
-                        player.setVelocity(0f)
-                        player.onGround = true
-                        player.setY(block.getPosition().y + block.getHeight())
-                    }
-                    else {
-                        player.setY(block.getPosition().y - player.getHeight() - 5)
-                        player.setVelocity(0f)
-                    }
-                }
-            }
-        }
 
         // drawing first plan objects
         batcher.begin()

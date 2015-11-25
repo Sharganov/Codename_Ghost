@@ -10,12 +10,16 @@ import com.cypress.CGHelpers.AssetLoader
 import java.util.*
 
 /** Contains definition of player. */
-public class Player(private val position : Vector2, private val width : Int,
-                    private val height : Int, val mapLength: Float)  : Character() {
+public class Player(override val position : Vector2, override protected  val width : Int,
+                    override protected  val height : Int, val mapLength: Float)  : Character() {
 
-    private val bounds       = Rectangle(position.x, position.y, width.toFloat(), height.toFloat())
+    override val bounds = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
+    override var delta = 0f
+    override val offsetY = 18f
+    override val offsetX = 10f
+
     private val assets       = AssetLoader.getInstance()
-    private var velocity     = Vector2(4f, 12f)
+    override protected  var velocity     = Vector2(4f, 12f)
     private val acceleration = Vector2(0f, 0.2f)
     private val gun          = Gun(this, assets.gunsNames[0])
 
@@ -27,8 +31,7 @@ public class Player(private val position : Vector2, private val width : Int,
     public override var gunType         = assets.gunsNames[0]
 
     public var lives      = 2
-    public var delta      = 0f
-    public var shouldJump = false
+    override public var shouldJump = false
 
     public val bulletsList   = LinkedList<Bullet>()
     public val availableGuns = Array(6, { false })
@@ -67,7 +70,6 @@ public class Player(private val position : Vector2, private val width : Int,
     /** Updates position of player. */
     public fun update(){
         val oldY = position.y
-        bounds.setPosition(position.x, position.y)
 
         if (position.y <= 80f) {
             onGround   = true
@@ -76,6 +78,7 @@ public class Player(private val position : Vector2, private val width : Int,
             acceleration.y = 0.2f
         }
         else {
+            if(velocity.y < -9) velocity.y = -9f
             position.y += velocity.y
             velocity.y -= acceleration.y
         }
@@ -98,6 +101,8 @@ public class Player(private val position : Vector2, private val width : Int,
         if (position.x < 2f) position.x = 2f
 
         delta = position.y - oldY
+        bounds.setPosition(position.x, position.y)
+
     }
 
     /** Draws player. */
@@ -156,22 +161,4 @@ public class Player(private val position : Vector2, private val width : Int,
     /** Returns position of player on Oy axis. */
     public override fun getY() : Float = position.y
 
-    public fun setX(value : Float) {
-        position.x = value
-    }
-
-    public fun setY(value : Float){
-        position.y = value
-    }
-
-    public fun getBounds() : Rectangle = bounds
-
-    public fun getWidth() : Int = width
-
-    public fun getHeight() : Int = height
-
-    public fun setVelocity(value : Float)
-    {
-        velocity.y = value
-    }
 }
