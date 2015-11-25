@@ -24,7 +24,7 @@ public abstract class Character {
     abstract protected val bounds: Rectangle
     abstract protected var delta : Float
 
-
+    abstract public val isEnemy  : Boolean
     /**Check collision with objects. If find, change position*/
     open public fun checkCollision(blockList: ArrayList<Block>) {
         for (block in blockList) {

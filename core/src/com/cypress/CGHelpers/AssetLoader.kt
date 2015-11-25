@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.cypress.GameObjects.Bullet
 import java.util.*
 
 /** Loads assets of project. */
@@ -33,6 +34,7 @@ public class AssetLoader {
     public val levelsBG    = Array(9, { LinkedList<Texture?>() })
     public val levelsFP    = Array(9, { LinkedList<Texture?>() })
     public val gunsNames   = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun", "rocketLauncher")
+    public val bulletsList = LinkedList<Bullet>()
     public val maxCapacity = arrayOf(30, 8, 45, 25, 20, 1)
 
     public var activeMusic : Music? = null
@@ -43,7 +45,7 @@ public class AssetLoader {
 
     public var levelsMusic = Array<Music?>(9, { null })
     public var shot        = Array<Sound?>(6, { null })
-    public var musicOn     = true
+    public var musicOn     = false
     public var language    = "english"
     public var zoom        = 1.25f
 

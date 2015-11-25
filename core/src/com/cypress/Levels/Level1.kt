@@ -31,6 +31,8 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
     private val fence     = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
     private val blockList = ArrayList<Block>()
     private val bulletsToRemove = ArrayList<Bullet>()
+    private val enemyList = ArrayList<Warrior>()
+    private val enemyToRemove = ArrayList<Warrior>()
     private val cam       = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
@@ -73,6 +75,10 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2))
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
+
+        enemyList.add( Warrior(Vector2(4863f, 700f), 115, 180, player))
+        enemyList.add( Warrior(Vector2(4163f, 700f), 115, 180, player))
+        enemyList.add( Warrior(Vector2(3563f, 700f), 115, 180, player))
 
         // animation of fan
         val fan1 = TextureRegion(assets.levelsFP[1][0], 582, 12, 141, 132)
@@ -122,8 +128,6 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         }
     }
 
-    private val warrior = Warrior(Vector2(4863f, 700f), 115, 180, player)
-
     /** Draws level. */
     public override fun render(delta: Float) {
         runTime += delta
@@ -148,31 +152,56 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         batcher.end()
 
         // drawing bullets
-        if (player.bulletsList.isNotEmpty() && player.bulletsList[0].distance() > 600)
-            player.bulletsList.removeFirst()
+        if (assets.bulletsList.isNotEmpty() && assets.bulletsList[0].distance() > 600)
+                assets.bulletsList.removeFirst()
 
-        for (b in player.bulletsList) b.draw(delta, batcher)
-
-        for(bullet in player.bulletsList)
-        {
-            if(bullet.getBounds().overlaps(warrior.getBound())){
-                warrior.health -= 10
-                bulletsToRemove.add(bullet)
+        for (bullet in assets.bulletsList) {
+            for (enemy in enemyList) {
+                if (bullet.getBounds().overlaps(enemy.getBound())) {
+                    if(!bullet.enemyBulllet) {
+                        enemy.health -= 25
+                        bulletsToRemove.add(bullet)
+                    }
+                }
+                if(enemy.health <= 0) enemyToRemove.add(enemy)
             }
         }
 
-        for(bullet in bulletsToRemove) player.bulletsList.remove(bullet)
+
+        for (bullet in assets.bulletsList) {
+            if (bullet.getBounds().overlaps(player.getBound())) {
+                if (bullet.enemyBulllet) {
+                    println("@")
+                    player.health -= 10
+                    bulletsToRemove.add(bullet)
+                }
+            }
+            if (player.health <= 0) println("killed")
+        }
+
+        //delete dead enemy
+        for(enemy in enemyToRemove) enemyList.remove(enemy)
         //drawing blocks
         for(block in blockList) block.draw(batcher)
+        //check collision of bullets with blocks
+        for(bullet in assets.bulletsList)
+            for(block in blockList)
+                if(bullet.getBounds().overlaps(block.getBounds()))
+                    bulletsToRemove.add(bullet)
+        //remove bulletes, which hit player or block
+        for(bullet in bulletsToRemove) assets.bulletsList.remove(bullet)
+        for (b in assets.bulletsList) b.draw(delta, batcher)
 
         //drawing player
         player.update()
         player.checkCollision(blockList)
         player.draw(runTime, batcher)
 
-        warrior.update(runTime)
-        warrior.checkCollision(blockList)
-        warrior.draw(runTime, batcher)
+        for(enemy in enemyList) {
+            enemy.update(runTime)
+            enemy.checkCollision(blockList)
+            enemy.draw(runTime, batcher)
+        }
 
         // drawing first plan objects
         batcher.begin()
@@ -184,6 +213,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
 
         // drawing stage
         if (gameStart) {
+            controls.update()
             stage.act(runTime)
             stage.draw()
         }
