@@ -2,6 +2,7 @@ package com.cypress.GameObjects
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.cypress.CGHelpers.AssetLoader
 
@@ -21,27 +22,28 @@ public class Bullet(private val character : Character) {
     private var lasergunBullet = TextureRegion()
     private var rocket          = TextureRegion()
 
+    private val bounds = Rectangle()
     //private var correction = if (Math.random() mod 2 > 0.5) (Math.random() mod 50).toFloat()
     //                         else -(Math.random() mod 50).toFloat()
 
     init {
         when (type) {
-            assets.gunsNames[0] -> startPos.y += 77
-            assets.gunsNames[1] -> startPos.y += 75
-            assets.gunsNames[2] -> startPos.y += 80
-            assets.gunsNames[3] -> startPos.y += 80
-            assets.gunsNames[4] -> startPos.y += 75
-            assets.gunsNames[5] -> startPos.y += 85
+            assets.gunsNames[0] -> {startPos.y += 77; bounds.setSize(45f, 25f)}
+            assets.gunsNames[1] -> {startPos.y += 75; bounds.setSize(50f, 42f)}
+            assets.gunsNames[2] -> {startPos.y += 80; bounds.setSize(50f, 26f)}
+            assets.gunsNames[3] -> {startPos.y += 80; bounds.setSize(52f, 16f)}
+            assets.gunsNames[4] -> {startPos.y += 75; bounds.setSize(52f, 38f)}
+            assets.gunsNames[5] -> {startPos.y += 85; bounds.setSize(128f, 32f)}
         }
 
         if (character.shouldGoToRight || character.stayRight) {
             when (type) {
-                assets.gunsNames[0] -> startPos.x += 145
-                assets.gunsNames[1] -> startPos.x += 165
-                assets.gunsNames[2] -> startPos.x += 200
-                assets.gunsNames[3] -> startPos.x += 175
-                assets.gunsNames[4] -> startPos.x += 170
-                assets.gunsNames[5] -> startPos.x += 160
+                assets.gunsNames[0] -> {startPos.x += 145; bounds.setSize(45f, 25f)}
+                assets.gunsNames[1] -> {startPos.x += 165; bounds.setSize(50f, 42f)}
+                assets.gunsNames[2] -> {startPos.x += 200; bounds.setSize(50f, 26f)}
+                assets.gunsNames[3] -> {startPos.x += 175; bounds.setSize(52f, 16f)}
+                assets.gunsNames[4] -> {startPos.x += 170; bounds.setSize(52f, 38f)}
+                assets.gunsNames[5] -> {startPos.x += 160; bounds.setSize(128f, 32f)}
             }
             direction = 15f
 
@@ -54,12 +56,12 @@ public class Bullet(private val character : Character) {
         }
         else {
             when (type) {
-                assets.gunsNames[0] -> startPos.x -= 25
-                assets.gunsNames[1] -> startPos.x -= 45
-                assets.gunsNames[2] -> startPos.x -= 60
-                assets.gunsNames[3] -> startPos.x -= 65
-                assets.gunsNames[4] -> startPos.x -= 65
-                assets.gunsNames[5] -> startPos.x -= 105
+                assets.gunsNames[0] -> {startPos.x -= 25; bounds.setSize(45f, 25f)}
+                assets.gunsNames[1] -> {startPos.x -= 45; bounds.setSize(50f, 42f)}
+                assets.gunsNames[2] -> {startPos.x -= 60; bounds.setSize(50f, 26f)}
+                assets.gunsNames[3] -> {startPos.x -= 65; bounds.setSize(52f, 16f)}
+                assets.gunsNames[4] -> {startPos.x -= 65; bounds.setSize(52f, 38f)}
+                assets.gunsNames[5] -> {startPos.x -= 105; bounds.setSize(128f, 32f)}
             }
             startPos.y -= 5
             direction = -15f
@@ -74,6 +76,7 @@ public class Bullet(private val character : Character) {
 
         position.x = startPos.x
         position.y = startPos.y
+        bounds.setPosition(position.x, position.y)
     }
 
     /** Draws bullet. */
@@ -81,6 +84,7 @@ public class Bullet(private val character : Character) {
         position.x += direction
         if (character.shouldGoToLeft) position.x -= 4
         else if (character.shouldGoToRight) position.x += 4
+        bounds.setPosition(position.x, position.y)
 
         // drawing bullet
         batcher.begin()
@@ -99,4 +103,6 @@ public class Bullet(private val character : Character) {
     public fun distance(): Float {
         return Math.abs(position.x - startPos.x)
     }
+
+    public fun getBounds() : Rectangle = bounds
 }

@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.Block
+import com.cypress.GameObjects.Bullet
 import com.cypress.GameObjects.Player
 import com.cypress.GameObjects.Warrior
 import com.cypress.Screens.LevelsScreen
@@ -29,6 +30,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
     private val spruce    = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
     private val fence     = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
     private val blockList = ArrayList<Block>()
+    private val bulletsToRemove = ArrayList<Bullet>()
     private val cam       = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
@@ -148,9 +150,18 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         // drawing bullets
         if (player.bulletsList.isNotEmpty() && player.bulletsList[0].distance() > 600)
             player.bulletsList.removeFirst()
-        for (b in player.bulletsList)
-            b.draw(delta, batcher)
 
+        for (b in player.bulletsList) b.draw(delta, batcher)
+
+        for(bullet in player.bulletsList)
+        {
+            if(bullet.getBounds().overlaps(warrior.getBound())){
+                warrior.health -= 10
+                bulletsToRemove.add(bullet)
+            }
+        }
+
+        for(bullet in bulletsToRemove) player.bulletsList.remove(bullet)
         //drawing blocks
         for(block in blockList) block.draw(batcher)
 
