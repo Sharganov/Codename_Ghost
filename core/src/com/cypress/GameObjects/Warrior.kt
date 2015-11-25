@@ -13,7 +13,7 @@ class Warrior(override val position : Vector2, override protected  val width : I
 
     public override val isEnemy  = true
     public override val bounds   = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
-    public override val velocity = Vector2()
+    public override val velocity = Vector2(3f, 12f)
     public override val offsetY  = 18f
     public override val offsetX  = 10f
 
@@ -58,106 +58,92 @@ class Warrior(override val position : Vector2, override protected  val width : I
         warriorGoesLeft.playMode = Animation.PlayMode.LOOP
     }
 
-    /** Updates position of warrior. */
+    /** Defines actions of warrior. */
     public fun update(delta : Float) {
-        //
-        var canShot = false
-
-        val oldY = position.y
-
-        if(delta.hashCode() % 72 == 0) canShot = true
-        //canShot = delta.toInt() % 2 == 0
-
+        // movement of warrior
         if (position.y <= 80f) {
             onGround   = true
             position.y = 80f
             velocity.y = 12f
         }
+        // falling
         else {
             if(velocity.y < -9) velocity.y = -9f
             position.y += velocity.y
             velocity.y -= 0.2f
         }
 
-        if (player.getX() > position.x && stayRight
-                && Math.abs(player.getX() - position.x) < 300f) {
+        val distance = player.getX() - position.x
+        val canShoot = delta.hashCode() % 60 == 0
+
+        // warrior pursues player
+        if (stayRight && distance > 0 && distance < 300f) {
             shouldGoToRight = false
             shouldGoToLeft = false
-            if (canShot) {
-                val bullet = Bullet(this)
-                assets.bulletsList.add(bullet)
-                canShot = false
-            }
+            if (canShoot) assets.bulletsList.add(Bullet(this))
         }
-        if (player.getX() > position.x && stayRight
-                && Math.abs(player.getX() - position.x) >= 300f && Math.abs(player.getX() - position.x) < 500f) {
+        else if (stayRight && distance >= 300f && distance < 500f) {
             position.x += 2
             shouldGoToRight = true
             shouldGoToLeft = false
         }
-        else if (player.getX() < position.x && !stayRight
-                && Math.abs(player.getX() - position.x) < 300f) {
+        else if (!stayRight && distance < 0 && distance > -300f) {
             shouldGoToRight = false
             shouldGoToLeft = false
-            println("!")
-            if (canShot) {
-                val bullet = Bullet(this)
-                assets.bulletsList.add(bullet)
-                canShot = false
-            }
+            if (canShoot) assets.bulletsList.add(Bullet(this))
         }
-        else if (player.getX() < position.x && !stayRight
-                && Math.abs(player.getX() - position.x) >= 300f && Math.abs(player.getX() - position.x) < 500f) {
+        else if (!stayRight && distance <= -300f && distance > -500f) {
             position.x -= 2
             shouldGoToRight = false
             shouldGoToLeft = true
         }
-        else if (player.getX() == position.x) stayRight = !stayRight
+        else if (distance == 0f) stayRight = !stayRight
+
+        // warrior can't find player and looks around
         else {
             shouldGoToRight = false
             shouldGoToLeft = false
-            if (delta.toInt() % 10 == 0) {
-                if (stayRight) stayRight = false
-                else stayRight = true
-            }
+            if (delta.hashCode() % 100 == 0) stayRight = !stayRight
         }
     }
 
     /** Draws warrior. */
     public fun draw(delta: Float, batcher : SpriteBatch) {
-
         gun.update(gunType)
         gun.draw(delta, batcher)
 
         batcher.begin()
-            // warrior should stay still ...
-            if (!shouldGoToLeft && !shouldGoToRight) {
-                when (stayRight) {
+
+        // warrior should stay still ...
+        if (!shouldGoToLeft && !shouldGoToRight) {
+            when (stayRight) {
                 // ... turning to the right side
-                    true ->
-                        batcher.draw(warriorStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                true ->
+                    batcher.draw(warriorStayRight, position.x, position.y, width.toFloat(), height.toFloat())
                 // ... turning to the left side
-                    false ->
-                        batcher.draw(warriorStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
-                }
+                false ->
+                    batcher.draw(warriorStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
             }
+        }
 
-            // warrior should go to left
-            else if (shouldGoToLeft) {
-                stayRight = false
-                batcher.draw(warriorGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-            }
+        // warrior should go to left
+        else if (shouldGoToLeft) {
+            stayRight = false
+            batcher.draw(warriorGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+        }
 
-            // warrior should go to right
-            else if (shouldGoToRight) {
-                stayRight = true
-                batcher.draw(warriorGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-            }
+        // warrior should go to right
+        else if (shouldGoToRight) {
+            stayRight = true
+            batcher.draw(warriorGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+        }
 
-            batcher.end()
+        batcher.end()
     }
+
     /** Returns position of warrior on Ox axis. */
     public override fun getX(): Float = position.x
+
     /** Returns position of warrior on Oy axis. */
     public override fun getY(): Float = position.y
 

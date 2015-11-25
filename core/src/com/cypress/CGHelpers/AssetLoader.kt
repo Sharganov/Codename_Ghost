@@ -46,7 +46,7 @@ public class AssetLoader {
 
     public var levelsMusic = Array<Music?>(9, { null })
     public var shot        = Array<Sound?>(6, { null })
-    public var musicOn     = false
+    public var musicOn     = true
     public var language    = "english"
     public var zoom        = 1.25f
 
@@ -108,10 +108,10 @@ public class AssetLoader {
         parameter.size  = size
         parameter.color = color
 
-        val RUS_CHARACTERS     = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-        val ENG_CHARACTERS     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val RUSSIAN_CHARACTERS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+        val ENGLISH_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         val DIGITS_AND_SYMBOLS = "0123456789`~!@#$%^&*()-_+=[]{}?/\\,.<>'|:;,\"∞"
-        parameter.characters = RUS_CHARACTERS + ENG_CHARACTERS + DIGITS_AND_SYMBOLS
+        parameter.characters   = RUSSIAN_CHARACTERS + ENGLISH_CHARACTERS + DIGITS_AND_SYMBOLS
 
         val font = generator.generateFont(parameter)
         generator.dispose()
@@ -167,7 +167,8 @@ public class AssetLoader {
         levelsFP[1].add(manager.get("data/images/level1/firstplan.png"))
 
         levelsMusic[1] = manager.get("data/sounds/music/Level1.ogg")
-        snow           = manager.get("data/sounds/events/snow.ogg")
-        fan            = manager.get("data/sounds/events/fan.ogg")
+
+        snow = manager.get("data/sounds/events/snow.ogg")
+        fan  = manager.get("data/sounds/events/fan.ogg")
     }
 }
