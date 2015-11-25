@@ -12,7 +12,7 @@ import java.util.*
 /** Contains definition of player. */
 public class Player(override val position : Vector2, override protected  val width : Int,
                     override protected  val height : Int, val mapLength: Float)  : Character() {
-
+    override val isEnemy: Boolean = false
     override val bounds = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
     override var delta = 0f
     override val offsetY = 18f
@@ -33,7 +33,7 @@ public class Player(override val position : Vector2, override protected  val wid
     public var lives      = 2
     override public var shouldJump = false
 
-    public val bulletsList   = LinkedList<Bullet>()
+    //public val bulletsList   = LinkedList<Bullet>()
     public val availableGuns = Array(6, { false })
     public val ammoCounter   = Array(6, { Pair(0, 0) })
 
@@ -160,5 +160,7 @@ public class Player(override val position : Vector2, override protected  val wid
 
     /** Returns position of player on Oy axis. */
     public override fun getY() : Float = position.y
+
+    public fun getBound() : Rectangle = bounds
 
 }

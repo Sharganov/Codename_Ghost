@@ -11,10 +11,14 @@ import com.cypress.CGHelpers.AssetLoader
 class Warrior(override val position : Vector2, override protected  val width : Int,
             override protected val height : Int, private val player : Player) : Character() {
 
+    override val isEnemy = true
+    private val assets = AssetLoader.getInstance()
+
     override val bounds = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
     override var delta = 0f
     override  var shouldJump: Boolean = false
     override val velocity: Vector2 = Vector2()
+    private val gun          = Gun(this, assets.gunsNames[0])
 
     override val offsetY = 18f
     override val offsetX = 10f
@@ -25,8 +29,6 @@ class Warrior(override val position : Vector2, override protected  val width : I
     public override var stayRight = false
     public override var onGround = true
     public override var gunType = "uzi"
-
-    private val assets = AssetLoader.getInstance()
 
     private var warriorGoToLeft  = Animation(0.1f, Array<TextureRegion>())
     private var warriorGoToRight = Animation(0.1f, Array<TextureRegion>())
@@ -60,7 +62,12 @@ class Warrior(override val position : Vector2, override protected  val width : I
     /** Updates position of warrior. */
     public fun update(delta : Float) {
         //
+        var canShot = false
+
         val oldY = position.y
+
+        if(delta.hashCode() % 72 == 0) canShot = true
+        //canShot = delta.toInt() % 2 == 0
 
         if (position.y <= 80f) {
             onGround   = true
@@ -77,7 +84,11 @@ class Warrior(override val position : Vector2, override protected  val width : I
                 && Math.abs(player.getX() - position.x) < 300f) {
             shouldGoToRight = false
             shouldGoToLeft = false
-            if (delta.toInt() % 10 == 0) println("bang!")
+            if (canShot) {
+                val bullet = Bullet(this)
+                assets.bulletsList.add(bullet)
+                canShot = false
+            }
         }
         if (player.getX() > position.x && stayRight
                 && Math.abs(player.getX() - position.x) >= 300f && Math.abs(player.getX() - position.x) < 500f) {
@@ -89,7 +100,12 @@ class Warrior(override val position : Vector2, override protected  val width : I
                 && Math.abs(player.getX() - position.x) < 300f) {
             shouldGoToRight = false
             shouldGoToLeft = false
-            if (delta.toInt() % 5 == 0) println("bang!")
+            println("!")
+            if (canShot) {
+                val bullet = Bullet(this)
+                assets.bulletsList.add(bullet)
+                canShot = false
+            }
         }
         else if (player.getX() < position.x && !stayRight
                 && Math.abs(player.getX() - position.x) >= 300f && Math.abs(player.getX() - position.x) < 500f) {
@@ -111,10 +127,10 @@ class Warrior(override val position : Vector2, override protected  val width : I
     /** Draws warrior. */
     public fun draw(delta: Float, batcher : SpriteBatch) {
 
-        if (health > 0) {
+        gun.update(gunType)
+        gun.draw(delta, batcher)
 
-            batcher.begin()
-
+        batcher.begin()
             // warrior should stay still ...
             if (!shouldGoToLeft && !shouldGoToRight) {
                 when (stayRight) {
@@ -139,9 +155,7 @@ class Warrior(override val position : Vector2, override protected  val width : I
                 batcher.draw(warriorGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
             }
 
-            update(delta)
             batcher.end()
-        }
     }
     /** Returns position of warrior on Ox axis. */
     public override fun getX(): Float = position.x

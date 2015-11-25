@@ -89,7 +89,7 @@ public class Controls(val game : CGGame, val player : Player) {
                 }
                 else {
                     val bullet = Bullet(player)
-                    player.bulletsList.add(bullet)
+                    assets.bulletsList.add(bullet)
 
                     assets.shot[index]?.stop()
                     if (assets.musicOn) assets.shot[index]?.play()
@@ -119,7 +119,6 @@ public class Controls(val game : CGGame, val player : Player) {
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                update()
             }
         })
 
@@ -142,7 +141,6 @@ public class Controls(val game : CGGame, val player : Player) {
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 prevGun(assets.gunsNames.indexOf(player.gunType))
-                update()
             }
         })
 
@@ -153,7 +151,6 @@ public class Controls(val game : CGGame, val player : Player) {
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 nextGun(assets.gunsNames.indexOf(player.gunType))
-                update()
             }
         })
 
@@ -195,7 +192,7 @@ public class Controls(val game : CGGame, val player : Player) {
     }
 
     /** Changes information about player's health and ammo. */
-    private fun update() {
+    public fun update() {
         val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
         val index  = assets.gunsNames.indexOf(player.gunType)
         val ac     = player.ammoCounter[index]

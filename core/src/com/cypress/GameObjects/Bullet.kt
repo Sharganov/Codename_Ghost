@@ -14,6 +14,7 @@ public class Bullet(private val character : Character) {
     private var startPos  = Vector2(character.getX(), character.getY())
     private var position  = Vector2(0f, 0f)
     private var direction = 0f
+    public val enemyBulllet = character.isEnemy
 
     private var uziBullet       = TextureRegion()
     private var shotgunBullet   = TextureRegion()
