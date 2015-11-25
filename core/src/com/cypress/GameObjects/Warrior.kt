@@ -11,27 +11,26 @@ import com.cypress.CGHelpers.AssetLoader
 class Warrior(override val position : Vector2, override protected  val width : Int,
             override protected val height : Int, private val player : Player) : Character() {
 
-    override val isEnemy = true
-    private val assets = AssetLoader.getInstance()
+    public override val isEnemy  = true
+    public override val bounds   = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
+    public override val velocity = Vector2()
+    public override val offsetY  = 18f
+    public override val offsetX  = 10f
 
-    override val bounds = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
-    override var delta = 0f
-    override  var shouldJump: Boolean = false
-    override val velocity: Vector2 = Vector2()
-    private val gun          = Gun(this, assets.gunsNames[0])
-
-    override val offsetY = 18f
-    override val offsetX = 10f
-
-    public override var health = 100
-    public override var shouldGoToLeft = false
+    public override var health          = 100
+    public override var shouldGoToLeft  = false
+    public override var delta           = 0f
+    public override var shouldJump      = false
     public override var shouldGoToRight = false
-    public override var stayRight = false
-    public override var onGround = true
-    public override var gunType = "uzi"
+    public override var stayRight       = false
+    public override var onGround        = true
+    public override var gunType         = "uzi"
 
-    private var warriorGoToLeft  = Animation(0.1f, Array<TextureRegion>())
-    private var warriorGoToRight = Animation(0.1f, Array<TextureRegion>())
+    private val assets = AssetLoader.getInstance()
+    private val gun    = Gun(this, assets.gunsNames[0])
+
+    private var warriorGoesLeft  = Animation(0.1f, Array<TextureRegion>())
+    private var warriorGoesRight = Animation(0.1f, Array<TextureRegion>())
     private var warriorStayRight = TextureRegion(assets.warrior, 25, 11, width, height)
     private var warriorStayLeft  = TextureRegion(assets.warrior, 201, 11, width, height)
 
@@ -52,11 +51,11 @@ class Warrior(override val position : Vector2, override protected  val width : I
             Array(9, {i -> TextureRegion(assets.warrior, leftPos[i].first, leftPos[i].second, width, height)}), 0, 8
         )
 
-        warriorGoToRight = Animation(0.1f, warriorsRight)
-        warriorGoToRight.playMode = Animation.PlayMode.LOOP
+        warriorGoesRight = Animation(0.1f, warriorsRight)
+        warriorGoesRight.playMode = Animation.PlayMode.LOOP
 
-        warriorGoToLeft = Animation(0.1f, warriorsLeft)
-        warriorGoToLeft.playMode = Animation.PlayMode.LOOP
+        warriorGoesLeft = Animation(0.1f, warriorsLeft)
+        warriorGoesLeft.playMode = Animation.PlayMode.LOOP
     }
 
     /** Updates position of warrior. */
@@ -146,13 +145,13 @@ class Warrior(override val position : Vector2, override protected  val width : I
             // warrior should go to left
             else if (shouldGoToLeft) {
                 stayRight = false
-                batcher.draw(warriorGoToLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+                batcher.draw(warriorGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
             }
 
             // warrior should go to right
             else if (shouldGoToRight) {
                 stayRight = true
-                batcher.draw(warriorGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+                batcher.draw(warriorGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
             }
 
             batcher.end()
