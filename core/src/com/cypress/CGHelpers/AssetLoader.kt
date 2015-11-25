@@ -20,10 +20,11 @@ public class AssetLoader {
 
     public val levelsBG     = Array(9, { LinkedList<Texture?>() })
     public val levelsFP     = Array(9, { LinkedList<Texture?>() })
-    public val gunsNames    = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun", "rocketLauncher")
+    public val gunsNames    = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun",
+                                      "lasergun", "minigun", "rocketLauncher")
     public val bulletsList  = LinkedList<Bullet>()
-    public val maxCapacity  = arrayOf(30, 8, 45, 25, 20, 1)
-    public val bulletDamage = arrayOf(10, 20, 15, 20, 30, 40)
+    public val maxCapacity  = arrayOf(30, 8, 45, 25, 20, 100, 1)
+    public val bulletDamage = arrayOf(10, 20, 15, 20, 30, 15, 40)
 
     public var manager  : AssetManager = AssetManager()
 
@@ -45,7 +46,7 @@ public class AssetLoader {
     public var reload      : Sound? = null
 
     public var levelsMusic = Array<Music?>(9, { null })
-    public var shot        = Array<Sound?>(6, { null })
+    public var shot        = Array<Sound?>(7, { null })
     public var musicOn     = true
     public var language    = "english"
     public var zoom        = 1.25f
@@ -96,7 +97,8 @@ public class AssetLoader {
         shot[2]   = manager.get("data/sounds/weapons/uzi.ogg")
         shot[3]   = manager.get("data/sounds/weapons/lasergun.ogg")
         shot[4]   = manager.get("data/sounds/weapons/lasergun.ogg")
-        shot[5]   = manager.get("data/sounds/weapons/rocket.ogg")
+        shot[5]   = manager.get("data/sounds/weapons/uzi.ogg")
+        shot[6]   = manager.get("data/sounds/weapons/rocket.ogg")
         reload    = manager.get("data/sounds/weapons/reload.ogg")
     }
 

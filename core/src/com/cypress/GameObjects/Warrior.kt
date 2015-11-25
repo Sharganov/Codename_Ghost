@@ -26,8 +26,8 @@ class Warrior(override val position : Vector2, override protected  val width : I
     public override var onGround        = true
     public override var gunType         = "uzi"
 
-    private val assets = AssetLoader.getInstance()
-    private val gun    = Gun(this, assets.gunsNames[0])
+    private val assets  = AssetLoader.getInstance()
+    private val uziLeft = TextureRegion(assets.guns, 281, 95, 90, 58)
 
     private var warriorGoesLeft  = Animation(0.1f, Array<TextureRegion>())
     private var warriorGoesRight = Animation(0.1f, Array<TextureRegion>())
@@ -109,10 +109,10 @@ class Warrior(override val position : Vector2, override protected  val width : I
 
     /** Draws warrior. */
     public fun draw(delta: Float, batcher : SpriteBatch) {
-        gun.update(gunType)
-        gun.draw(delta, batcher)
-
         batcher.begin()
+
+        if (shouldGoToLeft || !stayRight)
+            batcher.draw(uziLeft, position.x - 55, position.y + 25, 90f, 58f)
 
         // warrior should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight) {

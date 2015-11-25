@@ -18,6 +18,8 @@ public class Gun(private val character : Character, private var type : String) {
     private val plasmagunLeft       = TextureRegion(assets.guns, 223, 250, 178, 86)
     private val lasergunRight       = TextureRegion(assets.guns, 7, 348, 183, 93)
     private val lasergunLeft        = TextureRegion(assets.guns, 221, 348, 183, 93)
+    private val minigunRight        = TextureRegion(assets.guns, 14, 543, 180, 69)
+    private val minigunLeft         = TextureRegion(assets.guns, 232, 543, 180, 69)
     private val rocketLauncherRight = TextureRegion(assets.guns, 7, 456, 188, 73)
     private val rocketLauncherLeft  = TextureRegion(assets.guns, 222, 456, 188, 73)
 
@@ -64,6 +66,12 @@ public class Gun(private val character : Character, private var type : String) {
                     batcher.draw(lasergunLeft, x - 50, y + 20, 183f, 93f)
             }
             assets.gunsNames[5] -> {
+                if (character.shouldGoToRight || character.stayRight)
+                    batcher.draw(minigunRight, x + 5, y + 40, 180f, 69f)
+                else
+                    batcher.draw(minigunLeft, x - 65, y + 35, 180f, 69f)
+            }
+            assets.gunsNames[6] -> {
                 if (character.shouldGoToRight || character.stayRight)
                     batcher.draw(rocketLauncherRight, x - 5, y + 50, 188f, 73f)
                 else

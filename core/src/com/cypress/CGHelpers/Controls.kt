@@ -217,7 +217,8 @@ public class Controls(val game : CGGame, val player : Player) {
                 assets.gunsNames[2] -> Image(TextureRegion(assets.guns, 409, 17, 80, 55))
                 assets.gunsNames[3] -> Image(TextureRegion(assets.guns, 415, 261, 80, 55))
                 assets.gunsNames[4] -> Image(TextureRegion(assets.guns, 418, 358, 80, 55))
-                assets.gunsNames[5] -> Image(TextureRegion(assets.guns, 424, 452, 80, 55))
+                assets.gunsNames[5] -> Image(TextureRegion(assets.guns, 422, 545, 80, 55))
+                assets.gunsNames[6] -> Image(TextureRegion(assets.guns, 424, 452, 80, 55))
                 else                -> Image(TextureRegion(assets.guns, 410, 87, 80, 55))
             }
         gunIcon.setPosition(75f, 390f)
