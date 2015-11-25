@@ -7,8 +7,7 @@ import com.cypress.CGHelpers.AssetLoader
 /** Contains definition of gun. */
 public class Gun(private val character : Character, private var type : String) {
 
-    private val assets  = AssetLoader.getInstance()
-
+    private val assets              = AssetLoader.getInstance()
     private val assaultRiffleRight  = TextureRegion(assets.guns, 11, 6, 187, 80)
     private val assaultRiffleLeft   = TextureRegion(assets.guns, 202, 6, 187, 80)
     private val uziRight            = TextureRegion(assets.guns, 23, 95, 90, 58)

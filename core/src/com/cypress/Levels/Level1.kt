@@ -23,17 +23,17 @@ import java.util.*
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets    = AssetLoader.getInstance()
-    private val batcher   = SpriteBatch()
-    private var runTime   = 0f
-    private val controls  = Controls(game, player)
-    private val spruce    = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence     = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
-    private val blockList = ArrayList<Block>()
-    private val bulletsToRemove = ArrayList<Bullet>()
-    private val enemyList = ArrayList<Warrior>()
+    private val assets     = AssetLoader.getInstance()
+    private val batcher    = SpriteBatch()
+    private var runTime    = 0f
+    private val controls   = Controls(game, player)
+    private val spruce     = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
+    private val fence      = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
+    private val blockList  = ArrayList<Block>()
+    private val removeList = ArrayList<Bullet>()
+    private val enemyList  = ArrayList<Warrior>()
     private val enemyToRemove = ArrayList<Warrior>()
-    private val cam       = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private val camera     = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
     private var fan       = Animation(0.02f, Array<TextureRegion>())
@@ -139,11 +139,11 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // setting camera
-        if (!gameStart) cam.position.set(120f, 1243f, 0f)
-        else cam.position.set(player.getX() + 100, player.getY() + 220, 0f)
-        cam.zoom = assets.zoom
-        batcher.projectionMatrix = cam.combined
-        cam.update()
+        if (!gameStart) camera.position.set(120f, 1243f, 0f)
+        else camera.position.set(player.getX() + 100, player.getY() + 220, 0f)
+        camera.zoom = assets.zoom
+        batcher.projectionMatrix = camera.combined
+        camera.update()
 
         // drawing background
         batcher.begin()
@@ -160,36 +160,35 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
                 if (bullet.getBounds().overlaps(enemy.getBound())) {
                     if(!bullet.enemyBulllet) {
                         enemy.health -= 25
-                        bulletsToRemove.add(bullet)
+                        removeList.add(bullet)
                     }
                 }
                 if(enemy.health <= 0) enemyToRemove.add(enemy)
             }
         }
 
-
         for (bullet in assets.bulletsList) {
             if (bullet.getBounds().overlaps(player.getBound())) {
                 if (bullet.enemyBulllet) {
                     println("@")
                     player.health -= 10
-                    bulletsToRemove.add(bullet)
+                    removeList.add(bullet)
                 }
             }
-            if (player.health <= 0) println("killed")
         }
 
         //delete dead enemy
         for(enemy in enemyToRemove) enemyList.remove(enemy)
+
         //drawing blocks
         for(block in blockList) block.draw(batcher)
         //check collision of bullets with blocks
         for(bullet in assets.bulletsList)
             for(block in blockList)
                 if(bullet.getBounds().overlaps(block.getBounds()))
-                    bulletsToRemove.add(bullet)
+                    removeList.add(bullet)
         //remove bulletes, which hit player or block
-        for(bullet in bulletsToRemove) assets.bulletsList.remove(bullet)
+        for(bullet in removeList) assets.bulletsList.remove(bullet)
         for (b in assets.bulletsList) b.draw(delta, batcher)
 
         //drawing player

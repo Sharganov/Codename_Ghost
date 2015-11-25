@@ -18,7 +18,14 @@ import java.util.*
 /** Loads assets of project. */
 public class AssetLoader {
 
-    public var manager : AssetManager = AssetManager()
+    public val levelsBG     = Array(9, { LinkedList<Texture?>() })
+    public val levelsFP     = Array(9, { LinkedList<Texture?>() })
+    public val gunsNames    = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun", "rocketLauncher")
+    public val bulletsList  = LinkedList<Bullet>()
+    public val maxCapacity  = arrayOf(30, 8, 45, 25, 20, 1)
+    public val bulletDamage = arrayOf(10, 20, 15, 20, 30, 40)
+
+    public var manager  : AssetManager = AssetManager()
 
     public var logo     : Texture? = null
     public var main     : Texture? = null
@@ -30,12 +37,6 @@ public class AssetLoader {
     public var bullets  : Texture? = null
     public var levels   : Texture? = null
     public var warrior  : Texture? = null
-
-    public val levelsBG    = Array(9, { LinkedList<Texture?>() })
-    public val levelsFP    = Array(9, { LinkedList<Texture?>() })
-    public val gunsNames   = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun", "rocketLauncher")
-    public val bulletsList = LinkedList<Bullet>()
-    public val maxCapacity = arrayOf(30, 8, 45, 25, 20, 1)
 
     public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
@@ -102,19 +103,18 @@ public class AssetLoader {
     /** Generates font with given parameters. */
     public fun generateFont(fileName : String, size : Int, color : Color) : BitmapFont {
         val generator = FreeTypeFontGenerator(Gdx.files.internal("data/fonts/" + fileName))
-        var param     = FreeTypeFontGenerator.FreeTypeFontParameter()
+        var parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
 
-        param.size  = size
-        param.color = color
+        parameter.size  = size
+        parameter.color = color
 
         val RUS_CHARACTERS     = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
         val ENG_CHARACTERS     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        val DIGITS_AND_SYMBOLS = "0123456789][_!$%#@|\\/?-+=()*&.:;,{}\"?`'<>"
-        param.characters = RUS_CHARACTERS + ENG_CHARACTERS + DIGITS_AND_SYMBOLS
+        val DIGITS_AND_SYMBOLS = "0123456789`~!@#$%^&*()-_+=[]{}?/\\,.<>'|:;,\"∞"
+        parameter.characters = RUS_CHARACTERS + ENG_CHARACTERS + DIGITS_AND_SYMBOLS
 
-        val font = generator.generateFont(param)
+        val font = generator.generateFont(parameter)
         generator.dispose()
-
         return font
     }
 
