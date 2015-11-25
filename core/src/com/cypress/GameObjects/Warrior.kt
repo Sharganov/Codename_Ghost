@@ -3,12 +3,21 @@ package com.cypress.GameObjects
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
-class Warrior(val position : Vector2, private val width : Int,
-            private val height : Int, private val player : Player) : Character() {
+class Warrior(override val position : Vector2, override protected  val width : Int,
+            override protected val height : Int, private val player : Player) : Character() {
+
+    override val bounds = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
+    override var delta = 0f
+    override  var shouldJump: Boolean = false
+    override val velocity: Vector2 = Vector2()
+
+    override val offsetY = 18f
+    override val offsetX = 10f
 
     public override var health = 100
     public override var shouldGoToLeft = false
@@ -51,6 +60,19 @@ class Warrior(val position : Vector2, private val width : Int,
     /** Updates position of warrior. */
     public fun update(delta : Float) {
         //
+        val oldY = position.y
+
+        if (position.y <= 80f) {
+            onGround   = true
+            position.y = 80f
+            velocity.y = 12f
+        }
+        else {
+            if(velocity.y < -9) velocity.y = -9f
+            position.y += velocity.y
+            velocity.y -= 0.2f
+        }
+
         if (player.getX() > position.x && stayRight
                 && Math.abs(player.getX() - position.x) < 300f) {
             shouldGoToRight = false
@@ -88,43 +110,43 @@ class Warrior(val position : Vector2, private val width : Int,
 
     /** Draws warrior. */
     public fun draw(delta: Float, batcher : SpriteBatch) {
-        batcher.begin()
 
-        // warrior should stay still ...
-        if (!shouldGoToLeft && !shouldGoToRight) {
-            when (stayRight) {
-            // ... turning to the right side
-                true ->
-                    batcher.draw(warriorStayRight, position.x, position.y, width.toFloat(), height.toFloat())
-            // ... turning to the left side
-                false ->
-                    batcher.draw(warriorStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+        if (health > 0) {
+
+            batcher.begin()
+
+            // warrior should stay still ...
+            if (!shouldGoToLeft && !shouldGoToRight) {
+                when (stayRight) {
+                // ... turning to the right side
+                    true ->
+                        batcher.draw(warriorStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                // ... turning to the left side
+                    false ->
+                        batcher.draw(warriorStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                }
             }
-        }
 
-        // warrior should go to left
-        else if (shouldGoToLeft) {
-            stayRight = false
-            batcher.draw(warriorGoToLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-        }
+            // warrior should go to left
+            else if (shouldGoToLeft) {
+                stayRight = false
+                batcher.draw(warriorGoToLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            }
 
-        // warrior should go to right
-        else if (shouldGoToRight) {
-            stayRight = true
-            batcher.draw(warriorGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-        }
+            // warrior should go to right
+            else if (shouldGoToRight) {
+                stayRight = true
+                batcher.draw(warriorGoToRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            }
 
-        update(delta)
-        batcher.end()
+            update(delta)
+            batcher.end()
+        }
     }
-
     /** Returns position of warrior on Ox axis. */
-    public override fun getX(): Float {
-        return position.x
-    }
-
+    public override fun getX(): Float = position.x
     /** Returns position of warrior on Oy axis. */
-    public override fun getY(): Float {
-        return position.y
-    }
+    public override fun getY(): Float = position.y
+
+    public fun getBound() : Rectangle = bounds
 }
