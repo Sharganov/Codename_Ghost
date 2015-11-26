@@ -9,7 +9,7 @@ public class Gun(private val character : Character) {
     private val assets = AssetLoader.getInstance()
 
     /** Returns texture of the requested gun. */
-    private fun getGun(x : Int, y : Int, width : Int, height : Int) : TextureRegion =
+    private fun getGun(x : Int, y : Int, width : Int, height : Int) =
             TextureRegion(assets.guns, x, y, width, height)
 
     private val guns = arrayOf(

@@ -17,11 +17,13 @@ public class Player(override val position : Vector2, override protected  val wid
     public override val offsetY = 18f
     public override val offsetX = 10f
 
-    protected override var velocity = Vector2(4f, 12f)
+    protected override val velocity = Vector2(4f, 12f)
 
-    private val assets       = AssetLoader.getInstance()
-    private val acceleration = Vector2(0f, 0.2f)
-    private val gun          = Gun(this)
+    private val assets          = AssetLoader.getInstance()
+    private val acceleration    = Vector2(0f, 0.2f)
+    private val gun             = Gun(this)
+    private val playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
+    private val playerStayLeft  = TextureRegion(assets.player, 880, 802, width, height)
 
     public override var health          = 100
     public override var delta           = 0f
@@ -32,15 +34,14 @@ public class Player(override val position : Vector2, override protected  val wid
     public override var onGround        = false
     public override var gunType         = assets.gunsNames[0]
 
-    public val availableGuns = Array(7, { false })
-    public val ammoCounter   = Array(7, { Pair(0, 0) })
+    public val availableGuns = Array(7, { true })
+    public val ammoCounter   = Array(7, { Pair(300, 0) })
 
     public var lives = 2
+    public var shouldShoot = false
 
     private var playerGoesLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoesRight = Animation(0.2f, Array<TextureRegion>())
-    private var playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
-    private var playerStayLeft  = TextureRegion(assets.player, 880, 802, width, height)
 
     init {
         // setting animation
@@ -53,11 +54,8 @@ public class Player(override val position : Vector2, override protected  val wid
         playersRight.addAll(Array(4, {i -> TextureRegion(assets.player, rightPos[i], 802, width, height)}), 0, 3)
         playersLeft.addAll(Array(4, {i -> TextureRegion(assets.player, leftPos[i], 802, width, height)}), 0, 3)
 
-        playerGoesRight = Animation(0.2f, playersRight)
-        playerGoesRight.playMode = Animation.PlayMode.LOOP_PINGPONG
-
-        playerGoesLeft = Animation(0.2f, playersLeft)
-        playerGoesLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+        playerGoesRight = Animation(0.2f, playersRight, Animation.PlayMode.LOOP_PINGPONG)
+        playerGoesLeft  = Animation(0.2f, playersLeft, Animation.PlayMode.LOOP_PINGPONG)
 
         availableGuns[0] = true
         availableGuns[2] = true

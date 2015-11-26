@@ -19,16 +19,14 @@ public class Item(private val position : Vector2, private val type : String) {
     private val keyCard = TextureRegion(assets.items, 95, 202, 32, 45)
 
     /** Returns texture of the requested gun. */
-    private fun getGun(x : Int, y : Int) : TextureRegion =
-            TextureRegion(assets.guns, x, y, 80, 55)
+    private fun getGun(x : Int, y : Int) = TextureRegion(assets.guns, x, y, 80, 55)
 
     /** Returns texture of the requested ammo. */
-    private fun getAmmo(x : Int, y : Int, width : Int, height : Int) : TextureRegion =
+    private fun getAmmo(x : Int, y : Int, width : Int, height : Int) =
             TextureRegion(assets.items, x, y, width, height)
 
     /** Returns texture of the requested pill. */
-    private fun getPill(x : Int) : TextureRegion =
-            TextureRegion(assets.items, x, 209, 25, 35)
+    private fun getPill(x : Int) = TextureRegion(assets.items, x, 209, 25, 35)
 
     /** Draws item using given [batcher]. */
     public fun draw(batcher : SpriteBatch){
@@ -67,16 +65,20 @@ public class Item(private val position : Vector2, private val type : String) {
             player.availableGuns[index] = true
             addAmmo(index, assets.maxCapacity[index])
             player.gunType = assets.gunsNames[index]
+            assets.happy[Math.random().toInt() % 3]?.play()
         }
         else if (assets.ammoNames.contains(type)) {
             val index = assets.ammoNames.indexOf(type)
             addAmmo(index, assets.maxCapacity[index])
+            assets.happy[Math.random().toInt() % 3]?.play()
         }
         else when(type) {
             "medikit" -> {
                 if (player.health <= 100 && player.health + 30 <= 100) player.health += 30
                 else player.health = 100
+                assets.eats[Math.random().toInt() % 4]?.play()
             }
+            else -> println("ok")
         }
     }
 

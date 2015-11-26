@@ -1,9 +1,11 @@
 package com.cypress.GameObjects
 
+import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
 /** Contains definition of bullet. */
@@ -15,8 +17,10 @@ public class Bullet(private val character : Character) {
     private val bounds   = Rectangle()
     private val bullets  = Array(7, {TextureRegion()})
     private val index    = assets.gunsNames.indexOf(character.gunType)
+    private var shot     = Animation(0.01f, Array<TextureRegion>())
 
     private var direction  = 0f
+    private var startValue = 0f
 
     public val enemyBulllet = character.isEnemy
     public val damage       = assets.bulletDamage[index]
@@ -26,10 +30,10 @@ public class Bullet(private val character : Character) {
             bullets[index] = TextureRegion(assets.bullets, pos.first, pos.second, size.first, size.second)
         }
 
-        var startPosX  = arrayOf(145, 165, 200, 175, 170, 160, 160)
-        val startPosY  = arrayOf(77, 75, 80, 80, 75, 55, 85)
-        val bulletSize = arrayOf(Pair(45, 25), Pair(50, 42), Pair( 50, 26), Pair(52, 16),
-                                 Pair(52, 38), Pair(50, 26), Pair(128, 32))
+        var startPosX  = arrayOf(145, 175, 215, 180, 170, 175, 175)
+        val startPosY  = arrayOf(78, 77, 82, 77, 72, 55, 90)
+        val bulletSize = arrayOf(Pair(45, 25), Pair(50, 42), Pair( 50, 26), Pair(39, 29),
+                                 Pair(62, 38), Pair(50, 26), Pair(128, 32))
 
         startPos.y += startPosY[index]
         bounds.setSize(bulletSize[index].first.toFloat(), bulletSize[index].second.toFloat())
@@ -38,32 +42,60 @@ public class Bullet(private val character : Character) {
             direction = 15f
 
             val pos = arrayOf(Pair(0, 6),   Pair(0, 37),  Pair(0, 88),
-                              Pair(0, 121), Pair(0, 145), Pair(0, 6), Pair(0, 188))
+                              Pair(0, 115), Pair(0, 145), Pair(0, 6), Pair(0, 188))
             for (i in 0 .. 6) addBullet(i, pos[i], bulletSize[index])
         }
         else {
-            startPosX = arrayOf(-25, -45, -60, -65,-65, -80, -105)
+            startPosX = arrayOf(-85, -90, -115, -70, -60, -115, -115)
             direction = -15f
             startPos.y -= 5
 
             val pos = arrayOf(Pair(83, 6),   Pair(78, 37),  Pair(78, 88),
-                              Pair(76, 121), Pair(76, 145), Pair(83, 6), Pair(0, 224))
+                              Pair(89, 115), Pair(66, 145), Pair(83, 6), Pair(0, 224))
             for (i in 0 .. 6) addBullet(i, pos[i], bulletSize[index])
         }
 
         startPos.x += startPosX[index]
 
+        if (index != 3 && index != 4) {
+            val pos = arrayOf(17, 143, 273, 402, 530, 656, 788, 918, 1044, 1170, 1300, 1430, 1559, 1683, 1811, 1941, 2065)
+            val animation = Array<TextureRegion>()
+            animation.addAll(Array(17, { i -> TextureRegion(assets.effects, pos[i], 10, 100, 100) }), 0, 16)
+
+            shot = Animation(0.01f, animation, Animation.PlayMode.LOOP)
+        }
+
+        if (character is Warrior) {
+            if (character.shouldGoToRight || character.stayRight) {
+                startPos.x -= 40
+                startPos.y -= 20
+            }
+            else {
+                startPos.x -= 10
+                startPos.y -= 10
+            }
+        }
+
         position.x = startPos.x
         position.y = startPos.y
         bounds.setPosition(position.x, position.y)
+
     }
 
     /** Draws bullet. */
-    public fun draw(batcher : SpriteBatch) {
+    public fun draw(delta : Float, batcher : SpriteBatch) {
         position.x += direction
+        if (startValue == 0f) startValue = delta
+        var temp = 0
 
-        if (character.shouldGoToLeft) position.x -= character.getX()
-        else if (character.shouldGoToRight) position.x += character.getX()
+        if (character.shouldGoToLeft) {
+            position.x -= 4
+            temp -= 4
+        }
+        else if (character.shouldGoToRight) {
+            position.x += 4
+            temp += 4
+        }
         bounds.setPosition(position.x, position.y)
 
         val texture = bullets[index]
@@ -73,6 +105,8 @@ public class Bullet(private val character : Character) {
 
         batcher.begin()
         batcher.draw(texture, position.x, position.y, size.first, size.second)
+        if (delta - startValue < 0.17f && index != 3 && index != 4)
+            batcher.draw(shot.getKeyFrame(delta), startPos.x + temp, startPos.y - 15 + temp, 60f, 40f)
         batcher.end()
     }
 

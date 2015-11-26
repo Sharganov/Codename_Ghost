@@ -5,34 +5,32 @@ import com.badlogic.gdx.math.Vector2
 import java.util.*
 
 /** Abstract class for game characters. */
-
 public abstract class Character {
-    abstract public var health: Int
-    abstract public var shouldGoToLeft: Boolean
-    abstract public var shouldGoToRight: Boolean
-    abstract public var stayRight: Boolean
-    abstract public var shouldJump: Boolean
-    abstract public var onGround: Boolean
-    abstract public var gunType: String
+    public abstract var health          : Int
+    public abstract var shouldGoToLeft  : Boolean
+    public abstract var shouldGoToRight : Boolean
+    public abstract var stayRight       : Boolean
+    public abstract var shouldJump      : Boolean
+    public abstract var onGround        : Boolean
+    public abstract var gunType         : String
+    public abstract val isEnemy         : Boolean
 
-    abstract protected val position: Vector2
-    abstract protected val velocity: Vector2
-    abstract protected val offsetY: Float
-    abstract protected val offsetX : Float
-    abstract protected val width: Int
-    abstract protected val height: Int
-    abstract protected val bounds: Rectangle
-    abstract protected var delta : Float
+    protected abstract val position : Vector2
+    protected abstract val velocity : Vector2
+    protected abstract val offsetY  : Float
+    protected abstract val offsetX  : Float
+    protected abstract val width    : Int
+    protected abstract val height   : Int
+    protected abstract val bounds   : Rectangle
+    protected abstract var delta    : Float
 
-    abstract public val isEnemy  : Boolean
-    /**Check collision with objects. If find, change position*/
-    open public fun checkCollision(blockList: ArrayList<Block>) {
+    /** Checks collision with objects. If finds, changes position*/
+    open public fun checkCollision(blockList : ArrayList<Block>) {
         for (block in blockList) {
             var collision = false
 
             //detecting collision
             if (bounds.overlaps(block.getBounds())) {
-
                 if (position.x + width - offsetX < block.getPosition().x
                         && position.y - delta < block.getPosition().y + block.getHeight()) {
                     position.x = block.getPosition().x - width
@@ -46,14 +44,13 @@ public abstract class Character {
                     bounds.setX(position.x)
                 }
                 if (!collision) {
-
                     if (position.y + offsetY >= block.getPosition().y + block.getHeight()) {
                         velocity.y = 0f
                         onGround = true
                         position.y = block.getPosition().y + block.getHeight()
                         bounds.setY(position.y)
-
-                    } else if (position.y < block.getPosition().y + 10) {
+                    }
+                    else if (position.y < block.getPosition().y + 10) {
                         position.y = block.getPosition().y - height
                         velocity.y = 0f
                         bounds.setY(position.y)
@@ -69,6 +66,5 @@ public abstract class Character {
 
     /** Returns position of player on Oy axis. */
     abstract public fun getY() : Float
-
 }
 

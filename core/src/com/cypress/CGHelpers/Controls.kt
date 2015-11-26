@@ -13,11 +13,13 @@ import com.cypress.Screens.MenuScreen
 import com.cypress.GameObjects.Bullet
 
 /** Contains definition of controls. */
-public class Controls(val game : CGGame, val player : Player) {
+public class Controls(private val game : CGGame, private val player : Player) {
 
     private val assets     = AssetLoader.getInstance()
     private val stage      = Stage()
     private val labelStyle = Label.LabelStyle()
+
+    private var index = assets.gunsNames.indexOf(player.gunType)
 
     init {
         // initializing buttons
@@ -33,7 +35,6 @@ public class Controls(val game : CGGame, val player : Player) {
         labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
 
         val health = Label(player.health.toString() + "  x " + player.lives.toString(), labelStyle)
-        val index  = assets.gunsNames.indexOf(player.gunType)
         val ac     = player.ammoCounter[index]
         var ammo   =
                 if (index == 0) Label(ac.first.toString()  + " / ∞", labelStyle)
@@ -78,43 +79,13 @@ public class Controls(val game : CGGame, val player : Player) {
 
         shoot.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                val index = assets.gunsNames.indexOf(player.gunType)
-                val ac    = player.ammoCounter
-
-                // ammo run out
-                if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
-                    player.availableGuns[index] = false
-                    nextGun(index)
-                }
-                else {
-                    val bullet = Bullet(player)
-                    assets.bulletsList.add(bullet)
-
-                    assets.shot[index]?.stop()
-                    if (assets.musicOn) assets.shot[index]?.play()
-
-                    ac[index] = Pair(ac[index].first - 1, ac[index].second)
-
-                    // reloading
-                    if (ac[index].first == 0) {
-                        if (assets.musicOn) assets.reload?.play()
-                        if (index == 0)
-                            ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
-                        else {
-                            val max = assets.maxCapacity[index]
-                            if (ac[index].second >= max)
-                                ac[index] = Pair(max, ac[index].second - max)
-                            else
-                                ac[index] = Pair(ac[index].second, 0)
-                        }
-                    }
-                    // ammo run out
-                    if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
-                        player.availableGuns[index] = false
-                        nextGun(index)
-                    }
-                }
+                if (index == 5) player.shouldShoot = true
+                doAction()
                 return true
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                player.shouldShoot = false
             }
         })
 
@@ -128,13 +99,13 @@ public class Controls(val game : CGGame, val player : Player) {
         leftGun.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) = true
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) =
-                prevGun(assets.gunsNames.indexOf(player.gunType))
+                prevGun()
         })
 
         rightGun.addListener(object : ClickListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) = true
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) =
-                nextGun(assets.gunsNames.indexOf(player.gunType))
+                nextGun()
         })
 
         left.setPosition(20f, 0f)
@@ -176,12 +147,13 @@ public class Controls(val game : CGGame, val player : Player) {
 
     /** Changes information about player's health and ammo. */
     public fun update() {
+        index  = assets.gunsNames.indexOf(player.gunType)
+
         val temp   =
                 if (player.health >= 100) ""
                 else if (player.health < 10) "  "
                 else " "
         val health = Label(temp + player.health.toString() + "  x " + player.lives.toString(), labelStyle)
-        val index  = assets.gunsNames.indexOf(player.gunType)
         val ac     = player.ammoCounter[index]
         var ammo   =
                 if (index == 0) Label(ac.first.toString()  + " / ∞", labelStyle)
@@ -195,24 +167,64 @@ public class Controls(val game : CGGame, val player : Player) {
         setIcon()
     }
 
+    public fun doAction() {
+        var index = assets.gunsNames.indexOf(player.gunType)
+        val ac = player.ammoCounter
+
+        // ammo run out
+        if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
+            player.availableGuns[index] = false
+            nextGun()
+        }
+        else {
+            val bullet = Bullet(player)
+            assets.bulletsList.add(bullet)
+
+            assets.shot[index]?.stop()
+            if (assets.musicOn) assets.shot[index]?.play()
+
+            ac[index] = Pair(ac[index].first - 1, ac[index].second)
+
+            // reloading
+            if (ac[index].first == 0) {
+                if (assets.musicOn) assets.reload?.play()
+                if (player.shouldShoot) player.shouldShoot = false
+                if (index == 0)
+                    ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
+                else {
+                    val max = assets.maxCapacity[index]
+                    if (ac[index].second >= max)
+                        ac[index] = Pair(max, ac[index].second - max)
+                    else
+                        ac[index] = Pair(ac[index].second, 0)
+                }
+            }
+            // ammo run out
+            if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
+                player.availableGuns[index] = false
+                nextGun()
+            }
+        }
+    }
+
     /** Sets gun icon. */
     private fun setIcon() {
-        fun getGunImage(pair : Pair<Int, Int>) : Image =
+        fun getGunImage(pair : Pair<Int, Int>) =
                 Image(TextureRegion(assets.guns, pair.first, pair.second, 80, 55))
 
         val gunPos = arrayOf(Pair(410,  87), Pair(412, 177), Pair(409,  17), Pair(415, 261),
                              Pair(418, 358), Pair(422, 545), Pair(424, 452))
 
-        val gunIcon = getGunImage(gunPos[assets.gunsNames.indexOf(player.gunType)])
+        val gunIcon = getGunImage(gunPos[index])
         gunIcon.setPosition(75f, 390f)
         gunIcon.sizeBy(5f, 9f)
         stage.actors[8] = gunIcon
     }
 
     /** Sets next gun type. */
-    private fun nextGun(index : Int) {
+    private fun nextGun() {
         for (i in 1 .. 5) {
-            var temp = (index + i) % 6
+            var temp = (index + i) % 7
             if (player.availableGuns[temp]) {
                 player.gunType = assets.gunsNames[temp]
                 break
@@ -222,10 +234,10 @@ public class Controls(val game : CGGame, val player : Player) {
     }
 
     /** Sets previous gun type. */
-    private fun prevGun(index : Int) {
+    private fun prevGun() {
         for (i in 1 .. 5) {
-            var temp = (index - i) % 6
-            if (temp < 0) temp += 6
+            var temp = (index - i) % 7
+            if (temp < 0) temp += 7
             if (player.availableGuns[temp]) {
                 player.gunType = assets.gunsNames[temp]
                 break

@@ -55,7 +55,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         blockList.add(Block(Vector2(86f, 950f), 911f, 73f, hSnow))
         blockList.add(Block(Vector2(86f, 656f), 911f, 73f, hSnow))
         blockList.add(Block(Vector2(997f, 950f), 125f, 73f, hSnow))
-        blockList.add(Block(Vector2(520f, 390f), 470f, 73f, hSnow))
+        blockList.add(Block(Vector2(520f, 390f), 465f, 73f, hSnow))
         blockList.add(Block(Vector2(1330f, 374f), 880f, 73f, hSnow))
 
         blockList.add(Block(Vector2(-166f, 68f), 256f, 128f, crate))
@@ -77,13 +77,15 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
 
         // adding enemies
-        enemyList.add(Warrior(Vector2(4863f, 700f), 115, 180, player))
-        enemyList.add(Warrior(Vector2(4163f, 700f), 115, 180, player))
-        enemyList.add(Warrior(Vector2(3563f, 700f), 115, 180, player))
+        enemyList.add(Warrior(Vector2(43f, 364f), player))
+        enemyList.add(Warrior(Vector2(2120f, 105f), player))
+        enemyList.add(Warrior(Vector2(3360f, 485f), player))
+        enemyList.add(Warrior(Vector2(4394f, 1013f), player))
+        enemyList.add(Warrior(Vector2(4612f, 110f), player))
 
         // adding items
-        itemsList.add(Item(Vector2(2300f, 100f), "medikit"))
-        itemsList.add(Item(Vector2(3300f, 140f), assets.gunsNames[1] ))
+        itemsList.add(Item(Vector2(525f, 490f), assets.gunsNames[1]))
+        itemsList.add(Item(Vector2(4547f, 1012f), "medikit"))
 
         // animation of fan
         val fan1 = TextureRegion(assets.levelsFP[1][0], 582, 12, 141, 132)
@@ -122,6 +124,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
 
             if (player.getX() > 5345f && player.getX() < 6197f) {
                 if (!isPlaying) {
+                    assets.fan?.setVolume(1, 0.5f)
                     assets.fan?.loop()
                     isPlaying = true
                 }
@@ -131,6 +134,8 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
                 isPlaying = false
             }
         }
+
+        if (player.shouldShoot) controls.doAction()
 
         for (bullet in assets.bulletsList) {
             for (enemy in enemyList) {
@@ -196,7 +201,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         // drawing bullets
         if (assets.bulletsList.isNotEmpty() && assets.bulletsList[0].distance() > 600)
             assets.bulletsList.removeFirst()
-        for (b in assets.bulletsList) b.draw(batcher)
+        for (b in assets.bulletsList) b.draw(runTime, batcher)
 
         // drawing blocks
         for(block in blockList) block.draw(batcher)
