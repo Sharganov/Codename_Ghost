@@ -21,7 +21,7 @@ public class Player(override val position : Vector2, override protected  val wid
 
     private val assets       = AssetLoader.getInstance()
     private val acceleration = Vector2(0f, 0.2f)
-    private val gun          = Gun(this, assets.gunsNames[0])
+    private val gun          = Gun(this)
 
     public override var health          = 100
     public override var delta           = 0f
@@ -110,8 +110,8 @@ public class Player(override val position : Vector2, override protected  val wid
     /** Draws player. */
     public fun draw(delta: Float, batcher : SpriteBatch) {
         // drawing gun
-        gun.update(gunType)
-        gun.draw(delta, batcher)
+        gun.update()
+        gun.draw(batcher)
 
         batcher.begin()
 

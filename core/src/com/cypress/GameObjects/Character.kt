@@ -28,18 +28,19 @@ public abstract class Character {
     /**Check collision with objects. If find, change position*/
     open public fun checkCollision(blockList: ArrayList<Block>) {
         for (block in blockList) {
-            // drawing first plan object
             var collision = false
-            //detecting collision
 
+            //detecting collision
             if (bounds.overlaps(block.getBounds())) {
 
-                if (position.x + width - offsetX < block.getPosition().x && position.y - delta < block.getPosition().y + block.getHeight()) {
+                if (position.x + width - offsetX < block.getPosition().x
+                        && position.y - delta < block.getPosition().y + block.getHeight()) {
                     position.x = block.getPosition().x - width
                     collision = true
                     bounds.setX(position.x)
                 }
-                if (getX() > block.getPosition().x + block.getWidth() - offsetX && getY() - delta < block.getPosition().y + block.getHeight()) {
+                if (getX() > block.getPosition().x + block.getWidth() - offsetX
+                        && getY() - delta < block.getPosition().y + block.getHeight()) {
                     position.x = block.getPosition().x + block.getWidth()
                     collision = true
                     bounds.setX(position.x)
@@ -67,7 +68,7 @@ public abstract class Character {
     abstract  public fun  getX() : Float
 
     /** Returns position of player on Oy axis. */
-    abstract public fun getY() : Float //= position.y
+    abstract public fun getY() : Float
 
 }
 

@@ -116,16 +116,9 @@ public class Controls(val game : CGGame, val player : Player) {
                 }
                 return true
             }
-
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-            }
         })
 
         pause.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
-
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 game.screen = MenuScreen(game, player)
                 dispose()
@@ -133,23 +126,15 @@ public class Controls(val game : CGGame, val player : Player) {
         })
 
         leftGun.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
-
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) = true
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) =
                 prevGun(assets.gunsNames.indexOf(player.gunType))
-            }
         })
 
         rightGun.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
-
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) = true
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) =
                 nextGun(assets.gunsNames.indexOf(player.gunType))
-            }
         })
 
         left.setPosition(20f, 0f)
@@ -207,20 +192,18 @@ public class Controls(val game : CGGame, val player : Player) {
 
         stage.actors[9]  = health
         stage.actors[10] = ammo
+        setIcon()
     }
 
     /** Sets gun icon. */
     private fun setIcon() {
-        val gunIcon =
-            when (player.gunType) {
-                assets.gunsNames[1] -> Image(TextureRegion(assets.guns, 412, 177, 80, 55))
-                assets.gunsNames[2] -> Image(TextureRegion(assets.guns, 409, 17, 80, 55))
-                assets.gunsNames[3] -> Image(TextureRegion(assets.guns, 415, 261, 80, 55))
-                assets.gunsNames[4] -> Image(TextureRegion(assets.guns, 418, 358, 80, 55))
-                assets.gunsNames[5] -> Image(TextureRegion(assets.guns, 422, 545, 80, 55))
-                assets.gunsNames[6] -> Image(TextureRegion(assets.guns, 424, 452, 80, 55))
-                else                -> Image(TextureRegion(assets.guns, 410, 87, 80, 55))
-            }
+        fun getGunImage(pair : Pair<Int, Int>) : Image =
+                Image(TextureRegion(assets.guns, pair.first, pair.second, 80, 55))
+
+        val gunPos = arrayOf(Pair(410,  87), Pair(412, 177), Pair(409,  17), Pair(415, 261),
+                             Pair(418, 358), Pair(422, 545), Pair(424, 452))
+
+        val gunIcon = getGunImage(gunPos[assets.gunsNames.indexOf(player.gunType)])
         gunIcon.setPosition(75f, 390f)
         gunIcon.sizeBy(5f, 9f)
         stage.actors[8] = gunIcon
@@ -228,9 +211,8 @@ public class Controls(val game : CGGame, val player : Player) {
 
     /** Sets next gun type. */
     private fun nextGun(index : Int) {
-        var temp = 0
         for (i in 1 .. 5) {
-            temp = (index + i) % 6
+            var temp = (index + i) % 6
             if (player.availableGuns[temp]) {
                 player.gunType = assets.gunsNames[temp]
                 break
@@ -241,9 +223,8 @@ public class Controls(val game : CGGame, val player : Player) {
 
     /** Sets previous gun type. */
     private fun prevGun(index : Int) {
-        var temp = 0
         for (i in 1 .. 5) {
-            temp = (index - i) % 6
+            var temp = (index - i) % 6
             if (temp < 0) temp += 6
             if (player.availableGuns[temp]) {
                 player.gunType = assets.gunsNames[temp]
@@ -253,14 +234,9 @@ public class Controls(val game : CGGame, val player : Player) {
         setIcon()
     }
 
-
     /** Returns stage. */
-    public fun getStage(): Stage {
-        return stage
-    }
+    public fun getStage() = stage
 
     /** Dispose stage. */
-    public fun dispose() {
-        stage.dispose()
-    }
+    public fun dispose() = stage.dispose()
 }

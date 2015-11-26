@@ -21,7 +21,7 @@ public class AssetLoader {
     public val levelsBG     = Array(9, { LinkedList<Texture?>() })
     public val levelsFP     = Array(9, { LinkedList<Texture?>() })
     public val gunsNames    = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun",
-                                      "lasergun", "minigun", "rocketLauncher")
+                                "lasergun", "minigun", "rocketLauncher")
     public val ammoNames    = Array(7, {i-> gunsNames[i] + "_ammo"})
     public val bulletsList  = LinkedList<Bullet>()
     public val maxCapacity  = arrayOf(30, 8, 45, 25, 20, 100, 1)
@@ -39,6 +39,7 @@ public class AssetLoader {
     public var bullets  : Texture? = null
     public var levels   : Texture? = null
     public var warrior  : Texture? = null
+    public var items    : Texture? = null
 
     public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
@@ -60,24 +61,14 @@ public class AssetLoader {
     /** Loads main resources to AssetManager. */
     public fun load() {
         // loading of images
-        manager.load("data/images/logo.png", Texture::class.java)
-        manager.load("data/images/main.png", Texture::class.java)
-        manager.load("data/images/buttons.png", Texture::class.java)
-        manager.load("data/images/settings.png", Texture::class.java)
-        manager.load("data/images/about.png", Texture::class.java)
-        manager.load("data/images/player.png", Texture::class.java)
-        manager.load("data/images/guns.png", Texture::class.java)
-        manager.load("data/images/bullets.png", Texture::class.java)
-        manager.load("data/images/levels.png", Texture::class.java)
-        manager.load("data/images/warrior.png", Texture::class.java)
+        val textureLoadList = arrayOf("logo.png", "main.png", "buttons.png", "settings.png", "about.png",
+                "player.png", "guns.png", "bullets.png", "levels.png", "warrior.png", "items.png")
+        for (t in textureLoadList) manager.load("data/images/" + t, Texture::class.java)
 
         // loading of music and sounds
         manager.load("data/sounds/music/MainTheme.ogg", Music::class.java)
-        manager.load("data/sounds/weapons/uzi.ogg", Sound::class.java)
-        manager.load("data/sounds/weapons/shotgun.ogg", Sound::class.java)
-        manager.load("data/sounds/weapons/lasergun.ogg", Sound::class.java)
-        manager.load("data/sounds/weapons/rocket.ogg", Sound::class.java)
-        manager.load("data/sounds/weapons/reload.ogg", Sound::class.java)
+        val soundLoadList = arrayOf("uzi.ogg", "shotgun.ogg", "lasergun.ogg", "rocket.ogg", "reload.ogg")
+        for (s in soundLoadList) manager.load("data/sounds/weapons/" + s, Sound::class.java)
 
         manager.finishLoading()
 
@@ -91,6 +82,7 @@ public class AssetLoader {
         bullets  = manager.get("data/images/bullets.png")
         levels   = manager.get("data/images/levels.png")
         warrior  = manager.get("data/images/warrior.png")
+        items    = manager.get("data/images/items.png")
 
         mainTheme = manager.get("data/sounds/music/MainTheme.ogg")
         shot[0]   = manager.get("data/sounds/weapons/uzi.ogg")
@@ -154,14 +146,13 @@ public class AssetLoader {
     /** Loads resources of level 1 to AssetManager. */
     public fun loadLevel1() {
         // loading of images
-        manager.load("data/images/level1/background.png", Texture::class.java)
-        manager.load("data/images/level1/background2.png", Texture::class.java)
-        manager.load("data/images/level1/firstplan.png", Texture::class.java)
+        val textureLoadList = arrayOf("background.png", "background2.png", "firstplan.png")
+        for (t in textureLoadList) manager.load("data/images/level1/" + t, Texture::class.java)
 
         // loading of music and sounds
         manager.load("data/sounds/music/Level1.ogg", Music::class.java)
-        manager.load("data/sounds/events/snow.ogg", Music::class.java)
-        manager.load("data/sounds/events/fan.ogg", Sound::class.java)
+        manager.load("data/sounds/world/snow.ogg", Music::class.java)
+        manager.load("data/sounds/world/fan.ogg", Sound::class.java)
 
         manager.finishLoading()
 
@@ -171,7 +162,7 @@ public class AssetLoader {
 
         levelsMusic[1] = manager.get("data/sounds/music/Level1.ogg")
 
-        snow = manager.get("data/sounds/events/snow.ogg")
-        fan  = manager.get("data/sounds/events/fan.ogg")
+        snow = manager.get("data/sounds/world/snow.ogg")
+        fan  = manager.get("data/sounds/world/fan.ogg")
     }
 }
