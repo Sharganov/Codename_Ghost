@@ -13,11 +13,11 @@ class Warrior(override val position : Vector2, override protected  val width : I
 
     public override val isEnemy  = true
     public override val bounds   = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
-    public override val velocity = Vector2(3f, 12f)
+    public override val velocity = Vector2(4f, 12f)
     public override val offsetY  = 18f
     public override val offsetX  = 10f
 
-    public override var health          = 100
+    public override var health          = 50
     public override var shouldGoToLeft  = false
     public override var delta           = 0f
     public override var shouldJump      = false
@@ -36,19 +36,19 @@ class Warrior(override val position : Vector2, override protected  val width : I
 
     init {
         // setting animation
-        val rightPos = arrayOf(Pair(28, 235), Pair(350, 237), Pair(674, 236), Pair(30, 445),
-               Pair(361, 445), Pair(678, 445), Pair(23, 662), Pair(349, 662), Pair(688, 663))
-        val leftPos  = arrayOf(Pair(200, 236), Pair(529, 236), Pair(871, 236), Pair(199, 445),
-               Pair(519, 442), Pair(864, 442), Pair(204, 662), Pair(528, 661), Pair(853, 661))
+        val posR = arrayOf(Pair( 28, 235), Pair(350, 237), Pair(674, 236), Pair( 30, 445), Pair(361, 445),
+                           Pair(678, 445), Pair( 23, 662), Pair(349, 662), Pair(688, 663))
+        val posL = arrayOf(Pair(200, 236), Pair(529, 236), Pair(871, 236), Pair(199, 445), Pair(519, 442),
+                           Pair(864, 442), Pair(204, 662), Pair(528, 661), Pair(853, 661))
 
         val warriorsRight = Array<TextureRegion>()
         val warriorsLeft  = Array<TextureRegion>()
 
         warriorsRight.addAll(
-            Array(9, {i -> TextureRegion(assets.warrior, rightPos[i].first, rightPos[i].second, width, height)}), 0, 8
+            Array(9, {i -> TextureRegion(assets.warrior, posR[i].first, posR[i].second, width, height)}), 0, 8
         )
         warriorsLeft.addAll(
-            Array(9, {i -> TextureRegion(assets.warrior, leftPos[i].first, leftPos[i].second, width, height)}), 0, 8
+            Array(9, {i -> TextureRegion(assets.warrior, posL[i].first, posL[i].second, width, height)}), 0, 8
         )
 
         warriorGoesRight = Animation(0.1f, warriorsRight)
@@ -83,7 +83,7 @@ class Warrior(override val position : Vector2, override protected  val width : I
             if (canShoot) assets.bulletsList.add(Bullet(this))
         }
         else if (stayRight && distance >= 300f && distance < 500f) {
-            position.x += 2
+            position.x += velocity.x
             shouldGoToRight = true
             shouldGoToLeft = false
         }
@@ -93,7 +93,7 @@ class Warrior(override val position : Vector2, override protected  val width : I
             if (canShoot) assets.bulletsList.add(Bullet(this))
         }
         else if (!stayRight && distance <= -300f && distance > -500f) {
-            position.x -= 2
+            position.x -= velocity.x
             shouldGoToRight = false
             shouldGoToLeft = true
         }

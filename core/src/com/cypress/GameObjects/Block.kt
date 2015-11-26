@@ -5,22 +5,28 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 
+/** Contains definition of block. */
 public class Block(private val position : Vector2, private val width : Float, private val height : Float,
                    private val texture : TextureRegion ){
 
     private val bounds = Rectangle(position.x, position.y, width, height)
 
+    /** Draws block. */
     public fun draw(batcher : SpriteBatch){
         batcher.begin()
         batcher.draw(texture, position.x, position.y, width, height)
         batcher.end()
     }
 
-    public fun getWidth() : Float = width
+    /** Returns width. */
+    public fun getWidth() = width
 
-    public fun getHeight() : Float = height
+    /** Returns height. */
+    public fun getHeight() = height
 
-    public fun getBounds() : Rectangle = bounds
+    /** Returns bounds of block. */
+    public fun getBounds() = bounds
 
-    public fun getPosition() : Vector2 = position
+    /** Returns position of block. */
+    public fun getPosition() = position
 }

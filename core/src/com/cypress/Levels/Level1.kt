@@ -20,20 +20,19 @@ import java.util.*
 /** Contains definition of first level. */
 public class Level1(val game : CGGame, val player : Player) : Screen {
 
-    private val assets          = AssetLoader.getInstance()
-    private val batcher         = SpriteBatch()
-    private var runTime         = 0f
-    private val controls        = Controls(game, player)
-    private val spruce          = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence           = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
-    private val blockList       = ArrayList<Block>()
-    private val enemyList       = ArrayList<Warrior>()
-    private val itemsList       = ArrayList<Item>()
-    private val bulletsToRemove = ArrayList<Bullet>()
-    private val deadEnemies     = ArrayList<Warrior>()
-    private val itemsToRemove   = ArrayList<Item>()
-
-    private val camera      = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private val assets         = AssetLoader.getInstance()
+    private val batcher        = SpriteBatch()
+    private var runTime        = 0f
+    private val controls       = Controls(game, player)
+    private val spruce         = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
+    private val fence          = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
+    private val blockList      = ArrayList<Block>()
+    private val enemyList      = ArrayList<Warrior>()
+    private val itemsList      = ArrayList<Item>()
+    private val removedBullets = ArrayList<Bullet>()
+    private val deadEnemies    = ArrayList<Warrior>()
+    private val removedItems   = ArrayList<Item>()
+    private val camera         = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
     private var stage     = Stage()
     private var fan       = Animation(0.02f, Array<TextureRegion>())
@@ -44,6 +43,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         stage = controls.getStage()
         assets.activeMusic = assets.levelsMusic[1]
 
+        // adding blocks
         val hSnow = TextureRegion(assets.levelsFP[1][0], 28, 834, 911, 73)
         val vSnow = TextureRegion(assets.levelsFP[1][0], 907, 174, 100, 618)
         val crate = TextureRegion(assets.levelsFP[1][0], 316, 46, 256, 128)
@@ -76,11 +76,13 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
 
-        enemyList.add( Warrior(Vector2(4863f, 700f), 115, 180, player))
-        enemyList.add( Warrior(Vector2(4163f, 700f), 115, 180, player))
-        enemyList.add( Warrior(Vector2(3563f, 700f), 115, 180, player))
+        // adding enemies
+        enemyList.add(Warrior(Vector2(4863f, 700f), 115, 180, player))
+        enemyList.add(Warrior(Vector2(4163f, 700f), 115, 180, player))
+        enemyList.add(Warrior(Vector2(3563f, 700f), 115, 180, player))
 
-        itemsList.add(Item(Vector2(2300f, 100f), "medicine"))
+        // adding items
+        itemsList.add(Item(Vector2(2300f, 100f), "medikit"))
         itemsList.add(Item(Vector2(3300f, 140f), assets.gunsNames[1] ))
 
         // animation of fan
@@ -134,8 +136,8 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
             for (enemy in enemyList) {
                 if (bullet.getBounds().overlaps(enemy.getBound())) {
                     if(!bullet.enemyBulllet) {
-                        enemy.health -= 25
-                        bulletsToRemove.add(bullet)
+                        enemy.health -= bullet.damage
+                        removedBullets.add(bullet)
                     }
                 }
                 if(enemy.health <= 0) deadEnemies.add(enemy)
@@ -145,13 +147,13 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         for (bullet in assets.bulletsList) {
             if (bullet.getBounds().overlaps(player.getBound())) {
                 if (bullet.enemyBulllet) {
-                    player.health -= 10
+                    player.health -= bullet.damage
                     if (player.health <= 0) {
                         player.health = 100
                         player.lives -= 1
                         if (player.lives < 0) println("Game Over")
                     }
-                    bulletsToRemove.add(bullet)
+                    removedBullets.add(bullet)
                 }
             }
         }
@@ -162,10 +164,10 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         // check collision of bullets with blocks
         for(bullet in assets.bulletsList)
             for(block in blockList)
-                if(bullet.getBounds().overlaps(block.getBounds())) bulletsToRemove.add(bullet)
+                if(bullet.getBounds().overlaps(block.getBounds())) removedBullets.add(bullet)
 
         // remove bullets, which hit player or block
-        for(bullet in bulletsToRemove) assets.bulletsList.remove(bullet)
+        for(bullet in removedBullets) assets.bulletsList.remove(bullet)
     }
 
     /** Draws level. */
@@ -194,7 +196,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         // drawing bullets
         if (assets.bulletsList.isNotEmpty() && assets.bulletsList[0].distance() > 600)
             assets.bulletsList.removeFirst()
-        for (b in assets.bulletsList) b.draw(delta, batcher)
+        for (b in assets.bulletsList) b.draw(batcher)
 
         // drawing blocks
         for(block in blockList) block.draw(batcher)
@@ -204,16 +206,18 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         player.checkCollision(blockList)
         player.draw(runTime, batcher)
 
-        // check collision with items(medicine, ammo...
+        // check collision with picked up items
         for(item in itemsList) {
             item.draw(batcher)
             if (player.getBound().overlaps(item.getBounds())) {
                 item.activity(player)
-                itemsToRemove.add(item)
+                removedItems.add(item)
             }
         }
+
         // remove picked up items
-        for(item in itemsToRemove) itemsList.remove(item)
+        for(item in removedItems) itemsList.remove(item)
+
         // drawing enemies
         for(enemy in enemyList) {
             enemy.update(runTime)

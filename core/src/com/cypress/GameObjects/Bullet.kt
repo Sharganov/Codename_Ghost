@@ -9,74 +9,49 @@ import com.cypress.CGHelpers.AssetLoader
 /** Contains definition of bullet. */
 public class Bullet(private val character : Character) {
     
-    private val assets    = AssetLoader.getInstance()
-    private val type      = character.gunType
-    private val startPos  = Vector2(character.getX(), character.getY())
-    private val position  = Vector2(0f, 0f)
-    private val bounds    = Rectangle()
+    private val assets   = AssetLoader.getInstance()
+    private val startPos = Vector2(character.getX(), character.getY())
+    private val position = Vector2(0f, 0f)
+    private val bounds   = Rectangle()
+    private val bullets  = Array(7, {TextureRegion()})
+    private val index    = assets.gunsNames.indexOf(character.gunType)
 
-    private var direction       = 0f
-    private var uziBullet       = TextureRegion()
-    private var shotgunBullet   = TextureRegion()
-    private var rifleBullet     = TextureRegion()
-    private var plasmagunBullet = TextureRegion()
-    private var lasergunBullet  = TextureRegion()
-    private var rocket          = TextureRegion()
+    private var direction  = 0f
 
     public val enemyBulllet = character.isEnemy
-    //private var correction = if (Math.random() mod 2 > 0.5) (Math.random() mod 50).toFloat()
-    //                         else -(Math.random() mod 50).toFloat()
+    public val damage       = assets.bulletDamage[index]
 
     init {
-        when (type) {
-            assets.gunsNames[0] -> {startPos.y += 77; bounds.setSize(45f, 25f)}
-            assets.gunsNames[1] -> {startPos.y += 75; bounds.setSize(50f, 42f)}
-            assets.gunsNames[2] -> {startPos.y += 80; bounds.setSize(50f, 26f)}
-            assets.gunsNames[3] -> {startPos.y += 80; bounds.setSize(52f, 16f)}
-            assets.gunsNames[4] -> {startPos.y += 75; bounds.setSize(52f, 38f)}
-            assets.gunsNames[5] -> {startPos.y += 55; bounds.setSize(50f, 26f)}
-            assets.gunsNames[6] -> {startPos.y += 85; bounds.setSize(128f, 32f)}
+        fun addBullet(index : Int, pos : Pair<Int, Int>, size : Pair<Int, Int>) {
+            bullets[index] = TextureRegion(assets.bullets, pos.first, pos.second, size.first, size.second)
         }
+
+        var startPosX  = arrayOf(145, 165, 200, 175, 170, 160, 160)
+        val startPosY  = arrayOf(77, 75, 80, 80, 75, 55, 85)
+        val bulletSize = arrayOf(Pair(45, 25), Pair(50, 42), Pair( 50, 26), Pair(52, 16),
+                                 Pair(52, 38), Pair(50, 26), Pair(128, 32))
+
+        startPos.y += startPosY[index]
+        bounds.setSize(bulletSize[index].first.toFloat(), bulletSize[index].second.toFloat())
 
         if (character.shouldGoToRight || character.stayRight) {
-            when (type) {
-                assets.gunsNames[0] -> {startPos.x += 145; bounds.setSize(45f, 25f)}
-                assets.gunsNames[1] -> {startPos.x += 165; bounds.setSize(50f, 42f)}
-                assets.gunsNames[2] -> {startPos.x += 200; bounds.setSize(50f, 26f)}
-                assets.gunsNames[3] -> {startPos.x += 175; bounds.setSize(52f, 16f)}
-                assets.gunsNames[4] -> {startPos.x += 170; bounds.setSize(52f, 38f)}
-                assets.gunsNames[5] -> {startPos.x += 160; bounds.setSize(50f, 26f)}
-                assets.gunsNames[6] -> {startPos.x += 160; bounds.setSize(128f, 32f)}
-            }
             direction = 15f
 
-            uziBullet       = TextureRegion(assets.bullets, 0, 6, 45, 25)
-            shotgunBullet   = TextureRegion(assets.bullets, 0, 37, 50, 42)
-            rifleBullet     = TextureRegion(assets.bullets, 0, 88, 50, 26)
-            plasmagunBullet = TextureRegion(assets.bullets, 0, 121, 52, 16)
-            lasergunBullet  = TextureRegion(assets.bullets, 0, 145, 52, 38)
-            rocket          = TextureRegion(assets.bullets, 0, 188, 128, 32)
+            val pos = arrayOf(Pair(0, 6),   Pair(0, 37),  Pair(0, 88),
+                              Pair(0, 121), Pair(0, 145), Pair(0, 6), Pair(0, 188))
+            for (i in 0 .. 6) addBullet(i, pos[i], bulletSize[index])
         }
         else {
-            when (type) {
-                assets.gunsNames[0] -> {startPos.x -= 25; bounds.setSize(45f, 25f)}
-                assets.gunsNames[1] -> {startPos.x -= 45; bounds.setSize(50f, 42f)}
-                assets.gunsNames[2] -> {startPos.x -= 60; bounds.setSize(50f, 26f)}
-                assets.gunsNames[3] -> {startPos.x -= 65; bounds.setSize(52f, 16f)}
-                assets.gunsNames[4] -> {startPos.x -= 65; bounds.setSize(52f, 38f)}
-                assets.gunsNames[5] -> {startPos.x -= 80; bounds.setSize(50f, 26f)}
-                assets.gunsNames[6] -> {startPos.x -= 105; bounds.setSize(128f, 32f)}
-            }
-            startPos.y -= 5
+            startPosX = arrayOf(-25, -45, -60, -65,-65, -80, -105)
             direction = -15f
+            startPos.y -= 5
 
-            uziBullet       = TextureRegion(assets.bullets, 83, 6, 45, 25)
-            shotgunBullet   = TextureRegion(assets.bullets, 78, 37, 50, 42)
-            rifleBullet     = TextureRegion(assets.bullets, 78, 88, 50, 26)
-            plasmagunBullet = TextureRegion(assets.bullets, 76, 121, 52, 16)
-            lasergunBullet  = TextureRegion(assets.bullets, 76, 145, 52, 38)
-            rocket          = TextureRegion(assets.bullets, 0, 224, 128, 32)
+            val pos = arrayOf(Pair(83, 6),   Pair(78, 37),  Pair(78, 88),
+                              Pair(76, 121), Pair(76, 145), Pair(83, 6), Pair(0, 224))
+            for (i in 0 .. 6) addBullet(i, pos[i], bulletSize[index])
         }
+
+        startPos.x += startPosX[index]
 
         position.x = startPos.x
         position.y = startPos.y
@@ -84,30 +59,26 @@ public class Bullet(private val character : Character) {
     }
 
     /** Draws bullet. */
-    public fun draw(delta: Float, batcher : SpriteBatch) {
+    public fun draw(batcher : SpriteBatch) {
         position.x += direction
-        if (character.shouldGoToLeft) position.x -= 4
-        else if (character.shouldGoToRight) position.x += 4
+
+        if (character.shouldGoToLeft) position.x -= character.getX()
+        else if (character.shouldGoToRight) position.x += character.getX()
         bounds.setPosition(position.x, position.y)
 
-        // drawing bullet
+        val texture = bullets[index]
+        var size    =
+                if (index == 6) Pair(85f, 21f)
+                else Pair(texture.regionWidth.toFloat() / 2, texture.regionHeight.toFloat() / 2)
+
         batcher.begin()
-        when (type) {
-            assets.gunsNames[0] -> batcher.draw(uziBullet, position.x, position.y, 23f, 13f)
-            assets.gunsNames[1] -> batcher.draw(shotgunBullet, position.x, position.y, 25f, 21f)
-            assets.gunsNames[2] -> batcher.draw(rifleBullet, position.x, position.y, 25f, 13f)
-            assets.gunsNames[3] -> batcher.draw(plasmagunBullet, position.x, position.y, 26f, 8f)
-            assets.gunsNames[4] -> batcher.draw(lasergunBullet, position.x, position.y, 26f, 16f)
-            assets.gunsNames[5] -> batcher.draw(rifleBullet, position.x, position.y, 25f, 13f)
-            assets.gunsNames[6] -> batcher.draw(rocket, position.x, position.y, 85f, 21f)
-        }
+        batcher.draw(texture, position.x, position.y, size.first, size.second)
         batcher.end()
     }
 
     /** Returns distance from player to bullet. */
-    public fun distance(): Float {
-        return Math.abs(position.x - startPos.x)
-    }
+    public fun distance() = Math.abs(position.x - startPos.x)
 
-    public fun getBounds() : Rectangle = bounds
+    /** Returns bounds of bullet. */
+    public fun getBounds() = bounds
 }
