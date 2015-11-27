@@ -7,14 +7,14 @@ import com.cypress.Screens.LogoScreen
 
 /** Contains definition of game. */
 public class CGGame : Game() {
+    
+    public val availableLevels = arrayOf(false, true, false, false, false, false, false, false, false)
 
     /** Creates game. */
     companion object {
-
-        private var _instance: CGGame = CGGame()
-        fun getInstance(): CGGame = _instance
+        private var _instance : CGGame = CGGame()
+        fun getInstance() : CGGame = _instance
     }
-
 
     public override fun create() {
         Gdx.app.log("CGGame", "created")

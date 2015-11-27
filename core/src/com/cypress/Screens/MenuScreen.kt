@@ -10,13 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
-import com.cypress.GameObjects.Player
 import com.cypress.codenameghost.CGGame
-import com.cypress.Levels.Level1
 
 /** Contains definition of pause menu. */
-public class MenuScreen(val game : CGGame, val player : Player) : Screen {
-    val assets = AssetLoader.getInstance()
+public class MenuScreen(private val game : CGGame, private val level : Screen?) : Screen {
+    private val assets  = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -47,13 +45,9 @@ public class MenuScreen(val game : CGGame, val player : Player) : Screen {
                 }
         var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
-
         language.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
-
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 when (assets.language) {
                     "english" -> {
                         assets.language = "русский"
@@ -70,11 +64,9 @@ public class MenuScreen(val game : CGGame, val player : Player) : Screen {
         })
 
         sounds.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 if (assets.musicOn) {
                     assets.musicOn = false
                     assets.activeMusic?.stop()
@@ -87,28 +79,24 @@ public class MenuScreen(val game : CGGame, val player : Player) : Screen {
         })
 
         backToMain.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) =  true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 assets.activeMusic?.stop()
                 game.screen = MainScreen(game)
+                level?.dispose()
                 dispose()
             }
         })
 
         back.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = Level1(game, player)
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
+                level?.resume()
                 dispose()
             }
         })
-
 
         table.add(sounds)
         table.row()
@@ -146,13 +134,9 @@ public class MenuScreen(val game : CGGame, val player : Player) : Screen {
     }
 
     public override fun resize(width : Int, height : Int) {}
-
     public override fun show() {}
-
     public override fun hide() {}
-
     public override fun pause() {}
-
     public override fun resume() {}
 
     /** Clears this screen. */

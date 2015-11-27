@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
-class Warrior(override val position : Vector2, private val player : Player) : Character() {
+class Warrior(public override val position : Vector2, private val player : Player) : Character() {
 
     public override val isEnemy  = true
     public override val width    = 115
@@ -153,5 +153,6 @@ class Warrior(override val position : Vector2, private val player : Player) : Ch
     /** Returns position of warrior on Oy axis. */
     public override fun getY(): Float = position.y
 
+    /** Returns bounds of player. */
     public fun getBound() : Rectangle = bounds
 }

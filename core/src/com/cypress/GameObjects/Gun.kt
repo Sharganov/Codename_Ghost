@@ -12,7 +12,7 @@ public class Gun(private val character : Character) {
     private fun getGun(x : Int, y : Int, width : Int, height : Int) =
             TextureRegion(assets.guns, x, y, width, height)
 
-    private val guns = arrayOf(
+    private val gunTextures = arrayOf(
             Pair(getGun(23,  95,  90, 58), getGun(281,  95,  90, 58)),  // uzi
             Pair(getGun(29, 176, 138, 55), getGun(248, 176, 138, 55)),  // shotgun
             Pair(getGun(11,   6, 187, 80), getGun(202,   6, 187, 80)),  // assault riffle
@@ -22,16 +22,16 @@ public class Gun(private val character : Character) {
             Pair(getGun( 7, 456, 188, 73), getGun(222, 456, 188, 73))   // rocket launcher
     )
     private val posX = arrayOf(Pair(65, -45), Pair(50, -40), Pair(35, -75), Pair(23, -50),
-                               Pair(10, -50), Pair( 5, -65), Pair(-5, -65))
-    private val posY = arrayOf(40, 40, 40, 30, 25, 40, 50)
+                               Pair(10, -50), Pair(55, -85), Pair(-5, -65))
+    private val posY = arrayOf(40, 40, 40, 30, 25, 30, 50)
     private val size = arrayOf(Pair( 90f, 58f), Pair(138f, 55f), Pair(187f, 80f), Pair(178f, 86f),
                                Pair(183f, 93f), Pair(180f, 69f), Pair(188f, 73f))
 
-    private var index = assets.gunsNames.indexOf(character.gunType)
+    private var index = assets.gunNames.indexOf(character.gunType)
 
-    /** Updates gun. */
+    /** Updates gun type. */
     public fun update() {
-        index = assets.gunsNames.indexOf(character.gunType)
+        index = assets.gunNames.indexOf(character.gunType)
     }
 
     /** Draws gun. */
@@ -39,11 +39,11 @@ public class Gun(private val character : Character) {
         val x = character.getX()
         val y = character.getY()
 
-        var texture     = guns[index].first
+        var texture     = gunTextures[index].first
         var correctionX = posX[index].first
         var correctionY = posY[index]
         if (character.shouldGoToLeft || !character.stayRight) {
-            texture     = guns[index].second
+            texture     = gunTextures[index].second
             correctionX = posX[index].second
             correctionY = posY[index] - 5
         }

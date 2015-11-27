@@ -13,12 +13,12 @@ public fun info() : String {
             "https://github.com/MaKToff/Codename_Ghost\n" +
             "\n" +
             "\n" +
-            "We wants to say special thanks to Penguin Development Team for permission\n" +
+            "We want to say special thanks to Penguin Development Team for permission\n" +
             "to use some of their resources. For more information visit http://www.tagap.net/.\n" +
             "TAGAP(R) is a registered trademark of Jouni Lahtinen.\n" +
             "\n" +
             "\n" +
-            "All the other resources are free and was found in a free access in the Internet.\n" +
+            "All the other resources are free and were found in a free access in the Internet.\n" +
             "Our game uses materials from websites:\n" +
             "1) http://opengameart.org/\n" +
             "2) http://freesound.org/\n" +

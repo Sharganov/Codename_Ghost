@@ -13,17 +13,16 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.*
-import com.cypress.Screens.LevelsScreen
+import com.cypress.Screens.ScoreScreen
 import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of first level. */
-public class Level1(val game : CGGame, val player : Player) : Screen {
-
+public class Level1(private val game : CGGame, private val player : Player) : Screen {
     private val assets         = AssetLoader.getInstance()
     private val batcher        = SpriteBatch()
     private var runTime        = 0f
-    private val controls       = Controls(game, player)
+    private val controls       = Controls(game, player, this)
     private val spruce         = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
     private val fence          = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
     private val blockList      = ArrayList<Block>()
@@ -38,6 +37,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
     private var fan       = Animation(0.02f, Array<TextureRegion>())
     private var isPlaying = false
     private var gameStart = false
+    private var counter   = 0
 
     init {
         stage = controls.getStage()
@@ -52,18 +52,18 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416, 24)
         val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201, 25, 225)
 
-        blockList.add(Block(Vector2(86f, 950f), 911f, 73f, hSnow))
-        blockList.add(Block(Vector2(86f, 656f), 911f, 73f, hSnow))
-        blockList.add(Block(Vector2(997f, 950f), 125f, 73f, hSnow))
-        blockList.add(Block(Vector2(520f, 390f), 465f, 73f, hSnow))
+        blockList.add(Block(Vector2(  86f, 950f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2(  86f, 656f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2( 997f, 950f), 125f, 73f, hSnow))
+        blockList.add(Block(Vector2( 520f, 390f), 465f, 73f, hSnow))
         blockList.add(Block(Vector2(1330f, 374f), 880f, 73f, hSnow))
 
-        blockList.add(Block(Vector2(-166f, 68f), 256f, 128f, crate))
-        blockList.add(Block(Vector2(080f, 68f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(-166f,  68f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(  80f,  68f), 256f, 128f, crate))
         blockList.add(Block(Vector2(-110f, 190f), 256f, 128f, crate))
 
-        blockList.add(Block(Vector2(664f, 448f), 100f, 550f, vSnow))
-        blockList.add(Block(Vector2(897f, 448f), 100f, 550f, vSnow))
+        blockList.add(Block(Vector2( 664f, 448f), 100f, 550f, vSnow))
+        blockList.add(Block(Vector2( 897f, 448f), 100f, 550f, vSnow))
         blockList.add(Block(Vector2(1317f, 892f), 100f, 618f, vSnow))
         blockList.add(Block(Vector2(1317f, 413f), 100f, 618f, vSnow))
         blockList.add(Block(Vector2(2129f, 380f), 100f, 370f, vSnow))
@@ -74,42 +74,38 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         blockList.add(Block(Vector2(4559f, 357f), 214f, 46f, roof1))
         blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2))
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
+
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
 
         // adding enemies
-        enemyList.add(Warrior(Vector2(43f, 364f), player))
-        enemyList.add(Warrior(Vector2(2120f, 105f), player))
-        enemyList.add(Warrior(Vector2(3360f, 485f), player))
+        enemyList.add(Warrior(Vector2(  43f,  364f), player))
+        enemyList.add(Warrior(Vector2(2120f,  105f), player))
+        enemyList.add(Warrior(Vector2(3360f,  485f), player))
         enemyList.add(Warrior(Vector2(4394f, 1013f), player))
-        enemyList.add(Warrior(Vector2(4612f, 110f), player))
+        enemyList.add(Warrior(Vector2(4612f,  110f), player))
 
         // adding items
-        itemsList.add(Item(Vector2(525f, 490f), assets.gunsNames[1]))
+        itemsList.add(Item(Vector2( 525f,  490f), assets.gunNames[1]))
         itemsList.add(Item(Vector2(4547f, 1012f), "medikit"))
 
         // animation of fan
-        val fan1 = TextureRegion(assets.levelsFP[1][0], 582, 12, 141, 132)
-        val fan2 = TextureRegion(assets.levelsFP[1][0], 732, 12, 141, 132)
-        val fan3 = TextureRegion(assets.levelsFP[1][0], 877, 12, 141, 132)
-
+        val fanPos   = arrayOf(582, 732, 877)
         val fanArray = Array<TextureRegion>()
-        fanArray.addAll(fan1, fan2, fan3)
-
-        fan = Animation(0.02f, fanArray)
-        fan.playMode = Animation.PlayMode.LOOP
+        fanArray.addAll(Array(3, {i -> TextureRegion(assets.levelsFP[1][0], fanPos[i], 12, 141, 132)}), 0, 2)
+        fan = Animation(0.02f, fanArray, Animation.PlayMode.LOOP)
     }
 
     /** Updates level information. */
     private fun update() {
         // if level completed
         if (player.getX() >= player.mapLength) {
-            if (assets.musicOn) {
-                if ((assets.activeMusic?.isPlaying ?: false)) assets.activeMusic?.stop()
-                assets.snow?.stop()
-                assets.fan?.stop()
-            }
-            assets.activeMusic = assets.mainTheme
-            game.screen = LevelsScreen(game)
+            assets.snow?.stop()
+            assets.fan?.stop()
+            player.data[1] = 2 - player.lives
+            if (player.data[3] != 0) player.data[5] =
+                    (player.data[4].toFloat() / player.data[3].toFloat() * 100).toInt()
+            game.availableLevels[2] = true
+            game.screen = ScoreScreen(game, player.data)
         }
 
         // playing level1 music and sounds
@@ -135,17 +131,20 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
             }
         }
 
-        if (player.shouldShoot) controls.doAction()
-
         for (bullet in assets.bulletsList) {
             for (enemy in enemyList) {
                 if (bullet.getBounds().overlaps(enemy.getBound())) {
                     if(!bullet.enemyBulllet) {
                         enemy.health -= bullet.damage
                         removedBullets.add(bullet)
+                        player.data[4]++
                     }
                 }
-                if(enemy.health <= 0) deadEnemies.add(enemy)
+                if(enemy.health <= 0) {
+                    deadEnemies.add(enemy)
+                    player.data[0] += 50
+                    player.data[2]++
+                }
             }
         }
 
@@ -180,6 +179,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         if (player.onGround) gameStart = true
         runTime += delta
         update()
+        counter++
 
         // drawing background color
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
@@ -199,7 +199,7 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         batcher.end()
 
         // drawing bullets
-        if (assets.bulletsList.isNotEmpty() && assets.bulletsList[0].distance() > 600)
+        if (!assets.bulletsList.isEmpty() && assets.bulletsList[0].distance() > 600)
             assets.bulletsList.removeFirst()
         for (b in assets.bulletsList) b.draw(runTime, batcher)
 
@@ -210,6 +210,12 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         player.update()
         player.checkCollision(blockList)
         player.draw(runTime, batcher)
+
+        // if player has a minigun
+        if (player.shouldShoot && counter % 7 == 0) {
+            controls.shoot()
+            counter = 0
+        }
 
         // check collision with picked up items
         for(item in itemsList) {
@@ -246,15 +252,16 @@ public class Level1(val game : CGGame, val player : Player) : Screen {
         }
     }
 
-    public override fun resize(width: Int, height: Int) {}
-
+    public override fun resize(width : Int, height : Int) {}
     public override fun show() {}
-
     public override fun hide() {}
-
     public override fun pause() {}
 
-    public override fun resume() {}
+    /** Restores screen after pause. */
+    public override fun resume() {
+        game.screen = this
+        Gdx.input.inputProcessor = stage
+    }
 
     /** Dispose level 1. */
     public override fun dispose() {

@@ -8,7 +8,7 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of screen with logo. */
-public class LogoScreen(var game : CGGame) : Screen {
+public class LogoScreen(private val game : CGGame) : Screen {
 
     private var runTime = 0f
     private val batcher = SpriteBatch()
@@ -39,13 +39,9 @@ public class LogoScreen(var game : CGGame) : Screen {
     }
 
     public override fun resize(width : Int, height : Int) {}
-
     public override fun show() {}
-
     public override fun hide() {}
-
     public override fun pause() {}
-
     public override fun resume() {}
 
     /** Clears this screen. */

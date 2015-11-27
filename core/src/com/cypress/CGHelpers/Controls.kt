@@ -1,6 +1,7 @@
 package com.cypress.CGHelpers
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -13,23 +14,22 @@ import com.cypress.Screens.MenuScreen
 import com.cypress.GameObjects.Bullet
 
 /** Contains definition of controls. */
-public class Controls(private val game : CGGame, private val player : Player) {
-
+public class Controls(private val game : CGGame, private val player : Player, private val level : Screen) {
     private val assets     = AssetLoader.getInstance()
     private val stage      = Stage()
     private val labelStyle = Label.LabelStyle()
 
-    private var index = assets.gunsNames.indexOf(player.gunType)
+    private var index = assets.gunNames.indexOf(player.gunType)
 
     init {
         // initializing buttons
-        val left     = ImageButton(assets.getImageButtonStyle(21, 376, 20, 442, 65, 65, false))
-        val right    = ImageButton(assets.getImageButtonStyle(99, 376, 98, 442, 65, 65, false))
+        val left     = ImageButton(assets.getImageButtonStyle( 21, 376,  20, 442, 65, 65, false))
+        val right    = ImageButton(assets.getImageButtonStyle( 99, 376,  98, 442, 65, 65, false))
         val jump     = ImageButton(assets.getImageButtonStyle(174, 376, 173, 442, 65, 65, false))
         val shoot    = ImageButton(assets.getImageButtonStyle(264, 376, 263, 442, 65, 65, false))
-        val pause    = ImageButton(assets.getImageButtonStyle(350, 370, 349, 437, 67, 67, false))
-        val leftGun  = ImageButton(assets.getImageButtonStyle(458, 376, 457, 443, 40, 55, false))
-        val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 443, 40, 55, false))
+        val pause    = ImageButton(assets.getImageButtonStyle(350, 376, 349, 442, 65, 65, false))
+        val leftGun  = ImageButton(assets.getImageButtonStyle(458, 376, 457, 442, 40, 55, false))
+        val rightGun = ImageButton(assets.getImageButtonStyle(498, 376, 497, 442, 40, 55, false))
 
         // initializing labels
         labelStyle.font = assets.generateFont("Calibri.ttf", 30, Color.WHITE)
@@ -45,66 +45,66 @@ public class Controls(private val game : CGGame, private val player : Player) {
         val icon  = Image(TextureRegion(assets.guns, 410, 87, 80, 55))
 
         left.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) : Boolean {
                 player.shouldGoToLeft = true
                 return true
             }
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 player.shouldGoToLeft = false
             }
         })
 
         right.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) : Boolean {
                 player.shouldGoToRight = true
                 return true
             }
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 player.shouldGoToRight = false
             }
         })
 
         jump.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) : Boolean {
                 if (player.onGround) player.shouldJump = true
                 return true
             }
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 player.shouldJump = false
             }
         })
 
         shoot.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) : Boolean {
                 if (index == 5) player.shouldShoot = true
-                doAction()
+                shoot()
                 return true
             }
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 player.shouldShoot = false
             }
         })
 
         pause.addListener(object : ClickListener() {
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                game.screen = MenuScreen(game, player)
-                dispose()
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, pointer : Int, button : Int) {
+                game.screen = MenuScreen(game, level)
             }
         })
 
         leftGun.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) = true
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) =
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) =
                 prevGun()
         })
 
         rightGun.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) = true
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) =
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) =
                 nextGun()
         })
 
@@ -147,7 +147,7 @@ public class Controls(private val game : CGGame, private val player : Player) {
 
     /** Changes information about player's health and ammo. */
     public fun update() {
-        index  = assets.gunsNames.indexOf(player.gunType)
+        index = assets.gunNames.indexOf(player.gunType)
 
         val temp   =
                 if (player.health >= 100) ""
@@ -167,8 +167,9 @@ public class Controls(private val game : CGGame, private val player : Player) {
         setIcon()
     }
 
-    public fun doAction() {
-        var index = assets.gunsNames.indexOf(player.gunType)
+    /** Shoots from gun. */
+    public fun shoot() {
+        index  = assets.gunNames.indexOf(player.gunType)
         val ac = player.ammoCounter
 
         // ammo run out
@@ -184,19 +185,18 @@ public class Controls(private val game : CGGame, private val player : Player) {
             if (assets.musicOn) assets.shot[index]?.play()
 
             ac[index] = Pair(ac[index].first - 1, ac[index].second)
+            player.data[3]++
 
             // reloading
             if (ac[index].first == 0) {
                 if (assets.musicOn) assets.reload?.play()
                 if (player.shouldShoot) player.shouldShoot = false
-                if (index == 0)
-                    ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
+
+                if (index == 0) ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])
                 else {
                     val max = assets.maxCapacity[index]
-                    if (ac[index].second >= max)
-                        ac[index] = Pair(max, ac[index].second - max)
-                    else
-                        ac[index] = Pair(ac[index].second, 0)
+                    if (ac[index].second >= max) ac[index] = Pair(max, ac[index].second - max)
+                    else ac[index] = Pair(ac[index].second, 0)
                 }
             }
             // ammo run out
@@ -209,13 +209,9 @@ public class Controls(private val game : CGGame, private val player : Player) {
 
     /** Sets gun icon. */
     private fun setIcon() {
-        fun getGunImage(pair : Pair<Int, Int>) =
-                Image(TextureRegion(assets.guns, pair.first, pair.second, 80, 55))
-
-        val gunPos = arrayOf(Pair(410,  87), Pair(412, 177), Pair(409,  17), Pair(415, 261),
-                             Pair(418, 358), Pair(422, 545), Pair(424, 452))
-
-        val gunIcon = getGunImage(gunPos[index])
+        val gunPos  = arrayOf(Pair(410,  87), Pair(412, 177), Pair(409,  17), Pair(415, 261),
+                              Pair(418, 358), Pair(422, 545), Pair(424, 452))
+        val gunIcon = Image(TextureRegion(assets.guns, gunPos[index].first, gunPos[index].second, 80, 55))
         gunIcon.setPosition(75f, 390f)
         gunIcon.sizeBy(5f, 9f)
         stage.actors[8] = gunIcon
@@ -223,10 +219,11 @@ public class Controls(private val game : CGGame, private val player : Player) {
 
     /** Sets next gun type. */
     private fun nextGun() {
-        for (i in 1 .. 5) {
-            var temp = (index + i) % 7
+        val counter = assets.gunNames.size
+        for (i in 1 .. counter - 1) {
+            var temp = (index + i) % counter
             if (player.availableGuns[temp]) {
-                player.gunType = assets.gunsNames[temp]
+                player.gunType = assets.gunNames[temp]
                 break
             }
         }
@@ -235,11 +232,12 @@ public class Controls(private val game : CGGame, private val player : Player) {
 
     /** Sets previous gun type. */
     private fun prevGun() {
-        for (i in 1 .. 5) {
-            var temp = (index - i) % 7
-            if (temp < 0) temp += 7
+        val counter = assets.gunNames.size
+        for (i in 1 .. counter - 1) {
+            var temp = (index - i) % counter
+            if (temp < 0) temp += counter
             if (player.availableGuns[temp]) {
-                player.gunType = assets.gunsNames[temp]
+                player.gunType = assets.gunNames[temp]
                 break
             }
         }
