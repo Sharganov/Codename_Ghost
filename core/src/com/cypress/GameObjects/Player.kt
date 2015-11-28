@@ -9,19 +9,21 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
 /** Contains definition of player. */
-public class Player(override val position : Vector2, override protected  val width : Int,
-                    override protected  val height : Int, val mapLength: Float)  : Character() {
+public class Player(public override val position : Vector2, protected override val width : Int,
+                    protected override val height : Int, public val mapLength : Float) : Character() {
 
     public override val isEnemy = false
     public override val bounds  = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
     public override val offsetY = 18f
     public override val offsetX = 10f
 
-    protected override var velocity = Vector2(4f, 12f)
+    protected override val velocity = Vector2(4f, 12f)
 
-    private val assets       = AssetLoader.getInstance()
-    private val acceleration = Vector2(0f, 0.2f)
-    private val gun          = Gun(this)
+    private val assets          = AssetLoader.getInstance()
+    private val acceleration    = Vector2(0f, 0.2f)
+    private val gun             = Gun(this)
+    private val playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
+    private val playerStayLeft  = TextureRegion(assets.player, 880, 802, width, height)
 
     public override var health          = 100
     public override var delta           = 0f
@@ -30,17 +32,17 @@ public class Player(override val position : Vector2, override protected  val wid
     public override var shouldGoToRight = false
     public override var stayRight       = true
     public override var onGround        = false
-    public override var gunType         = assets.gunsNames[0]
+    public override var gunType         = assets.gunNames[0]
 
-    public val availableGuns = Array(7, { false })
+    public val availableGuns = Array(7, { true }) // TODO: before release change to false
     public val ammoCounter   = Array(7, { Pair(0, 0) })
+    public val data          = arrayOf(0, 0, 0, 0, 0, 0)
 
-    public var lives = 2
+    public var lives       = 2
+    public var shouldShoot = false
 
     private var playerGoesLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoesRight = Animation(0.2f, Array<TextureRegion>())
-    private var playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
-    private var playerStayLeft  = TextureRegion(assets.player, 880, 802, width, height)
 
     init {
         // setting animation
@@ -53,20 +55,12 @@ public class Player(override val position : Vector2, override protected  val wid
         playersRight.addAll(Array(4, {i -> TextureRegion(assets.player, rightPos[i], 802, width, height)}), 0, 3)
         playersLeft.addAll(Array(4, {i -> TextureRegion(assets.player, leftPos[i], 802, width, height)}), 0, 3)
 
-        playerGoesRight = Animation(0.2f, playersRight)
-        playerGoesRight.playMode = Animation.PlayMode.LOOP_PINGPONG
-
-        playerGoesLeft = Animation(0.2f, playersLeft)
-        playerGoesLeft.playMode = Animation.PlayMode.LOOP_PINGPONG
+        playerGoesRight = Animation(0.2f, playersRight, Animation.PlayMode.LOOP_PINGPONG)
+        playerGoesLeft  = Animation(0.2f, playersLeft, Animation.PlayMode.LOOP_PINGPONG)
 
         availableGuns[0] = true
-        availableGuns[2] = true
-        availableGuns[4] = true
-        availableGuns[5] = true
         ammoCounter[0] = Pair(assets.maxCapacity[0], 30)
-        ammoCounter[2] = Pair(assets.maxCapacity[2], 300)
-        ammoCounter[4] = Pair(assets.maxCapacity[4], 15)
-        ammoCounter[5] = Pair(assets.maxCapacity[5], 50)
+        for (i in 1 .. ammoCounter.size - 1) ammoCounter[i] = Pair(assets.maxCapacity[i], 100)
     }
 
     /** Updates position of player. */
@@ -89,7 +83,7 @@ public class Player(override val position : Vector2, override protected  val wid
         if (shouldGoToLeft)  position.x -= velocity.x
 
         if (shouldJump) {
-            //need to change because of collision
+            // need to change because of collision
             velocity.y = 12f
             position.y += 60f
             shouldJump = false
@@ -104,11 +98,10 @@ public class Player(override val position : Vector2, override protected  val wid
 
         delta = position.y - oldY
         bounds.setPosition(position.x, position.y)
-
     }
 
     /** Draws player. */
-    public fun draw(delta: Float, batcher : SpriteBatch) {
+    public fun draw(delta : Float, batcher : SpriteBatch) {
         // drawing gun
         gun.update()
         gun.draw(batcher)
@@ -134,7 +127,8 @@ public class Player(override val position : Vector2, override protected  val wid
 
             if (!onGround)
                 batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
-            else batcher.draw(playerGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            else
+                batcher.draw(playerGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
         }
 
         // player should go to right
@@ -144,7 +138,8 @@ public class Player(override val position : Vector2, override protected  val wid
 
             if (!onGround)
                 batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
-            else batcher.draw(playerGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            else
+                batcher.draw(playerGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
         }
 
         // player should jump
@@ -163,5 +158,6 @@ public class Player(override val position : Vector2, override protected  val wid
     /** Returns position of player on Oy axis. */
     public override fun getY() : Float = position.y
 
+    /** Returns bounds of player. */
     public fun getBound() : Rectangle = bounds
 }

@@ -13,9 +13,9 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of screen of settings. */
-public class SettingsScreen(val game : CGGame) : Screen {
+public class SettingsScreen(private val game : CGGame) : Screen {
 
-    val assets = AssetLoader.getInstance()
+    private val assets  = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -46,13 +46,10 @@ public class SettingsScreen(val game : CGGame) : Screen {
                 }
         var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
 
-
         language.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 when (assets.language) {
                     "english" -> {
                         assets.language = "русский"
@@ -69,11 +66,9 @@ public class SettingsScreen(val game : CGGame) : Screen {
         })
 
         sounds.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 if (assets.musicOn) {
                     assets.musicOn = false
                     assets.mainTheme?.stop()
@@ -86,27 +81,22 @@ public class SettingsScreen(val game : CGGame) : Screen {
         })
 
         about.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 game.screen = AboutScreen(game)
                 dispose()
             }
         })
 
         back.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 game.screen = MainScreen(game)
                 dispose()
             }
         })
-
 
         table.add(sounds)
         table.row()
@@ -144,13 +134,9 @@ public class SettingsScreen(val game : CGGame) : Screen {
     }
 
     public override fun resize(width : Int, height : Int) {}
-
     public override fun show() {}
-
     public override fun hide() {}
-
     public override fun pause() {}
-
     public override fun resume() {}
 
     /** Clears this screen. */

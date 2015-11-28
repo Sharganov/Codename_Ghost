@@ -13,9 +13,9 @@ import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
 /** Contains definition of main screen. */
-public class MainScreen(val game : CGGame) : Screen {
+public class MainScreen(private val game : CGGame) : Screen {
 
-    val assets = AssetLoader.getInstance()
+    private val assets  = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
@@ -30,7 +30,6 @@ public class MainScreen(val game : CGGame) : Screen {
         // style of labels
         var titleStyle  = Label.LabelStyle()
         titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
-
 
         // initializing table
         var table = Table()
@@ -52,40 +51,32 @@ public class MainScreen(val game : CGGame) : Screen {
         // initializing labels
         var title = Label("Codename: Ghost", titleStyle)
 
-
         play.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 game.screen = LevelsScreen(game)
                 dispose()
             }
         })
 
         exit.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 game.dispose()
                 Gdx.app.exit()
             }
         })
 
         settings.addListener(object : ClickListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                return true
-            }
+            override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
-            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
                 game.screen = SettingsScreen(game)
                 dispose()
             }
         })
-
 
         table.add(play)
         table.row()
@@ -125,13 +116,9 @@ public class MainScreen(val game : CGGame) : Screen {
     }
 
     public override fun resize(width : Int, height : Int) {}
-
     public override fun show() {}
-
     public override fun hide() {}
-
     public override fun pause() {}
-
     public override fun resume() {}
 
     /** Clears this screen. */

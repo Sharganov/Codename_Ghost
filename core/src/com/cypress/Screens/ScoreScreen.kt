@@ -12,61 +12,69 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.codenameghost.CGGame
 
-/** Contains definition of about screen. */
-public class AboutScreen(private val game : CGGame) : Screen {
-
-    private val assets = AssetLoader.getInstance()
+/** Contains definition of pause menu. */
+public class ScoreScreen(private val game : CGGame, private val data : Array<Int>) : Screen {
+    private val assets  = AssetLoader.getInstance()
     private val batcher = SpriteBatch()
     private val stage   = Stage()
 
     init {
+        // style of big text buttons
+        val font            = assets.generateFont("Calibri.ttf", 32, Color.GREEN)
+        val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
+
         // style of labels
         var titleStyle = Label.LabelStyle()
-        titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
+        titleStyle.font = assets.generateFont("American_TextC.ttf", 40, Color.valueOf("36ba29"))
 
         var textStyle = Label.LabelStyle()
-        textStyle.font = assets.generateFont("Academia Roman.ttf", 25, Color.WHITE)
+        textStyle.font = assets.generateFont("Academia Roman.ttf", 30, Color.WHITE)
 
         val text =
                 when (assets.language) {
-                    "english" -> com.cypress.Locale.en.info()
-                    else      -> com.cypress.Locale.ru.info()
+                    "english" -> com.cypress.Locale.en.score(data)
+                    else      -> com.cypress.Locale.ru.score(data)
+                }
+
+        // initializing buttons
+        var continueButton =
+                when (assets.language) {
+                    "english" -> TextButton("Continue", textButtonStyle)
+                    else      -> TextButton("Продолжить", textButtonStyle)
                 }
 
         // initializing labels
-        var title = Label("Codename: Ghost", titleStyle)
+        var title =
+                when (assets.language) {
+                    "english" -> Label("Level Complete!", titleStyle)
+                    else      -> Label("Уровень пройден!", titleStyle)
+                }
         var info  = Label(text, textStyle)
-        val textPanel = ScrollPane(info)
 
-        // initializing button
-        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
-
-        back.addListener(object : ClickListener() {
+        continueButton.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
 
             override fun touchUp(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) {
-                game.screen = SettingsScreen(game)
+                if ((assets.activeMusic?.isPlaying ?: false)) assets.activeMusic?.stop()
+                assets.activeMusic = assets.mainTheme
+                game.screen = LevelsScreen(game)
                 dispose()
             }
         })
 
-        title.setPosition(100f, 350f)
-        textPanel.setPosition(10f, 90f)
-        textPanel.sizeBy(800f, 120f)
-        textPanel.scrollTo(10f, 120f, 100f, 100f)
-        textPanel.setForceScroll(false, true)
-
-        back.setPosition(10f, 10f)
+        title.setPosition(300f, 390f)
+        info.setPosition(100f, 75f)
+        continueButton.setPosition(575f, 10f)
 
         stage.addActor(title)
-        stage.addActor(textPanel)
-        stage.addActor(back)
+        stage.addActor(info)
+        stage.addActor(continueButton)
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
     }
 
-    /** Draws about screen. */
+    /** Draws pause menu. */
     public override fun render(delta : Float) {
         // drawing background color
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -78,7 +86,7 @@ public class AboutScreen(private val game : CGGame) : Screen {
         batcher.draw(assets.about, 0f, 0f, 800f, 480f)
         batcher.end()
 
-        // playing main theme
+        // playing music
         if (!(assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.play()
 
         // drawing stage
@@ -92,7 +100,7 @@ public class AboutScreen(private val game : CGGame) : Screen {
     public override fun pause() {}
     public override fun resume() {}
 
-    /** Dispose about screen. */
+    /** Clears this screen. */
     public override fun dispose() {
         stage.dispose()
         game.dispose()

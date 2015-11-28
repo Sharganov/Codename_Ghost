@@ -17,17 +17,23 @@ import java.util.*
 
 /** Loads assets of project. */
 public class AssetLoader {
-
+    public val manager      = AssetManager()
     public val levelsBG     = Array(9, { LinkedList<Texture?>() })
     public val levelsFP     = Array(9, { LinkedList<Texture?>() })
-    public val gunsNames    = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun",
-                                "lasergun", "minigun", "rocketLauncher")
-    public val ammoNames    = Array(7, {i-> gunsNames[i] + "_ammo"})
+    public val gunNames     = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun",
+                                      "lasergun", "minigun", "rocketLauncher")
+    public val ammoNames    = Array(7, {i-> gunNames[i] + "_ammo"})
     public val bulletsList  = LinkedList<Bullet>()
-    public val maxCapacity  = arrayOf(30, 8, 45, 25, 20, 100, 1)
-    public val bulletDamage = arrayOf(10, 20, 15, 20, 30, 15, 40)
+    public val maxCapacity  = arrayOf(30, 8, 45, 25, 50, 100, 1)
+    public val bulletDamage = arrayOf(10, 20, 15, 25, 20, 15, 40)
+    public val levelsMusic  = Array<Music?>(9, { null })
+    public val shot         = Array<Sound?>(7, { null })
+    public val happy        = Array<Sound?>(3, { null })
+    public val eats         = Array<Sound?>(4, { null })
 
-    public var manager  : AssetManager = AssetManager()
+    public var musicOn  = true
+    public var language = "english"
+    public var zoom     = 1.25f
 
     public var logo     : Texture? = null
     public var main     : Texture? = null
@@ -40,18 +46,13 @@ public class AssetLoader {
     public var levels   : Texture? = null
     public var warrior  : Texture? = null
     public var items    : Texture? = null
+    public var effects  : Texture? = null
 
     public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
     public var snow        : Music? = null
     public var fan         : Sound? = null
     public var reload      : Sound? = null
-
-    public var levelsMusic = Array<Music?>(9, { null })
-    public var shot        = Array<Sound?>(7, { null })
-    public var musicOn     = true
-    public var language    = "english"
-    public var zoom        = 1.25f
 
     companion object {
         private var _instance : AssetLoader = AssetLoader()
@@ -61,14 +62,19 @@ public class AssetLoader {
     /** Loads main resources to AssetManager. */
     public fun load() {
         // loading of images
-        val textureLoadList = arrayOf("logo.png", "main.png", "buttons.png", "settings.png", "about.png",
-                "player.png", "guns.png", "bullets.png", "levels.png", "warrior.png", "items.png")
-        for (t in textureLoadList) manager.load("data/images/" + t, Texture::class.java)
+        val textureLoadList = arrayOf("logo", "main", "buttons", "settings", "about", "player",
+                                      "guns", "bullets", "levels", "warrior", "items", "effects")
+        for (t in textureLoadList) manager.load("data/images/" + t + ".png", Texture::class.java)
 
         // loading of music and sounds
         manager.load("data/sounds/music/MainTheme.ogg", Music::class.java)
-        val soundLoadList = arrayOf("uzi.ogg", "shotgun.ogg", "lasergun.ogg", "rocket.ogg", "reload.ogg")
-        for (s in soundLoadList) manager.load("data/sounds/weapons/" + s, Sound::class.java)
+
+        val soundLoadList = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun",
+                                    "minigun", "rocketLauncher", "reload")
+        for (s in soundLoadList) manager.load("data/sounds/weapons/" + s + ".ogg", Sound::class.java)
+
+        val voiceLoadList = arrayOf("yeah1", "yeah2", "yeah3", "yum1", "yum2", "yum3", "yum4")
+        for (v in voiceLoadList) manager.load("data/sounds/player/" + v + ".ogg", Sound::class.java)
 
         manager.finishLoading()
 
@@ -83,16 +89,14 @@ public class AssetLoader {
         levels   = manager.get("data/images/levels.png")
         warrior  = manager.get("data/images/warrior.png")
         items    = manager.get("data/images/items.png")
+        effects  = manager.get("data/images/effects.png")
 
         mainTheme = manager.get("data/sounds/music/MainTheme.ogg")
-        shot[0]   = manager.get("data/sounds/weapons/uzi.ogg")
-        shot[1]   = manager.get("data/sounds/weapons/shotgun.ogg")
-        shot[2]   = manager.get("data/sounds/weapons/uzi.ogg")
-        shot[3]   = manager.get("data/sounds/weapons/lasergun.ogg")
-        shot[4]   = manager.get("data/sounds/weapons/lasergun.ogg")
-        shot[5]   = manager.get("data/sounds/weapons/uzi.ogg")
-        shot[6]   = manager.get("data/sounds/weapons/rocket.ogg")
         reload    = manager.get("data/sounds/weapons/reload.ogg")
+
+        for (i in 0 .. 6) shot[i]  = manager.get("data/sounds/weapons/" + gunNames[i] + ".ogg")
+        for (i in 0 .. 2) happy[i] = manager.get("data/sounds/player/" + voiceLoadList[i] + ".ogg")
+        for (i in 0 .. 3) eats[i]  = manager.get("data/sounds/player/" + voiceLoadList[i + 3] + ".ogg")
     }
 
     /** Generates font with given parameters. */
@@ -156,13 +160,11 @@ public class AssetLoader {
 
         manager.finishLoading()
 
-        levelsBG[1].add(manager.get("data/images/level1/background.png"))
-        levelsBG[1].add(manager.get("data/images/level1/background2.png"))
+        for (i in 0 .. 1) levelsBG[1].add(manager.get("data/images/level1/" + textureLoadList[i]))
         levelsFP[1].add(manager.get("data/images/level1/firstplan.png"))
 
         levelsMusic[1] = manager.get("data/sounds/music/Level1.ogg")
-
-        snow = manager.get("data/sounds/world/snow.ogg")
-        fan  = manager.get("data/sounds/world/fan.ogg")
+        snow           = manager.get("data/sounds/world/snow.ogg")
+        fan            = manager.get("data/sounds/world/fan.ogg")
     }
 }

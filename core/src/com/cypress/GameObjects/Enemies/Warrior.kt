@@ -8,10 +8,11 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
-class Warrior(override val position : Vector2, override protected  val width : Int,
-            override protected val height : Int, private val player : Player) : Character() {
+class Warrior(public override val position : Vector2, private val player : Player) : Character() {
 
     public override val isEnemy  = true
+    public override val width    = 115
+    public override val height   = 180
     public override val bounds   = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
     public override val velocity = Vector2(4f, 12f)
     public override val offsetY  = 18f
@@ -51,11 +52,8 @@ class Warrior(override val position : Vector2, override protected  val width : I
             Array(9, {i -> TextureRegion(assets.warrior, posL[i].first, posL[i].second, width, height)}), 0, 8
         )
 
-        warriorGoesRight = Animation(0.1f, warriorsRight)
-        warriorGoesRight.playMode = Animation.PlayMode.LOOP
-
-        warriorGoesLeft = Animation(0.1f, warriorsLeft)
-        warriorGoesLeft.playMode = Animation.PlayMode.LOOP
+        warriorGoesRight = Animation(0.1f, warriorsRight, Animation.PlayMode.LOOP)
+        warriorGoesLeft  = Animation(0.1f, warriorsLeft, Animation.PlayMode.LOOP)
     }
 
     /** Defines actions of warrior. */
@@ -80,7 +78,11 @@ class Warrior(override val position : Vector2, override protected  val width : I
         if (stayRight && distance > 0 && distance < 300f) {
             shouldGoToRight = false
             shouldGoToLeft = false
-            if (canShoot) assets.bulletsList.add(Bullet(this))
+            if (canShoot) {
+                assets.bulletsList.add(Bullet(this))
+                assets.shot[0]?.stop()
+                if (assets.musicOn) assets.shot[0]?.play()
+            }
         }
         else if (stayRight && distance >= 300f && distance < 500f) {
             position.x += velocity.x
@@ -90,7 +92,11 @@ class Warrior(override val position : Vector2, override protected  val width : I
         else if (!stayRight && distance < 0 && distance > -300f) {
             shouldGoToRight = false
             shouldGoToLeft = false
-            if (canShoot) assets.bulletsList.add(Bullet(this))
+            if (canShoot) {
+                assets.bulletsList.add(Bullet(this))
+                assets.shot[0]?.stop()
+                if (assets.musicOn) assets.shot[0]?.play()
+            }
         }
         else if (!stayRight && distance <= -300f && distance > -500f) {
             position.x -= velocity.x
@@ -147,5 +153,6 @@ class Warrior(override val position : Vector2, override protected  val width : I
     /** Returns position of warrior on Oy axis. */
     public override fun getY(): Float = position.y
 
+    /** Returns bounds of player. */
     public fun getBound() : Rectangle = bounds
 }
