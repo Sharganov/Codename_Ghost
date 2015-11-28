@@ -13,20 +13,23 @@ public class Item(private val position : Vector2, private val type : String) {
     private fun getGun(x : Int, y : Int) = TextureRegion(assets.guns, x, y, 80, 55)
 
     /** Returns texture of the requested ammo. */
-    private fun getAmmo(x : Int, y : Int, width : Int, height : Int) =
-            TextureRegion(assets.items, x, y, width, height)
+    private fun getAmmo(x : Int, y : Int, size : Pair<Int, Int>) =
+            TextureRegion(assets.items, x, y, size.first, size.second)
 
-    private val bounds  = Rectangle(position.x, position.y, 80f, 55f)
-    private val assets  = AssetLoader.getInstance()
-    private val guns    = arrayOf(getGun(412, 177), getGun(409,  17), getGun(415, 261),
+    private val bounds   = Rectangle(position.x, position.y, 80f, 55f)
+    private val assets   = AssetLoader.getInstance()
+    private val guns     = arrayOf(getGun(412, 177), getGun(409,  17), getGun(415, 261),
                                   getGun(418, 358), getGun(422, 545), getGun(424, 452))
-    private val ammo    = arrayOf(getAmmo(6,   8, 40, 40), getAmmo(58,  6, 65, 45), getAmmo( 3,  63, 38, 47),
-                                  getAmmo(0, 123, 38, 47), getAmmo(62, 65, 57, 53), getAmmo(42, 143, 83, 37))
-    private val medikit = TextureRegion(assets.items,  3, 180, 43, 21)
-    private val keyCard = TextureRegion(assets.items, 95, 202, 32, 45)
+    private val ammoSize = arrayOf(Pair(40, 40), Pair(65, 45), Pair(37, 46),
+                                   Pair(37, 46), Pair(57, 53), Pair(83, 36))
+    private val ammo     = arrayOf(getAmmo( 6,  8, ammoSize[0]), getAmmo(58,   6, ammoSize[1]),
+                                   getAmmo( 3, 56, ammoSize[2]), getAmmo( 0, 109, ammoSize[3]),
+                                   getAmmo(62, 65, ammoSize[4]), getAmmo(45, 123, ammoSize[5]))
+    private val medikit  = TextureRegion(assets.items, 71, 186, 49, 56)
+    private val keyCard  = TextureRegion(assets.items, 31, 205, 32, 45)
 
     /** Returns texture of the requested pill. */
-    private fun getPill(x : Int) = TextureRegion(assets.items, x, 209, 25, 35)
+    private fun getPill(x : Int, y : Int) = TextureRegion(assets.items, x, y, 25, 35)
 
     /** Draws item using given [batcher]. */
     public fun draw(batcher : SpriteBatch){
@@ -36,14 +39,16 @@ public class Item(private val position : Vector2, private val type : String) {
             batcher.draw(guns[index - 1], position.x, position.y, 120f, 80f)
         }
         else if (assets.ammoNames.contains(type)) {
-            val index = assets.ammoNames.indexOf(type)
-            batcher.draw(ammo[index - 1], position.x, position.y, 80f, 55f)
+            val index  = assets.ammoNames.indexOf(type)
+            val width  = ammoSize[index - 1].first.toFloat()
+            val height = ammoSize[index - 1].second.toFloat()
+            batcher.draw(ammo[index - 1], position.x, position.y, width, height)
         }
         else when(type) {
-            "medikit"   -> batcher.draw(medikit, position.x, position.y, 65f, 48f)
-            "greenPill" -> batcher.draw(getPill(0), position.x, position.y, 25f, 35f)
-            "redPill"   -> batcher.draw(getPill(31), position.x, position.y, 25f, 35f)
-            "bluePill"  -> batcher.draw(getPill(64), position.x, position.y, 25f, 35f)
+            "medikit"   -> batcher.draw(medikit, position.x, position.y, 49f, 56f)
+            "greenPill" -> batcher.draw(getPill(0, 166), position.x, position.y, 25f, 35f)
+            "redPill"   -> batcher.draw(getPill(31, 166), position.x, position.y, 25f, 35f)
+            "bluePill"  -> batcher.draw(getPill(0, 211), position.x, position.y, 25f, 35f)
             "keyCard"   -> batcher.draw(keyCard, position.x, position.y, 32f, 45f)
         }
         batcher.end()

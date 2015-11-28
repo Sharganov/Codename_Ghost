@@ -33,6 +33,7 @@ public class Player(public override val position : Vector2, protected override v
     public override var stayRight       = true
     public override var onGround        = false
     public override var gunType         = assets.gunNames[0]
+    public override var isDead          = false
 
     public val availableGuns = Array(7, { true }) // TODO: before release change to false
     public val ammoCounter   = Array(7, { Pair(0, 0) })
@@ -43,6 +44,7 @@ public class Player(public override val position : Vector2, protected override v
 
     private var playerGoesLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoesRight = Animation(0.2f, Array<TextureRegion>())
+    private var startValue      = 0f
 
     init {
         // setting animation
@@ -102,54 +104,66 @@ public class Player(public override val position : Vector2, protected override v
 
     /** Draws player. */
     public fun draw(delta : Float, batcher : SpriteBatch) {
-        // drawing gun
-        gun.update()
-        gun.draw(batcher)
+        if (!isDead) startValue = delta
 
-        batcher.begin()
+        // player is dead
+        if (isDead) {
+            batcher.begin()
+            batcher.draw(death.getKeyFrame(delta - startValue), position.x, position.y, 155f, 155f)
+            batcher.end()
+            if (delta - startValue > 0.5f) isDead = false
+        }
+        else {
+            // drawing gun
+            gun.update()
+            gun.draw(batcher)
 
-        // player should stay still ...
-        if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
-            when (stayRight) {
-                // ... turning to the right side
-                true ->
-                    batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
-                // ... turning to the left side
-                false ->
-                    batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+            batcher.begin()
+
+            // player should stay still ...
+            if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
+                when (stayRight) {
+                    // ... turning to the right side
+                    true ->
+                        batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                    // ... turning to the left side
+                    false ->
+                        batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                }
             }
-        }
 
-        // player should go to left
-        else if (shouldGoToLeft) {
-            stayRight = false
-            if (shouldJump) onGround = false
+            // player should go to left
+            else if (shouldGoToLeft) {
+                stayRight = false
+                if (shouldJump) onGround = false
 
-            if (!onGround)
-                batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
-            else
-                batcher.draw(playerGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-        }
+                if (!onGround)
+                    batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                else
+                    batcher.draw(playerGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            }
 
-        // player should go to right
-        else if (shouldGoToRight) {
-            stayRight = true
-            if (shouldJump) onGround = false
+            // player should go to right
+            else if (shouldGoToRight) {
+                stayRight = true
+                if (shouldJump) onGround = false
 
-            if (!onGround)
+                if (!onGround)
+                    batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                else
+                    batcher.draw(playerGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            }
+
+            // player should jump
+            else if (shouldJump) {
+                onGround = false
                 batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
-            else
-                batcher.draw(playerGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-        }
+            }
 
-        // player should jump
-        else if (shouldJump) {
-            onGround = false
-            batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+            batcher.end()
         }
 
         update()
-        batcher.end()
     }
 
     /** Returns position of player on Ox axis. */

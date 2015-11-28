@@ -25,31 +25,31 @@ public class MainScreen(private val game : CGGame) : Screen {
         val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
         // style of settings button
-        var settingsStyle = assets.getImageButtonStyle(517, 194, 596, 194, 70, 70, false)
+        val settingsStyle = assets.getImageButtonStyle(517, 194, 596, 194, 70, 70, false)
 
         // style of labels
-        var titleStyle  = Label.LabelStyle()
+        val titleStyle  = Label.LabelStyle()
         titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
 
         // initializing table
-        var table = Table()
+        val table = Table()
         table.setFillParent(true)
 
         // initializing buttons
-        var play =
+        val play =
                 when (assets.language) {
                     "english" -> TextButton("Play", textButtonStyle)
                     else      -> TextButton("Играть", textButtonStyle)
                 }
-        var exit =
+        val exit =
                 when (assets.language) {
                     "english" -> TextButton("Exit", textButtonStyle)
                     else      -> TextButton("Выход", textButtonStyle)
                 }
-        var settings = ImageButton(settingsStyle)
+        val settings = ImageButton(settingsStyle)
 
         // initializing labels
-        var title = Label("Codename: Ghost", titleStyle)
+        val title = Label("Codename: Ghost", titleStyle)
 
         play.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true

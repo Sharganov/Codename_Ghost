@@ -13,7 +13,9 @@ import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 import com.cypress.CGHelpers.Controls
 import com.cypress.GameObjects.*
-import com.cypress.Screens.ScoreScreen
+import com.cypress.GameObjects.Enemies.*
+import com.cypress.Screens.GameOverScreen
+import com.cypress.Screens.StatsScreen
 import com.cypress.codenameghost.CGGame
 import java.util.*
 
@@ -80,13 +82,17 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // adding enemies
         enemyList.add(Warrior(Vector2(  43f,  364f), player))
         enemyList.add(Warrior(Vector2(2120f,  105f), player))
+        enemyList.add(Warrior(Vector2(3241f,  110f), player))
         enemyList.add(Warrior(Vector2(3360f,  485f), player))
         enemyList.add(Warrior(Vector2(4394f, 1013f), player))
         enemyList.add(Warrior(Vector2(4612f,  110f), player))
+        enemyList.add(Warrior(Vector2(4821f,  700f), player))
+        enemyList.add(Warrior(Vector2(5850f,  110f), player))
 
         // adding items
         itemsList.add(Item(Vector2( 525f,  490f), assets.gunNames[1]))
-        itemsList.add(Item(Vector2(4547f, 1012f), "medikit"))
+        itemsList.add(Item(Vector2(4530f, 1005f), assets.ammoNames[1]))
+        itemsList.add(Item(Vector2(4639f,  472f), "medikit"))
 
         // animation of fan
         val fanPos   = arrayOf(582, 732, 877)
@@ -105,7 +111,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
             if (player.data[3] != 0) player.data[5] =
                     (player.data[4].toFloat() / player.data[3].toFloat() * 100).toInt()
             game.availableLevels[2] = true
-            game.screen = ScoreScreen(game, player.data)
+            game.screen = StatsScreen(game, player.data)
         }
 
         // playing level1 music and sounds
@@ -140,38 +146,51 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
                         player.data[4]++
                     }
                 }
-                if(enemy.health <= 0) {
-                    deadEnemies.add(enemy)
-                    player.data[0] += 50
-                    player.data[2]++
-                }
             }
         }
 
         for (bullet in assets.bulletsList) {
-            if (bullet.getBounds().overlaps(player.getBound())) {
+            if (bullet.getBounds().overlaps(player.getBound()) && !player.isDead) {
                 if (bullet.enemyBulllet) {
                     player.health -= bullet.damage
                     if (player.health <= 0) {
                         player.health = 100
                         player.lives -= 1
-                        if (player.lives < 0) println("Game Over")
+                        player.isDead = true
+                        if (player.lives < 0) {
+                            assets.snow?.stop()
+                            assets.fan?.stop()
+                            assets.activeMusic?.stop()
+                            assets.activeMusic = assets.gameOver
+                            game.screen = GameOverScreen(game)
+                        }
                     }
                     removedBullets.add(bullet)
                 }
             }
         }
 
-        // delete dead enemy
-        for(enemy in deadEnemies) enemyList.remove(enemy)
+        // deleting dead enemy
+        for(enemy in deadEnemies)
+            // if dead enemy has already drawn his animation
+            if (!enemy.isDead) enemyList.remove(enemy)
 
-        // check collision of bullets with blocks
+        // removing picked up items
+        for(item in removedItems) itemsList.remove(item)
+
+        // checking collision of bullets with blocks
         for(bullet in assets.bulletsList)
             for(block in blockList)
                 if(bullet.getBounds().overlaps(block.getBounds())) removedBullets.add(bullet)
 
-        // remove bullets, which hit player or block
+        // removing bullets, which hit player or block
         for(bullet in removedBullets) assets.bulletsList.remove(bullet)
+
+        // if player has a minigun
+        if (player.shouldShoot && counter % 7 == 0) {
+            controls.shoot()
+            counter = 0
+        }
     }
 
     /** Draws level. */
@@ -206,17 +225,6 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // drawing blocks
         for(block in blockList) block.draw(batcher)
 
-        // drawing player
-        player.update()
-        player.checkCollision(blockList)
-        player.draw(runTime, batcher)
-
-        // if player has a minigun
-        if (player.shouldShoot && counter % 7 == 0) {
-            controls.shoot()
-            counter = 0
-        }
-
         // check collision with picked up items
         for(item in itemsList) {
             item.draw(batcher)
@@ -226,13 +234,26 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
             }
         }
 
-        // remove picked up items
-        for(item in removedItems) itemsList.remove(item)
+        // drawing player
+        if (player.lives >= 0) {
+            player.update()
+            player.checkCollision(blockList)
+            player.draw(runTime, batcher)
+        }
 
         // drawing enemies
         for(enemy in enemyList) {
-            enemy.update(runTime)
-            enemy.checkCollision(blockList)
+            if(enemy.health <= 0 && !enemy.isDead) {
+                enemy.isDead = true
+                deadEnemies.add(enemy)
+                player.data[0] += 50
+                player.data[2]++
+            }
+
+            if (enemy.health > 0) {
+                enemy.update(runTime)
+                enemy.checkCollision(blockList)
+            }
             enemy.draw(runTime, batcher)
         }
 
@@ -245,7 +266,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         batcher.end()
 
         // drawing stage
-        if (gameStart) {
+        if (gameStart && !player.isDead) {
             controls.update()
             stage.act(runTime)
             stage.draw()

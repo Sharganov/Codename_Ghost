@@ -21,10 +21,10 @@ public class AboutScreen(private val game : CGGame) : Screen {
 
     init {
         // style of labels
-        var titleStyle = Label.LabelStyle()
+        val titleStyle = Label.LabelStyle()
         titleStyle.font = assets.generateFont("American_TextC.ttf", 100, Color.valueOf("36ba29"))
 
-        var textStyle = Label.LabelStyle()
+        val textStyle = Label.LabelStyle()
         textStyle.font = assets.generateFont("Academia Roman.ttf", 25, Color.WHITE)
 
         val text =
@@ -34,12 +34,12 @@ public class AboutScreen(private val game : CGGame) : Screen {
                 }
 
         // initializing labels
-        var title = Label("Codename: Ghost", titleStyle)
-        var info  = Label(text, textStyle)
+        val title = Label("Codename: Ghost", titleStyle)
+        val info  = Label(text, textStyle)
         val textPanel = ScrollPane(info)
 
         // initializing button
-        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
+        val back = ImageButton(assets.getImageButtonStyle(517, 121, 624, 121, 104, 50, false))
 
         back.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
@@ -51,8 +51,8 @@ public class AboutScreen(private val game : CGGame) : Screen {
         })
 
         title.setPosition(100f, 350f)
-        textPanel.setPosition(10f, 90f)
-        textPanel.sizeBy(800f, 120f)
+        textPanel.setPosition(10f, 70f)
+        textPanel.sizeBy(780f, 140f)
         textPanel.scrollTo(10f, 120f, 100f, 100f)
         textPanel.setForceScroll(false, true)
 

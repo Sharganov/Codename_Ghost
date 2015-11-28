@@ -24,17 +24,17 @@ public class LevelsScreen(private val game : CGGame) : Screen {
     init {
         // style of available buttons
         val x = arrayOf(0, 6, 102, 201, 299, 396, 494, 592, 691)
-        var buttonStyle = Array(9, { i -> assets.getImageButtonStyle(x[i], 15, x[i], 272, 90, 90, false)})
+        val buttonStyle = Array(9, { i -> assets.getImageButtonStyle(x[i], 15, x[i], 272, 90, 90, false)})
 
         // style of locked buttons
-        var lockedStyle = assets.getImageButtonStyle(804, 5, 804, 259, 75, 100, false)
+        val lockedStyle = assets.getImageButtonStyle(804, 5, 804, 259, 75, 100, false)
 
         // initializing buttons
-        var back  = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
-        var level = Array(9, { i ->
+        val level = Array(9, { i ->
             if (game.availableLevels[i]) ImageButton(buttonStyle[i])
             else ImageButton(lockedStyle)
         })
+        val back = ImageButton(assets.getImageButtonStyle(517, 121, 624, 121, 104, 50, false))
 
         level[1].addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true

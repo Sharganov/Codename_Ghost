@@ -7,10 +7,10 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
+import com.cypress.GameObjects.Enemies.*
 
 /** Contains definition of bullet. */
 public class Bullet(private val character : Character) {
-    
     private val assets   = AssetLoader.getInstance()
     private val startPos = Vector2(character.getX(), character.getY())
     private val position = Vector2(0f, 0f)
@@ -54,13 +54,10 @@ public class Bullet(private val character : Character) {
 
         startPos.x += startPosX[index]
 
-        if (index != 3 && index != 4) {
-            val pos = arrayOf(17, 143, 273, 402, 530, 656, 788, 918, 1044, 1170, 1300, 1430, 1559, 1683, 1811, 1941, 2065)
-            val animation = Array<TextureRegion>()
-            animation.addAll(Array(17, { i -> TextureRegion(assets.effects, pos[i], 10, 100, 100) }), 0, 16)
-
-            shot = Animation(0.01f, animation, Animation.PlayMode.LOOP)
-        }
+        val pos = arrayOf(17, 143, 273, 402, 530, 656, 788, 918, 1044, 1170, 1300, 1430, 1559, 1683, 1811, 1941, 2065)
+        val animation = Array<TextureRegion>()
+        animation.addAll(Array(17, { i -> TextureRegion(assets.effects, pos[i], 10, 100, 100) }), 0, 16)
+        shot = Animation(0.01f, animation, Animation.PlayMode.LOOP)
 
         if (character is Warrior) {
             if (character.shouldGoToRight || character.stayRight) {
@@ -94,8 +91,8 @@ public class Bullet(private val character : Character) {
 
         batcher.begin()
         batcher.draw(texture, position.x, position.y, size.first, size.second)
-        if (delta - startValue < 0.17f && index != 3 && index != 4)
-            batcher.draw(shot.getKeyFrame(delta), startPos.x, startPos.y - 15, 60f, 40f)
+        if (delta - startValue < 0.15f && index != 3 && index != 4)
+            batcher.draw(shot.getKeyFrame(delta - startValue), startPos.x, startPos.y - 15, 60f, 40f)
         batcher.end()
     }
 

@@ -50,6 +50,7 @@ public class AssetLoader {
 
     public var activeMusic : Music? = null
     public var mainTheme   : Music? = null
+    public var gameOver    : Music? = null
     public var snow        : Music? = null
     public var fan         : Sound? = null
     public var reload      : Sound? = null
@@ -68,6 +69,7 @@ public class AssetLoader {
 
         // loading of music and sounds
         manager.load("data/sounds/music/MainTheme.ogg", Music::class.java)
+        manager.load("data/sounds/music/GameOver.ogg", Music::class.java)
 
         val soundLoadList = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun", "lasergun",
                                     "minigun", "rocketLauncher", "reload")
@@ -92,6 +94,7 @@ public class AssetLoader {
         effects  = manager.get("data/images/effects.png")
 
         mainTheme = manager.get("data/sounds/music/MainTheme.ogg")
+        gameOver  = manager.get("data/sounds/music/GameOver.ogg")
         reload    = manager.get("data/sounds/weapons/reload.ogg")
 
         for (i in 0 .. 6) shot[i]  = manager.get("data/sounds/weapons/" + gunNames[i] + ".ogg")
@@ -109,7 +112,7 @@ public class AssetLoader {
 
         val RUSSIAN_CHARACTERS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
         val ENGLISH_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        val DIGITS_AND_SYMBOLS = "0123456789`~!@#$%^&*()-_+=[]{}?/\\,.<>'|:;,\"∞"
+        val DIGITS_AND_SYMBOLS = "0123456789`~!@#$%^&*()-_+=[]{}?/\\,.<>'|:;,\"®©∞"
         parameter.characters   = RUSSIAN_CHARACTERS + ENGLISH_CHARACTERS + DIGITS_AND_SYMBOLS
 
         val font = generator.generateFont(parameter)
