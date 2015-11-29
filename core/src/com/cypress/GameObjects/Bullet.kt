@@ -30,8 +30,8 @@ public class Bullet(private val character : Character) {
             bullets[index] = TextureRegion(assets.bullets, x, y, size.first, size.second)
         }
 
-        var startPosX  = arrayOf(145, 175, 215, 180, 170, 225, 175)
-        val startPosY  = arrayOf( 78,  77,  82,  77,  72,  45,  90)
+        var startPosX  = arrayOf(145, 175, 215, 180, 170, 210, 175)
+        val startPosY  = arrayOf( 78,  77,  82,  77,  72,  37,  90)
         val positionY  = arrayOf(  6,  37,  88, 115, 145,   6, 188)
         val bulletSize = arrayOf(Pair(45, 25), Pair(50, 42), Pair( 50, 26), Pair(39, 29),
                                  Pair(62, 38), Pair(50, 26), Pair(128, 32))
@@ -44,7 +44,7 @@ public class Bullet(private val character : Character) {
             for (i in 0 .. 6) addBullet(i, 0, positionY[i], bulletSize[index])
         }
         else {
-            startPosX = arrayOf(-85, -90, -115, -70, -60, -135, -115)
+            startPosX = arrayOf(-85, -90, -115, -70, -60, -125, -115)
             direction = -15f
             startPos.y -= 5
             positionY[6] = 224

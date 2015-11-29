@@ -25,8 +25,6 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
     private val batcher        = SpriteBatch()
     private var runTime        = 0f
     private val controls       = Controls(game, player, this)
-    private val spruce         = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
-    private val fence          = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
     private val blockList      = ArrayList<Block>()
     private val enemyList      = ArrayList<Warrior>()
     private val itemsList      = ArrayList<Item>()
@@ -35,24 +33,28 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
     private val removedItems   = ArrayList<Item>()
     private val camera         = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-    private var stage     = Stage()
-    private var fan       = Animation(0.02f, Array<TextureRegion>())
-    private var isPlaying = false
-    private var gameStart = false
-    private var counter   = 0
+    private var stage      = Stage()
+    private var fan        = Animation(0.02f, Array<TextureRegion>())
+    private var index      = assets.gunNames.indexOf(player.gunType)
+    private var fanSoundOn = false
+    private var hmmSoundOn = true
+    private var gameStart  = false
+    private var counter    = 0
+    private var doorOpened = false
 
     init {
         stage = controls.getStage()
         assets.activeMusic = assets.levelsMusic[1]
 
         // adding blocks
-        val hSnow = TextureRegion(assets.levelsFP[1][0], 28, 834, 911, 73)
+        val hSnow = TextureRegion(assets.levelsFP[1][0],  28, 924, 911,  73)
         val vSnow = TextureRegion(assets.levelsFP[1][0], 907, 174, 100, 618)
-        val crate = TextureRegion(assets.levelsFP[1][0], 316, 46, 256, 128)
-        val roof  = TextureRegion(assets.levelsFP[1][0], 314, 348, 386, 73)
-        val roof1 = TextureRegion(assets.levelsFP[1][0], 311, 451, 214, 46)
-        val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416, 24)
-        val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201, 25, 225)
+        val crate = TextureRegion(assets.levelsFP[1][0], 316,  46, 256, 128)
+        val roof  = TextureRegion(assets.levelsFP[1][0], 314, 348, 386,  73)
+        val roof1 = TextureRegion(assets.levelsFP[1][0], 311, 451, 214,  46)
+        val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416,  24)
+        val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201,  25, 225)
+        val door  = TextureRegion(assets.levelsFP[1][0], 742, 448, 152, 257)
 
         blockList.add(Block(Vector2(  86f, 950f), 911f, 73f, hSnow))
         blockList.add(Block(Vector2(  86f, 656f), 911f, 73f, hSnow))
@@ -78,6 +80,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
 
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
+        blockList.add(Block(Vector2(5999f, 100f), 152f, 257f, door))
 
         // adding enemies
         enemyList.add(Warrior(Vector2(  43f,  364f), player))
@@ -91,8 +94,9 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
 
         // adding items
         itemsList.add(Item(Vector2( 525f,  490f), assets.gunNames[1]))
-        itemsList.add(Item(Vector2(4530f, 1005f), assets.ammoNames[1]))
-        itemsList.add(Item(Vector2(4639f,  472f), "medikit"))
+        itemsList.add(Item(Vector2(3405f,  478f), assets.ammoNames[1]))
+        itemsList.add(Item(Vector2(4530f, 1005f), "keyCard"))
+        itemsList.add(Item(Vector2(4637f,  495f), "medikit"))
 
         // animation of fan
         val fanPos   = arrayOf(582, 732, 877)
@@ -125,16 +129,29 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
             else assets.snow?.stop()
 
             if (player.getX() > 5345f && player.getX() < 6197f) {
-                if (!isPlaying) {
+                if (!fanSoundOn) {
                     assets.fan?.setVolume(1, 0.5f)
                     assets.fan?.loop()
-                    isPlaying = true
+                    fanSoundOn = true
                 }
             }
             else {
                 assets.fan?.stop()
-                isPlaying = false
+                fanSoundOn = false
             }
+        }
+
+        // player should shoot
+        index = assets.gunNames.indexOf(player.gunType)
+        if (player.shouldShoot && counter % assets.rateOfFire[index] == 0 && index != 6) {
+            controls.shoot()
+            counter = 0
+        }
+
+        if (player.hasKey) {
+            blockList.removeAt(blockList.size - 1)
+            player.hasKey = false
+            doorOpened    = true
         }
 
         for (bullet in assets.bulletsList) {
@@ -150,29 +167,29 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         }
 
         for (bullet in assets.bulletsList) {
-            if (bullet.getBounds().overlaps(player.getBound()) && !player.isDead) {
-                if (bullet.enemyBulllet) {
-                    player.health -= bullet.damage
-                    if (player.health <= 0) {
-                        player.health = 100
-                        player.lives -= 1
-                        player.isDead = true
-                        if (player.lives < 0) {
-                            assets.snow?.stop()
-                            assets.fan?.stop()
-                            assets.activeMusic?.stop()
-                            assets.activeMusic = assets.gameOver
-                            game.screen = GameOverScreen(game)
-                        }
+            if (bullet.getBounds().overlaps(player.getBound()) && bullet.enemyBulllet && !player.isDead ) {
+                player.health -= bullet.damage
+                if (player.health <= 0) {
+                    player.health = 100
+                    player.lives -= 1
+                    player.isDead = true
+
+                    // game over
+                    if (player.lives < 0) {
+                        assets.snow?.stop()
+                        assets.fan?.stop()
+                        assets.activeMusic?.stop()
+                        assets.activeMusic = assets.gameOver
+                        game.screen = GameOverScreen(game)
                     }
-                    removedBullets.add(bullet)
                 }
+                removedBullets.add(bullet)
             }
         }
 
-        // deleting dead enemy
+        // deleting dead enemy ...
         for(enemy in deadEnemies)
-            // if dead enemy has already drawn his animation
+            // ... if he has already drawn his animation
             if (!enemy.isDead) enemyList.remove(enemy)
 
         // removing picked up items
@@ -185,12 +202,6 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
 
         // removing bullets, which hit player or block
         for(bullet in removedBullets) assets.bulletsList.remove(bullet)
-
-        // if player has a minigun
-        if (player.shouldShoot && counter % 7 == 0) {
-            controls.shoot()
-            counter = 0
-        }
     }
 
     /** Draws level. */
@@ -234,6 +245,26 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
             }
         }
 
+        // drawing terminal and hint
+        batcher.begin()
+        if (doorOpened)
+            batcher.draw(TextureRegion(assets.levelsFP[1][0], 171, 835, 94, 70), 5799f, 162f, 94f, 70f) // info
+        else {
+            batcher.draw(TextureRegion(assets.levelsFP[1][0], 28, 835, 94, 70), 5799f, 162f, 94f, 70f) // info
+            if (player.getX() >= 5799 && player.getX() <= 5893 && player.getY() <= 100f) {
+                var hint = TextureRegion(assets.levelsFP[1][0], 319, 568, 249, 163)
+                if (assets.language != "english")
+                    hint = TextureRegion(assets.levelsFP[1][0], 319, 748, 249, 163)
+                batcher.draw(hint, 5831f, 281f, 249f, 163f)
+                if (hmmSoundOn) {
+                    assets.neutral[(Math.random() * 1000).toInt() % 3]?.play()
+                    hmmSoundOn = false
+                }
+            }
+            else hmmSoundOn = true
+        }
+        batcher.end()
+
         // drawing player
         if (player.lives >= 0) {
             player.update()
@@ -260,8 +291,8 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
-        batcher.draw(spruce, 350f, 980f, 221f, 417f)
-        batcher.draw(fence, 6151f, 77f, 236f, 356f)
+        batcher.draw(TextureRegion(assets.levelsFP[1][0], 19,   0, 221, 417), 350f, 980f, 221f, 417f) // spruce
+        batcher.draw(TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356), 6151f, 77f, 236f, 356f) // fence
         batcher.draw(fan.getKeyFrame(runTime), 5885f, 527f, 141f, 132f)
         batcher.end()
 

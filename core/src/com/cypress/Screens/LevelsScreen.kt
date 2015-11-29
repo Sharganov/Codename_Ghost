@@ -27,14 +27,14 @@ public class LevelsScreen(private val game : CGGame) : Screen {
         val buttonStyle = Array(9, { i -> assets.getImageButtonStyle(x[i], 15, x[i], 272, 90, 90, false)})
 
         // style of locked buttons
-        val lockedStyle = assets.getImageButtonStyle(804, 5, 804, 259, 75, 100, false)
+        val lockedStyle = assets.getImageButtonStyle(804, 10, 807, 270, 75, 94, false)
 
         // initializing buttons
         val level = Array(9, { i ->
             if (game.availableLevels[i]) ImageButton(buttonStyle[i])
             else ImageButton(lockedStyle)
         })
-        val back = ImageButton(assets.getImageButtonStyle(517, 121, 624, 121, 104, 50, false))
+        val back = ImageButton(assets.getImageButtonStyle(525, 116, 663, 116, 129, 65, false))
 
         level[1].addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
@@ -48,6 +48,16 @@ public class LevelsScreen(private val game : CGGame) : Screen {
                 dispose()
             }
         })
+
+        if (game.availableLevels[2]) {
+            level[2].addListener(object : ClickListener() {
+                override fun touchDown(event: InputEvent?, x: Float, y: Float, ptr: Int, button: Int) = true
+
+                override fun touchUp(event: InputEvent?, x: Float, y: Float, ptr: Int, button: Int) {
+                    assets.godMode = true
+                }
+            })
+        }
 
         back.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true

@@ -43,7 +43,7 @@ public class MenuScreen(private val game : CGGame, private val level : Screen?) 
                     "english" -> TextButton("Back to \nmain menu", textButtonStyle)
                     else      -> TextButton("В главное \nменю", textButtonStyle)
                 }
-        val back = ImageButton(assets.getImageButtonStyle(517, 121, 624, 121, 104, 50, false))
+        val back = ImageButton(assets.getImageButtonStyle(525, 116, 663, 116, 129, 65, false))
 
         language.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
@@ -103,7 +103,7 @@ public class MenuScreen(private val game : CGGame, private val level : Screen?) 
         table.add(language)
         table.row()
         table.add(backToMain)
-        table.setPosition(-230f, 20f)
+        table.setPosition(-230f, 30f)
         back.setPosition(10f, 10f)
 
         stage.addActor(table)

@@ -1,6 +1,7 @@
 package com.cypress.CGHelpers
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -79,7 +80,7 @@ public class Controls(private val game : CGGame, private val player : Player, pr
 
         shoot.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) : Boolean {
-                if (index == 5) player.shouldShoot = true
+                player.shouldShoot = true
                 shoot()
                 return true
             }
@@ -143,6 +144,10 @@ public class Controls(private val game : CGGame, private val player : Player, pr
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
+
+        if(Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            game.screen = MenuScreen(game, level)
+        }
     }
 
     /** Changes information about player's health and ammo. */
@@ -173,10 +178,7 @@ public class Controls(private val game : CGGame, private val player : Player, pr
         val ac = player.ammoCounter
 
         // ammo run out
-        if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
-            player.availableGuns[index] = false
-            nextGun()
-        }
+        if (ac[index].first == 0 && ac[index].second == 0 && index != 0) nextGun()
         else {
             val bullet = Bullet(player)
             assets.bulletsList.add(bullet)
@@ -200,10 +202,7 @@ public class Controls(private val game : CGGame, private val player : Player, pr
                 }
             }
             // ammo run out
-            if (ac[index].first == 0 && ac[index].second == 0 && index != 0) {
-                player.availableGuns[index] = false
-                nextGun()
-            }
+            if (ac[index].first == 0 && ac[index].second == 0 && index != 0) nextGun()
         }
     }
 
@@ -222,7 +221,8 @@ public class Controls(private val game : CGGame, private val player : Player, pr
         val counter = assets.gunNames.size
         for (i in 1 .. counter - 1) {
             var temp = (index + i) % counter
-            if (player.availableGuns[temp]) {
+            val ac   = player.ammoCounter[temp]
+            if (player.availableGuns[temp] && (ac.first != 0 || ac.second != 0)) {
                 player.gunType = assets.gunNames[temp]
                 break
             }
@@ -236,7 +236,8 @@ public class Controls(private val game : CGGame, private val player : Player, pr
         for (i in 1 .. counter - 1) {
             var temp = (index - i) % counter
             if (temp < 0) temp += counter
-            if (player.availableGuns[temp]) {
+            val ac   = player.ammoCounter[temp]
+            if (player.availableGuns[temp] && (ac.first != 0 || ac.second != 0)) {
                 player.gunType = assets.gunNames[temp]
                 break
             }

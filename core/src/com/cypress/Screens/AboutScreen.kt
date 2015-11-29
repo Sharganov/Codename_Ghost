@@ -39,7 +39,7 @@ public class AboutScreen(private val game : CGGame) : Screen {
         val textPanel = ScrollPane(info)
 
         // initializing button
-        val back = ImageButton(assets.getImageButtonStyle(517, 121, 624, 121, 104, 50, false))
+        val back = ImageButton(assets.getImageButtonStyle(525, 116, 663, 116, 129, 65, false))
 
         back.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true
@@ -51,8 +51,8 @@ public class AboutScreen(private val game : CGGame) : Screen {
         })
 
         title.setPosition(100f, 350f)
-        textPanel.setPosition(10f, 70f)
-        textPanel.sizeBy(780f, 140f)
+        textPanel.setPosition(10f, 90f)
+        textPanel.sizeBy(780f, 125f)
         textPanel.scrollTo(10f, 120f, 100f, 100f)
         textPanel.setForceScroll(false, true)
 

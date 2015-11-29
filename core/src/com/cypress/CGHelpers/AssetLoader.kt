@@ -22,18 +22,21 @@ public class AssetLoader {
     public val levelsFP     = Array(9, { LinkedList<Texture?>() })
     public val gunNames     = arrayOf("uzi", "shotgun", "assaultRiffle", "plasmagun",
                                       "lasergun", "minigun", "rocketLauncher")
-    public val ammoNames    = Array(7, {i-> gunNames[i] + "_ammo"})
+    public val ammoNames    = Array(7, {i -> gunNames[i] + "_ammo"})
     public val bulletsList  = LinkedList<Bullet>()
-    public val maxCapacity  = arrayOf(30, 8, 45, 25, 50, 100, 1)
+    public val maxCapacity  = arrayOf(30,  8, 45, 25, 50, 100, 1)
     public val bulletDamage = arrayOf(10, 20, 15, 25, 20, 15, 40)
+    public val rateOfFire   = arrayOf(20, 50, 13, 35, 15,  7, 90)
     public val levelsMusic  = Array<Music?>(9, { null })
     public val shot         = Array<Sound?>(7, { null })
     public val happy        = Array<Sound?>(3, { null })
     public val eats         = Array<Sound?>(4, { null })
+    public val neutral      = Array<Sound?>(3, { null })
 
     public var musicOn  = true
     public var language = "english"
     public var zoom     = 1.25f
+    public var godMode  = false
 
     public var logo     : Texture? = null
     public var main     : Texture? = null
@@ -75,7 +78,8 @@ public class AssetLoader {
                                     "minigun", "rocketLauncher", "reload")
         for (s in soundLoadList) manager.load("data/sounds/weapons/" + s + ".ogg", Sound::class.java)
 
-        val voiceLoadList = arrayOf("yeah1", "yeah2", "yeah3", "yum1", "yum2", "yum3", "yum4")
+        val voiceLoadList = arrayOf("yeah1", "yeah2", "yeah3", "yum1", "yum2", "yum3", "yum4",
+                                    "neutral1", "neutral2", "neutral3")
         for (v in voiceLoadList) manager.load("data/sounds/player/" + v + ".ogg", Sound::class.java)
 
         manager.finishLoading()
@@ -97,9 +101,10 @@ public class AssetLoader {
         gameOver  = manager.get("data/sounds/music/GameOver.ogg")
         reload    = manager.get("data/sounds/weapons/reload.ogg")
 
-        for (i in 0 .. 6) shot[i]  = manager.get("data/sounds/weapons/" + gunNames[i] + ".ogg")
-        for (i in 0 .. 2) happy[i] = manager.get("data/sounds/player/" + voiceLoadList[i] + ".ogg")
-        for (i in 0 .. 3) eats[i]  = manager.get("data/sounds/player/" + voiceLoadList[i + 3] + ".ogg")
+        for (i in 0 .. 6) shot[i]    = manager.get("data/sounds/weapons/" + gunNames[i] + ".ogg")
+        for (i in 0 .. 2) happy[i]   = manager.get("data/sounds/player/" + voiceLoadList[i] + ".ogg")
+        for (i in 0 .. 3) eats[i]    = manager.get("data/sounds/player/" + voiceLoadList[i + 3] + ".ogg")
+        for (i in 0 .. 2) neutral[i] = manager.get("data/sounds/player/" + voiceLoadList[i + 7] + ".ogg")
     }
 
     /** Generates font with given parameters. */

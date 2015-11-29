@@ -35,12 +35,13 @@ public class Player(public override val position : Vector2, protected override v
     public override var gunType         = assets.gunNames[0]
     public override var isDead          = false
 
-    public val availableGuns = Array(7, { true }) // TODO: before release change to false
+    public val availableGuns = Array(7, { false })
     public val ammoCounter   = Array(7, { Pair(0, 0) })
     public val data          = arrayOf(0, 0, 0, 0, 0, 0)
 
     public var lives       = 2
     public var shouldShoot = false
+    public var hasKey      = false
 
     private var playerGoesLeft  = Animation(0.2f, Array<TextureRegion>())
     private var playerGoesRight = Animation(0.2f, Array<TextureRegion>())
@@ -62,7 +63,13 @@ public class Player(public override val position : Vector2, protected override v
 
         availableGuns[0] = true
         ammoCounter[0] = Pair(assets.maxCapacity[0], 30)
-        for (i in 1 .. ammoCounter.size - 1) ammoCounter[i] = Pair(assets.maxCapacity[i], 100)
+
+        if (assets.godMode) {
+            for (i in 1 .. 6) {
+                availableGuns[i] = true
+                ammoCounter[i] = Pair(assets.maxCapacity[i], assets.maxCapacity[i] * 5)
+            }
+        }
     }
 
     /** Updates position of player. */

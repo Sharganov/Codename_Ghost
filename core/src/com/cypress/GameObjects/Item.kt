@@ -83,6 +83,10 @@ public class Item(private val position : Vector2, private val type : String) {
                 else player.health = 100
                 assets.eats[(Math.random() * 1000).toInt() % 4]?.play()
             }
+            "keyCard" -> {
+                player.hasKey = true
+                assets.happy[(Math.random() * 1000).toInt() % 3]?.play()
+            }
             else -> println("ok")
         }
     }
