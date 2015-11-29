@@ -9,7 +9,7 @@ First of all you should download the project. Use
 $ git clone https://github.com/maktoff/codename_ghost cg
 $ cd cg
 ```
-or click `Dowload ZIP`.
+or click `Download ZIP`.
 
 ### Installing JDK
 If you haven't installed JDK 1.7, install it. Use the following command
@@ -17,9 +17,9 @@ If you haven't installed JDK 1.7, install it. Use the following command
 $ sudo apt-get update
 $ sudo apt-get install openjdk-7-jdk
 ```
-or download it from offical [website](http://www.oracle.com/technetwork/java/javase/downloads/1880260).
+or download it from official [website](http://www.oracle.com/technetwork/java/javase/downloads/1880260).
 
-### Installing Andoid SDK
+### Installing Android SDK
 Our project uses Android SDK. For work you need to install it following the instructions below.
 
 #### Linux
