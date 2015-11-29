@@ -1,7 +1,6 @@
 package com.cypress.CGHelpers
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -144,10 +143,6 @@ public class Controls(private val game : CGGame, private val player : Player, pr
 
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
-
-        if(Gdx.input.isKeyPressed(Input.Keys.BACK)){
-            game.screen = MenuScreen(game, level)
-        }
     }
 
     /** Changes information about player's health and ammo. */
@@ -191,7 +186,7 @@ public class Controls(private val game : CGGame, private val player : Player, pr
 
             // reloading
             if (ac[index].first == 0) {
-                if (assets.musicOn) assets.reload?.play()
+                if (assets.musicOn) assets.reload[index]?.play()
                 if (player.shouldShoot) player.shouldShoot = false
 
                 if (index == 0) ac[0] = Pair(assets.maxCapacity[0], assets.maxCapacity[0])

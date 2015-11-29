@@ -69,6 +69,7 @@ public class Player(public override val position : Vector2, protected override v
                 availableGuns[i] = true
                 ammoCounter[i] = Pair(assets.maxCapacity[i], assets.maxCapacity[i] * 5)
             }
+            ammoCounter[6] = Pair(assets.maxCapacity[6], 100)
         }
     }
 

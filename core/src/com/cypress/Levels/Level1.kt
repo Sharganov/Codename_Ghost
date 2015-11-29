@@ -47,14 +47,14 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         assets.activeMusic = assets.levelsMusic[1]
 
         // adding blocks
-        val hSnow = TextureRegion(assets.levelsFP[1][0],  28, 924, 911,  73)
-        val vSnow = TextureRegion(assets.levelsFP[1][0], 907, 174, 100, 618)
-        val crate = TextureRegion(assets.levelsFP[1][0], 316,  46, 256, 128)
-        val roof  = TextureRegion(assets.levelsFP[1][0], 314, 348, 386,  73)
-        val roof1 = TextureRegion(assets.levelsFP[1][0], 311, 451, 214,  46)
-        val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416,  24)
-        val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201,  25, 225)
-        val door  = TextureRegion(assets.levelsFP[1][0], 742, 448, 152, 257)
+        val hSnow = TextureRegion(assets.levelsFP[1],  28, 924, 911,  73)
+        val vSnow = TextureRegion(assets.levelsFP[1], 907, 174, 100, 618)
+        val crate = TextureRegion(assets.levelsFP[1], 316,  46, 256, 128)
+        val roof  = TextureRegion(assets.levelsFP[1], 314, 348, 386,  73)
+        val roof1 = TextureRegion(assets.levelsFP[1], 311, 451, 214,  46)
+        val roof2 = TextureRegion(assets.levelsFP[1], 313, 529, 416,  24)
+        val wall  = TextureRegion(assets.levelsFP[1], 754, 201,  25, 225)
+        val door  = TextureRegion(assets.levelsFP[1], 742, 448, 152, 257)
 
         blockList.add(Block(Vector2(  86f, 950f), 911f, 73f, hSnow))
         blockList.add(Block(Vector2(  86f, 656f), 911f, 73f, hSnow))
@@ -84,10 +84,12 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
 
         // adding enemies
         enemyList.add(Warrior(Vector2(  43f,  364f), player))
+        enemyList.add(Warrior(Vector2( 444f,  101f), player))
         enemyList.add(Warrior(Vector2(2120f,  105f), player))
         enemyList.add(Warrior(Vector2(3241f,  110f), player))
         enemyList.add(Warrior(Vector2(3360f,  485f), player))
         enemyList.add(Warrior(Vector2(4394f, 1013f), player))
+        enemyList.add(Warrior(Vector2(4608f,  404f), player))
         enemyList.add(Warrior(Vector2(4612f,  110f), player))
         enemyList.add(Warrior(Vector2(4821f,  700f), player))
         enemyList.add(Warrior(Vector2(5850f,  110f), player))
@@ -99,9 +101,9 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         itemsList.add(Item(Vector2(4637f,  495f), "medikit"))
 
         // animation of fan
-        val fanPos   = arrayOf(582, 732, 877)
+        val fanPos   = arrayOf(582, 732, 878)
         val fanArray = Array<TextureRegion>()
-        fanArray.addAll(Array(3, {i -> TextureRegion(assets.levelsFP[1][0], fanPos[i], 12, 141, 132)}), 0, 2)
+        fanArray.addAll(Array(3, {i -> TextureRegion(assets.levelsFP[1], fanPos[i], 14, 141, 134)}), 0, 3)
         fan = Animation(0.02f, fanArray, Animation.PlayMode.LOOP)
     }
 
@@ -148,24 +150,28 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
             counter = 0
         }
 
+        // player has a key
         if (player.hasKey) {
             blockList.removeAt(blockList.size - 1)
             player.hasKey = false
             doorOpened    = true
         }
 
+        // checking collision of bullets with enemies
         for (bullet in assets.bulletsList) {
             for (enemy in enemyList) {
                 if (bullet.getBounds().overlaps(enemy.getBound())) {
                     if(!bullet.enemyBulllet) {
                         enemy.health -= bullet.damage
-                        removedBullets.add(bullet)
+                        if (bullet.damage == assets.bulletDamage[6]) bullet.shouldExplode = true
+                        else if (!bullet.shouldExplode) removedBullets.add(bullet)
                         player.data[4]++
                     }
                 }
             }
         }
 
+        // checking collision of bullets with player
         for (bullet in assets.bulletsList) {
             if (bullet.getBounds().overlaps(player.getBound()) && bullet.enemyBulllet && !player.isDead ) {
                 player.health -= bullet.damage
@@ -188,20 +194,22 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         }
 
         // deleting dead enemy ...
-        for(enemy in deadEnemies)
+        for (enemy in deadEnemies)
             // ... if he has already drawn his animation
             if (!enemy.isDead) enemyList.remove(enemy)
 
         // removing picked up items
-        for(item in removedItems) itemsList.remove(item)
+        for (item in removedItems) itemsList.remove(item)
 
         // checking collision of bullets with blocks
-        for(bullet in assets.bulletsList)
-            for(block in blockList)
-                if(bullet.getBounds().overlaps(block.getBounds())) removedBullets.add(bullet)
+        for (bullet in assets.bulletsList)
+            for (block in blockList)
+                if(bullet.getBounds().overlaps(block.getBounds()))
+                    if (bullet.damage == assets.bulletDamage[6]) bullet.shouldExplode = true
+                    else if (!bullet.shouldExplode) removedBullets.add(bullet)
 
         // removing bullets, which hit player or block
-        for(bullet in removedBullets) assets.bulletsList.remove(bullet)
+        for (bullet in removedBullets) assets.bulletsList.remove(bullet)
     }
 
     /** Draws level. */
@@ -228,16 +236,11 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         else batcher.draw(assets.levelsBG[1][1], 2696f, 0f, 4096f, 2048f)
         batcher.end()
 
-        // drawing bullets
-        if (!assets.bulletsList.isEmpty() && assets.bulletsList[0].distance() > 600)
-            assets.bulletsList.removeFirst()
-        for (b in assets.bulletsList) b.draw(runTime, batcher)
-
         // drawing blocks
-        for(block in blockList) block.draw(batcher)
+        for (block in blockList) block.draw(batcher)
 
         // check collision with picked up items
-        for(item in itemsList) {
+        for (item in itemsList) {
             item.draw(batcher)
             if (player.getBound().overlaps(item.getBounds())) {
                 item.activity(player)
@@ -248,13 +251,13 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // drawing terminal and hint
         batcher.begin()
         if (doorOpened)
-            batcher.draw(TextureRegion(assets.levelsFP[1][0], 171, 835, 94, 70), 5799f, 162f, 94f, 70f) // info
+            batcher.draw(TextureRegion(assets.levelsFP[1], 171, 835, 94, 70), 5799f, 162f, 94f, 70f) // info
         else {
-            batcher.draw(TextureRegion(assets.levelsFP[1][0], 28, 835, 94, 70), 5799f, 162f, 94f, 70f) // info
+            batcher.draw(TextureRegion(assets.levelsFP[1], 28, 835, 94, 70), 5799f, 162f, 94f, 70f) // info
             if (player.getX() >= 5799 && player.getX() <= 5893 && player.getY() <= 100f) {
-                var hint = TextureRegion(assets.levelsFP[1][0], 319, 568, 249, 163)
+                var hint = TextureRegion(assets.levelsFP[1], 319, 568, 249, 163)
                 if (assets.language != "english")
-                    hint = TextureRegion(assets.levelsFP[1][0], 319, 748, 249, 163)
+                    hint = TextureRegion(assets.levelsFP[1], 319, 748, 249, 163)
                 batcher.draw(hint, 5831f, 281f, 249f, 163f)
                 if (hmmSoundOn) {
                     assets.neutral[(Math.random() * 1000).toInt() % 3]?.play()
@@ -265,6 +268,11 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         }
         batcher.end()
 
+        // drawing bullets
+        if (!assets.bulletsList.isEmpty() && assets.bulletsList[0].distance() > 600)
+            assets.bulletsList.removeFirst()
+        for (b in assets.bulletsList) b.draw(runTime, batcher)
+
         // drawing player
         if (player.lives >= 0) {
             player.update()
@@ -273,7 +281,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         }
 
         // drawing enemies
-        for(enemy in enemyList) {
+        for (enemy in enemyList) {
             if(enemy.health <= 0 && !enemy.isDead) {
                 enemy.isDead = true
                 deadEnemies.add(enemy)
@@ -291,8 +299,8 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // drawing first plan objects
         batcher.begin()
         batcher.enableBlending()
-        batcher.draw(TextureRegion(assets.levelsFP[1][0], 19,   0, 221, 417), 350f, 980f, 221f, 417f) // spruce
-        batcher.draw(TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356), 6151f, 77f, 236f, 356f) // fence
+        batcher.draw(TextureRegion(assets.levelsFP[1], 19,   0, 221, 417), 350f, 980f, 221f, 417f) // spruce
+        batcher.draw(TextureRegion(assets.levelsFP[1], 29, 437, 236, 356), 6151f, 77f, 236f, 356f) // fence
         batcher.draw(fan.getKeyFrame(runTime), 5885f, 527f, 141f, 132f)
         batcher.end()
 

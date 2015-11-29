@@ -41,8 +41,8 @@ public abstract class Character {
         death = Animation(0.2f, deathArray, Animation.PlayMode.LOOP)
     }
 
-    /** Checks collision with objects. If finds, changes position*/
-    open public fun checkCollision(blockList : ArrayList<Block>) {
+    /** Checks collision with objects. If finds, changes position. */
+    public fun checkCollision(blockList : ArrayList<Block>) {
         for (block in blockList) {
             var collision = false
 

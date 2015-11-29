@@ -17,13 +17,17 @@ public class Bullet(private val character : Character) {
     private val bounds   = Rectangle()
     private val bullets  = Array(7, {TextureRegion()})
     private val index    = assets.gunNames.indexOf(character.gunType)
-    private var shot     = Animation(0.01f, Array<TextureRegion>())
 
-    private var direction  = 0f
-    private var startValue = 0f
+    private var shot           = Animation(0.01f, Array<TextureRegion>())
+    private var direction      = 0f
+    private var shotStartValue = 0f
+    private var explStartValue = 0f
+    private var explosionSound = true
 
     public val enemyBulllet = character.isEnemy
-    public val damage       = assets.bulletDamage[index]
+
+    public var damage        = assets.bulletDamage[index]
+    public var shouldExplode = false
 
     init {
         fun addBullet(index : Int, x : Int, y : Int, size : Pair<Int, Int>) {
@@ -77,8 +81,11 @@ public class Bullet(private val character : Character) {
 
     /** Draws bullet. */
     public fun draw(delta : Float, batcher : SpriteBatch) {
-        position.x += direction
-        if (startValue == 0f) startValue = delta
+        if (!shouldExplode) {
+            position.x += direction
+            if (shotStartValue == 0f) shotStartValue = delta
+        }
+        else if (explStartValue == 0f) explStartValue = delta
 
         if (character.shouldGoToLeft) position.x -= 4
         else if (character.shouldGoToRight) position.x += 4
@@ -90,9 +97,28 @@ public class Bullet(private val character : Character) {
                 else Pair(texture.regionWidth.toFloat() / 2, texture.regionHeight.toFloat() / 2)
 
         batcher.begin()
-        batcher.draw(texture, position.x, position.y, size.first, size.second)
-        if (delta - startValue < 0.15f && index != 3 && index != 4)
-            batcher.draw(shot.getKeyFrame(delta - startValue), startPos.x, startPos.y - 15, 60f, 40f)
+        if (!shouldExplode) batcher.draw(texture, position.x, position.y, size.first, size.second)
+        var temp = delta - shotStartValue
+        if (temp < 0.15f && temp >= 0f && index != 3 && index != 4)
+            batcher.draw(shot.getKeyFrame(temp), startPos.x, startPos.y - 15, 60f, 40f)
+        temp = delta - explStartValue
+        if (shouldExplode && temp < 0.15f && temp >= 0f) {
+            if (assets.musicOn && explosionSound) {
+                assets.explosion?.play()
+                explosionSound = false
+            }
+            if (direction > 0f) {
+                batcher.draw(shot.getKeyFrame(temp), position.x + 100, position.y - 100, 200f, 200f)
+                bounds.setPosition(position.x + 100, position.y - 100)
+            }
+            else {
+                batcher.draw(shot.getKeyFrame(temp), position.x - 100, position.y - 100, 200f, 200f)
+                bounds.setPosition(position.x - 100, position.y - 100)
+            }
+            bounds.setSize(200f, 200f)
+            damage = 20
+        }
+        else shouldExplode = false
         batcher.end()
     }
 
