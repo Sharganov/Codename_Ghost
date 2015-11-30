@@ -3,7 +3,7 @@ package com.cypress.Locale.en
 /** Returns string with info on English. */
 public fun info() : String {
     val text =
-            "                                       Version 0.1.3\n" +
+            "                                       Version 0.2.7\n" +
             "\n" +
             "Made by the Cypress team composed of:\n" +
             "Mikhail Kita\n" +
@@ -15,7 +15,7 @@ public fun info() : String {
             "\n" +
             "We want to say special thanks to Penguin Development Team for permission\n" +
             "to use some of their resources. For more information visit http://www.tagap.net/.\n" +
-            "TAGAP(R) is a registered trademark of Jouni Lahtinen.\n" +
+            "TAGAP® is a registered trademark of Jouni Lahtinen.\n" +
             "\n" +
             "\n" +
             "All the other resources are free and were found in a free access in the Internet.\n" +
@@ -30,6 +30,6 @@ public fun info() : String {
             "\n" +
             "Powered by libGDX.\n" +
             "\n" +
-            "Cypress (c) 2015"
+            "Cypress © 2015"
     return text
 }

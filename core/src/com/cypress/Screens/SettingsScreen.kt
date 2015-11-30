@@ -25,26 +25,26 @@ public class SettingsScreen(private val game : CGGame) : Screen {
         val textButtonStyle = assets.getTextButtonStyle(314, 128, 41, 128, 191, 127, font)
 
         // initializing table
-        var table = Table()
+        val table = Table()
         table.setFillParent(true)
 
         // initializing buttons
-        var sounds =
+        val sounds =
                 when (assets.musicOn) {
-                    true  -> ImageButton(assets.getImageButtonStyle(667, 156, 767, 156, 100, 100, true))
-                    false -> ImageButton(assets.getImageButtonStyle(767, 156, 667, 156, 100, 100, true))
+                    true  -> ImageButton(assets.getImageButtonStyle(684, 181, 789, 181, 90, 90, true))
+                    false -> ImageButton(assets.getImageButtonStyle(789, 181, 684, 181, 90, 90, true))
                 }
-        var language =
+        val language =
                 when (assets.language) {
                     "english" -> TextButton("Language:\n" + assets.language, textButtonStyle)
                     else      -> TextButton("Язык:\n" + assets.language, textButtonStyle)
                 }
-        var about =
+        val about =
                 when (assets.language) {
                     "english" -> TextButton("About", textButtonStyle)
                     else      -> TextButton("Об игре", textButtonStyle)
                 }
-        var back = ImageButton(assets.getImageButtonStyle(517, 120, 595, 121, 70, 70, false))
+        val back = ImageButton(assets.getImageButtonStyle(525, 116, 663, 116, 129, 65, false))
 
         language.addListener(object : ClickListener() {
             override fun touchDown(event : InputEvent?, x : Float, y : Float, ptr : Int, button : Int) = true

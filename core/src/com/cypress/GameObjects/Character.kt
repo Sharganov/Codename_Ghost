@@ -1,7 +1,11 @@
 package com.cypress.GameObjects
 
+import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
+import com.cypress.CGHelpers.AssetLoader
 import java.util.*
 
 /** Abstract class for game characters. */
@@ -13,6 +17,7 @@ public abstract class Character {
     public abstract var shouldJump      : Boolean
     public abstract var onGround        : Boolean
     public abstract var gunType         : String
+    public abstract var isDead          : Boolean
     public abstract val isEnemy         : Boolean
 
     protected abstract val position : Vector2
@@ -24,8 +29,20 @@ public abstract class Character {
     protected abstract val bounds   : Rectangle
     protected abstract var delta    : Float
 
-    /** Checks collision with objects. If finds, changes position*/
-    open public fun checkCollision(blockList : ArrayList<Block>) {
+    public var death  = Animation(0.2f, Array<TextureRegion>())
+
+    private val assets = AssetLoader.getInstance()
+
+    init {
+        // animation of death
+        val deathPos   = arrayOf(9, 161, 317, 491, 664)
+        val deathArray = Array<TextureRegion>()
+        deathArray.addAll(Array(5, {i -> TextureRegion(assets.effects, deathPos[i], 106, 155, 155) }), 0, 4)
+        death = Animation(0.2f, deathArray, Animation.PlayMode.LOOP)
+    }
+
+    /** Checks collision with objects. If finds, changes position. */
+    public fun checkCollision(blockList : ArrayList<Block>) {
         for (block in blockList) {
             var collision = false
 

@@ -7,31 +7,35 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
+import com.cypress.GameObjects.Enemies.*
 
 /** Contains definition of bullet. */
 public class Bullet(private val character : Character) {
-    
     private val assets   = AssetLoader.getInstance()
     private val startPos = Vector2(character.getX(), character.getY())
     private val position = Vector2(0f, 0f)
     private val bounds   = Rectangle()
     private val bullets  = Array(7, {TextureRegion()})
     private val index    = assets.gunNames.indexOf(character.gunType)
-    private var shot     = Animation(0.01f, Array<TextureRegion>())
 
-    private var direction  = 0f
-    private var startValue = 0f
+    private var shot           = Animation(0.01f, Array<TextureRegion>())
+    private var direction      = 0f
+    private var shotStartValue = 0f
+    private var explStartValue = 0f
+    private var explosionSound = true
 
     public val enemyBulllet = character.isEnemy
-    public val damage       = assets.bulletDamage[index]
+
+    public var damage        = assets.bulletDamage[index]
+    public var shouldExplode = false
 
     init {
         fun addBullet(index : Int, x : Int, y : Int, size : Pair<Int, Int>) {
             bullets[index] = TextureRegion(assets.bullets, x, y, size.first, size.second)
         }
 
-        var startPosX  = arrayOf(145, 175, 215, 180, 170, 225, 175)
-        val startPosY  = arrayOf( 78,  77,  82,  77,  72,  45,  90)
+        var startPosX  = arrayOf(145, 175, 215, 180, 170, 210, 175)
+        val startPosY  = arrayOf( 78,  77,  82,  77,  72,  37,  90)
         val positionY  = arrayOf(  6,  37,  88, 115, 145,   6, 188)
         val bulletSize = arrayOf(Pair(45, 25), Pair(50, 42), Pair( 50, 26), Pair(39, 29),
                                  Pair(62, 38), Pair(50, 26), Pair(128, 32))
@@ -44,7 +48,7 @@ public class Bullet(private val character : Character) {
             for (i in 0 .. 6) addBullet(i, 0, positionY[i], bulletSize[index])
         }
         else {
-            startPosX = arrayOf(-85, -90, -115, -70, -60, -135, -115)
+            startPosX = arrayOf(-85, -90, -115, -70, -60, -125, -115)
             direction = -15f
             startPos.y -= 5
             positionY[6] = 224
@@ -54,13 +58,10 @@ public class Bullet(private val character : Character) {
 
         startPos.x += startPosX[index]
 
-        if (index != 3 && index != 4) {
-            val pos = arrayOf(17, 143, 273, 402, 530, 656, 788, 918, 1044, 1170, 1300, 1430, 1559, 1683, 1811, 1941, 2065)
-            val animation = Array<TextureRegion>()
-            animation.addAll(Array(17, { i -> TextureRegion(assets.effects, pos[i], 10, 100, 100) }), 0, 16)
-
-            shot = Animation(0.01f, animation, Animation.PlayMode.LOOP)
-        }
+        val pos = arrayOf(17, 143, 273, 402, 530, 656, 788, 918, 1044, 1170, 1300, 1430, 1559, 1683, 1811, 1941, 2065)
+        val animation = Array<TextureRegion>()
+        animation.addAll(Array(17, { i -> TextureRegion(assets.effects, pos[i], 10, 100, 100) }), 0, 16)
+        shot = Animation(0.01f, animation, Animation.PlayMode.LOOP)
 
         if (character is Warrior) {
             if (character.shouldGoToRight || character.stayRight) {
@@ -80,8 +81,11 @@ public class Bullet(private val character : Character) {
 
     /** Draws bullet. */
     public fun draw(delta : Float, batcher : SpriteBatch) {
-        position.x += direction
-        if (startValue == 0f) startValue = delta
+        if (!shouldExplode) {
+            position.x += direction
+            if (shotStartValue == 0f) shotStartValue = delta
+        }
+        else if (explStartValue == 0f) explStartValue = delta
 
         if (character.shouldGoToLeft) position.x -= 4
         else if (character.shouldGoToRight) position.x += 4
@@ -93,9 +97,28 @@ public class Bullet(private val character : Character) {
                 else Pair(texture.regionWidth.toFloat() / 2, texture.regionHeight.toFloat() / 2)
 
         batcher.begin()
-        batcher.draw(texture, position.x, position.y, size.first, size.second)
-        if (delta - startValue < 0.17f && index != 3 && index != 4)
-            batcher.draw(shot.getKeyFrame(delta), startPos.x, startPos.y - 15, 60f, 40f)
+        if (!shouldExplode) batcher.draw(texture, position.x, position.y, size.first, size.second)
+        var temp = delta - shotStartValue
+        if (temp < 0.15f && temp >= 0f && index != 3 && index != 4)
+            batcher.draw(shot.getKeyFrame(temp), startPos.x, startPos.y - 15, 60f, 40f)
+        temp = delta - explStartValue
+        if (shouldExplode && temp < 0.15f && temp >= 0f) {
+            if (assets.musicOn && explosionSound) {
+                assets.explosion?.play()
+                explosionSound = false
+            }
+            if (direction > 0f) {
+                batcher.draw(shot.getKeyFrame(temp), position.x + 100, position.y - 100, 200f, 200f)
+                bounds.setPosition(position.x + 100, position.y - 100)
+            }
+            else {
+                batcher.draw(shot.getKeyFrame(temp), position.x - 100, position.y - 100, 200f, 200f)
+                bounds.setPosition(position.x - 100, position.y - 100)
+            }
+            bounds.setSize(200f, 200f)
+            damage = 20
+        }
+        else shouldExplode = false
         batcher.end()
     }
 

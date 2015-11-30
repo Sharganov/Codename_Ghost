@@ -1,4 +1,4 @@
-package com.cypress.GameObjects
+package com.cypress.GameObjects.Enemies
 
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -7,9 +7,10 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
+import com.cypress.GameObjects.*
 
+/** */
 class Warrior(public override val position : Vector2, private val player : Player) : Character() {
-
     public override val isEnemy  = true
     public override val width    = 115
     public override val height   = 180
@@ -26,6 +27,7 @@ class Warrior(public override val position : Vector2, private val player : Playe
     public override var stayRight       = false
     public override var onGround        = true
     public override var gunType         = "uzi"
+    public override var isDead          = false
 
     private val assets  = AssetLoader.getInstance()
     private val uziLeft = TextureRegion(assets.guns, 281, 95, 90, 58)
@@ -34,6 +36,9 @@ class Warrior(public override val position : Vector2, private val player : Playe
     private var warriorGoesRight = Animation(0.1f, Array<TextureRegion>())
     private var warriorStayRight = TextureRegion(assets.warrior, 25, 11, width, height)
     private var warriorStayLeft  = TextureRegion(assets.warrior, 201, 11, width, height)
+    private var counter          = 0
+    private var canShoot         = false
+    private var startValue       = 0f
 
     init {
         // setting animation
@@ -58,6 +63,8 @@ class Warrior(public override val position : Vector2, private val player : Playe
 
     /** Defines actions of warrior. */
     public fun update(delta : Float) {
+        counter++
+
         // movement of warrior
         if (position.y <= 80f) {
             onGround   = true
@@ -72,7 +79,11 @@ class Warrior(public override val position : Vector2, private val player : Playe
         }
 
         val distance = player.getX() - position.x
-        val canShoot = delta.hashCode() % 60 == 0
+        if (counter % 50 == 0) {
+            canShoot = true
+            counter = 0
+        }
+        else canShoot = false
 
         // warrior pursues player
         if (stayRight && distance > 0 && distance < 300f) {
@@ -114,36 +125,44 @@ class Warrior(public override val position : Vector2, private val player : Playe
     }
 
     /** Draws warrior. */
-    public fun draw(delta: Float, batcher : SpriteBatch) {
+    public fun draw(delta : Float, batcher : SpriteBatch) {
+        if (!isDead) startValue = delta
+
         batcher.begin()
 
-        if (shouldGoToLeft || !stayRight)
-            batcher.draw(uziLeft, position.x - 55, position.y + 25, 90f, 58f)
+        // warrior is dead
+        if (isDead) {
+            batcher.draw(death.getKeyFrame(delta - startValue), position.x, position.y, 155f, 155f)
+            if (delta - startValue > 0.5f) isDead = false
+        }
+        else {
+            if (shouldGoToLeft || !stayRight)
+                batcher.draw(uziLeft, position.x - 55, position.y + 25, 90f, 58f)
 
-        // warrior should stay still ...
-        if (!shouldGoToLeft && !shouldGoToRight) {
-            when (stayRight) {
+            // warrior should stay still ...
+            if (!shouldGoToLeft && !shouldGoToRight) {
+                when (stayRight) {
                 // ... turning to the right side
-                true ->
-                    batcher.draw(warriorStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                    true ->
+                        batcher.draw(warriorStayRight, position.x, position.y, width.toFloat(), height.toFloat())
                 // ... turning to the left side
-                false ->
-                    batcher.draw(warriorStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                    false ->
+                        batcher.draw(warriorStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                }
+            }
+
+            // warrior should go to left
+            else if (shouldGoToLeft) {
+                stayRight = false
+                batcher.draw(warriorGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+            }
+
+            // warrior should go to right
+            else if (shouldGoToRight) {
+                stayRight = true
+                batcher.draw(warriorGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
             }
         }
-
-        // warrior should go to left
-        else if (shouldGoToLeft) {
-            stayRight = false
-            batcher.draw(warriorGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-        }
-
-        // warrior should go to right
-        else if (shouldGoToRight) {
-            stayRight = true
-            batcher.draw(warriorGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
-        }
-
         batcher.end()
     }
 

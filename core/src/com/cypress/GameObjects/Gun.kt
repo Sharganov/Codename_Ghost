@@ -18,14 +18,14 @@ public class Gun(private val character : Character) {
             Pair(getGun(11,   6, 187, 80), getGun(202,   6, 187, 80)),  // assault riffle
             Pair(getGun( 9, 250, 178, 86), getGun(223, 250, 178, 86)),  // plasmagun
             Pair(getGun( 7, 348, 183, 93), getGun(221, 348, 183, 93)),  // lasergun
-            Pair(getGun(14, 543, 180, 69), getGun(232, 543, 180, 69)),  // minigun
+            Pair(getGun(13, 544, 167, 77), getGun(245, 544, 167, 77)),  // minigun
             Pair(getGun( 7, 456, 188, 73), getGun(222, 456, 188, 73))   // rocket launcher
     )
     private val posX = arrayOf(Pair(65, -45), Pair(50, -40), Pair(35, -75), Pair(23, -50),
-                               Pair(10, -50), Pair(55, -85), Pair(-5, -65))
-    private val posY = arrayOf(40, 40, 40, 30, 25, 30, 50)
+                               Pair(10, -50), Pair(50, -75), Pair(-5, -65))
+    private val posY = arrayOf(40, 40, 40, 30, 25, 20, 50)
     private val size = arrayOf(Pair( 90f, 58f), Pair(138f, 55f), Pair(187f, 80f), Pair(178f, 86f),
-                               Pair(183f, 93f), Pair(180f, 69f), Pair(188f, 73f))
+                               Pair(183f, 93f), Pair(167f, 77f), Pair(188f, 73f))
 
     private var index = assets.gunNames.indexOf(character.gunType)
 

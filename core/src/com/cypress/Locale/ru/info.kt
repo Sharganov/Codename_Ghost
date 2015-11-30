@@ -3,7 +3,7 @@ package com.cypress.Locale.ru
 /** Returns string with info on Russian. */
 public fun info() : String {
     val text =
-            "                                       Версия 0.1.3\n" +
+            "                                       Версия 0.2.7\n" +
             "\n" +
             "Игра создана командой Cypress:\n" +
             "Михаил Кита\n" +
@@ -16,7 +16,7 @@ public fun info() : String {
             "Мы хотим сказать отдельное спасибо команде Penguin DT за разрешение\n" +
             "использовать некоторые из их ресурсов. Для получения дополнительной\n" +
             "информации посетите http://www.tagap.net/.\n" +
-            "TAGAP(R) - зарегистрированный товарный знак, принадлежащий\n" +
+            "TAGAP® - зарегистрированный товарный знак, принадлежащий\n" +
             "Jouni Lahtinen.\n" +
             "\n" +
             "\n" +
@@ -32,6 +32,6 @@ public fun info() : String {
             "\n" +
             "Сделано с помощью libGDX.\n" +
             "\n" +
-            "Cypress (c) 2015"
+            "Cypress © 2015"
     return text
 }
