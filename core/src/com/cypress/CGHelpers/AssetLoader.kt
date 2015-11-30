@@ -34,7 +34,7 @@ public class AssetLoader {
     public var musicOn  = false
     public var language = "english"
     public var zoom     = 1.25f
-    public val ppm = 1f
+    public val ppm = 32f
 
     public var logo     : Texture? = null
     public var main     : Texture? = null

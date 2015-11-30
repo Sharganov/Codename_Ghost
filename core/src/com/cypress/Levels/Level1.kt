@@ -23,7 +23,7 @@ public class Level1(private val game : CGGame) : Screen {
     private val assets         = AssetLoader.getInstance()
     private val batch = SpriteBatch()
     private var runTime        = 0f
-    private var world = World(Vector2(0f, -36.8f), false)
+    private var world = World(Vector2(0f, -9.8f), false)
     val player  = Player(Vector2(20f, 1500f), 120, 177, 6196f)
 
     init {
@@ -61,22 +61,32 @@ public class Level1(private val game : CGGame) : Screen {
         val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416, 24)
         val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201, 25, 225)
 
-        blockList.add(Block(Vector2(  86f, 950f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2( 0f, 950f), 911f, 73f, hSnow))
+      //  createBox(500, 987, 912, 74, true)
         blockList.add(Block(Vector2(  86f, 656f), 911f, 73f, hSnow))
+        //createBox(541, 692, 911, 73, true)
         blockList.add(Block(Vector2( 997f, 950f), 125f, 73f, hSnow))
+        //createBox(1060, 986, 124, 72, true)
         blockList.add(Block(Vector2( 520f, 390f), 465f, 73f, hSnow))
+       // createBox(752, 426, 465, 73, true)
         blockList.add(Block(Vector2(1330f, 374f), 880f, 73f, hSnow))
-
+        //createBox(-38, 132, 256, 128, true)
         blockList.add(Block(Vector2(-166f,  68f), 256f, 128f, crate))
+
+        //createBox(208, 132, 256, 128, true)
         blockList.add(Block(Vector2(  80f,  68f), 256f, 128f, crate))
+        //createBox(18, 254, 256, 128, true)
         blockList.add(Block(Vector2(-110f, 190f), 256f, 128f, crate))
-
+        //createBox(714, 723, 100, 550, true)
         blockList.add(Block(Vector2( 664f, 448f), 100f, 550f, vSnow))
+        //createBox(1367, 1201, 100, 618, true)
         blockList.add(Block(Vector2( 897f, 448f), 100f, 550f, vSnow))
+        //createBox(1367, 722, 100, 618, true)
         blockList.add(Block(Vector2(1317f, 892f), 100f, 618f, vSnow))
+        //createBox(1367, 722, 100, 618, true)
         blockList.add(Block(Vector2(1317f, 413f), 100f, 618f, vSnow))
+        //createBox(2179, )
         blockList.add(Block(Vector2(2129f, 380f), 100f, 370f, vSnow))
-
         blockList.add(Block(Vector2(3230f, 403f), 386f, 73f, roof))
         blockList.add(Block(Vector2(4376f, 929f), 386f, 73f, roof))
         blockList.add(Block(Vector2(4763f, 616f), 386f, 73f, roof))
@@ -85,7 +95,7 @@ public class Level1(private val game : CGGame) : Screen {
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
 
         blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
-
+        for(block in blockList) block.initialize(world)
         // adding enemies
         enemyList.add(Warrior(Vector2(  43f,  364f), player))
         enemyList.add(Warrior(Vector2(2120f,  105f), player))
@@ -96,11 +106,11 @@ public class Level1(private val game : CGGame) : Screen {
         // adding items
         itemsList.add(Item(Vector2( 525f,  490f), assets.gunNames[1]))
         itemsList.add(Item(Vector2(4547f, 1012f), "medikit"))
-        createBox(2048, 40, 4196, 80, true)
-        createBox(-30, 500, 32, 1000, true)
-        createBox(400, 1010, 1050, 30, true)
-        createBox(950, 500, 30, 500, true)
-        createBox(-100, 1000, 32, 1000, true)
+        createBox(3500, 40, 7000, 80, true)//floor
+        createBox(-30, 500, 32, 1000, true)//left dowm stone
+        //createBox(400, 1010, 1050, 30, true)
+        //createBox(950, 500, 30, 500, true)
+        createBox(-100, 1000, 32, 1000, true)//left up stone
 
 
 
@@ -224,6 +234,7 @@ public class Level1(private val game : CGGame) : Screen {
         // drawing blocks
         for(block in blockList) block.draw(batch)
 
+        player.onGround = true
         // drawing player
         player.update()
 //        player.inputUpdate(delta)
@@ -268,7 +279,7 @@ public class Level1(private val game : CGGame) : Screen {
             stage.act(runTime)
             stage.draw()
         }
-        b2dr.render(world, camera.combined.scl(assets.ppm))
+        //b2dr.render(world, camera.combined.scl(assets.ppm))
     }
 
     public override fun resize(width : Int, height : Int) {}

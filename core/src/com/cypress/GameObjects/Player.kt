@@ -74,15 +74,15 @@ public class Player(public override val position : Vector2, protected override v
 
         var horizontalForce = 0
 
-        if (shouldGoToRight)  {horizontalForce += 14; println("!")}
-        if (shouldGoToLeft)   {horizontalForce -= 14; println("@")}
+        if (shouldGoToRight)  horizontalForce += 2;
+        if (shouldGoToLeft)   horizontalForce -= 2;
 
         if (shouldJump) {
-            getBody().applyForceToCenter(0f, 30000f, false)
+            getBody().applyForceToCenter(0f, 9500f, false)
             shouldJump = false
             onGround = false
         }
-        getBody().setLinearVelocity((horizontalForce * 15).toFloat(), getBody().getLinearVelocity().y)
+        getBody().setLinearVelocity((horizontalForce*5).toFloat(), getBody().getLinearVelocity().y)
 
         /*//if player reach right side
         if (position.x > mapLength) position.x = mapLength
@@ -90,16 +90,17 @@ public class Player(public override val position : Vector2, protected override v
         // if player reach left side
         if (position.x < 2f) position.x = 2f*/
     }
+
 fun inputUpdate(delta: Float) {
         var horizontalForce = 0
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            horizontalForce -= 2
+            horizontalForce -= 1
             shouldGoToLeft = true
         }else shouldGoToLeft = false
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            horizontalForce += 2
+            horizontalForce += 1
             shouldGoToRight = true
         } else shouldGoToRight = false
 
@@ -107,7 +108,7 @@ fun inputUpdate(delta: Float) {
             getBody().applyForceToCenter(0f, 300f*assets.ppm, false)
         }
 
-        getBody().setLinearVelocity((horizontalForce * 5).toFloat(), getBody().getLinearVelocity().y)
+        getBody().setLinearVelocity((horizontalForce).toFloat(), getBody().getLinearVelocity().y)
     }
 
     /** Draws player. */
@@ -116,6 +117,7 @@ fun inputUpdate(delta: Float) {
         var current = TextureRegion()
         gun.update()
         gun.draw(batch)
+        println("!")
 
 
         // player should stay still ...
@@ -146,9 +148,14 @@ fun inputUpdate(delta: Float) {
             if (shouldJump) onGround = false
 
             if (!onGround)
+            {
                 current = playerStayRight
+            }
             else
+            {
+                println("@")
                 current = playerGoesRight.getKeyFrame(delta)
+            }
         }
 
         // player should jump
