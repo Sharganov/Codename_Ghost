@@ -23,7 +23,7 @@ public class Level1(private val game : CGGame) : Screen {
     private val assets         = AssetLoader.getInstance()
     private val batch = SpriteBatch()
     private var runTime        = 0f
-    private var world = World(Vector2(0f, -9.8f), false)
+    private var world = World(Vector2(0f, -36.8f), false)
     val player  = Player(Vector2(20f, 1500f), 120, 177, 6196f)
 
     init {
@@ -96,7 +96,13 @@ public class Level1(private val game : CGGame) : Screen {
         // adding items
         itemsList.add(Item(Vector2( 525f,  490f), assets.gunNames[1]))
         itemsList.add(Item(Vector2(4547f, 1012f), "medikit"))
-        createBox(2048, 40, 4096, 80, true)
+        createBox(2048, 40, 4196, 80, true)
+        createBox(-30, 500, 32, 1000, true)
+        createBox(400, 1010, 1050, 30, true)
+        createBox(950, 500, 30, 500, true)
+        createBox(-100, 1000, 32, 1000, true)
+
+
 
         // animation of fan
         val fanPos   = arrayOf(582, 732, 877)
@@ -220,7 +226,7 @@ public class Level1(private val game : CGGame) : Screen {
 
         // drawing player
         player.update()
-        player.inputUpdate(delta)
+//        player.inputUpdate(delta)
         player.draw(runTime, batch)
 
         // if player has a minigun

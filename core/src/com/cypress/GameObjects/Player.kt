@@ -74,11 +74,11 @@ public class Player(public override val position : Vector2, protected override v
 
         var horizontalForce = 0
 
-        if (shouldGoToRight)  {horizontalForce += 1; println("!")}
-        if (shouldGoToLeft)   {horizontalForce -= 1; println("@")}
+        if (shouldGoToRight)  {horizontalForce += 14; println("!")}
+        if (shouldGoToLeft)   {horizontalForce -= 14; println("@")}
 
         if (shouldJump) {
-            getBody().applyForceToCenter(0f, 300f, false)
+            getBody().applyForceToCenter(0f, 30000f, false)
             shouldJump = false
             onGround = false
         }
