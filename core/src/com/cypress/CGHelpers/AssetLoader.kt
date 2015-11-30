@@ -31,9 +31,10 @@ public class AssetLoader {
     public val happy        = Array<Sound?>(3, { null })
     public val eats         = Array<Sound?>(4, { null })
 
-    public var musicOn  = true
+    public var musicOn  = false
     public var language = "english"
     public var zoom     = 1.25f
+    public val ppm = 1f
 
     public var logo     : Texture? = null
     public var main     : Texture? = null

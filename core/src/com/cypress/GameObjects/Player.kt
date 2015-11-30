@@ -1,10 +1,16 @@
 package com.cypress.GameObjects
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
@@ -18,7 +24,7 @@ public class Player(public override val position : Vector2, protected override v
     public override val offsetX = 10f
 
     protected override val velocity = Vector2(4f, 12f)
-
+    private var body : Body? = null
     private val assets          = AssetLoader.getInstance()
     private val acceleration    = Vector2(0f, 0.2f)
     private val gun             = Gun(this)
@@ -37,7 +43,6 @@ public class Player(public override val position : Vector2, protected override v
     public val availableGuns = Array(7, { true }) // TODO: before release change to false
     public val ammoCounter   = Array(7, { Pair(0, 0) })
     public val data          = arrayOf(0, 0, 0, 0, 0, 0)
-
     public var lives       = 2
     public var shouldShoot = false
 
@@ -63,60 +68,64 @@ public class Player(public override val position : Vector2, protected override v
         for (i in 1 .. ammoCounter.size - 1) ammoCounter[i] = Pair(assets.maxCapacity[i], 100)
     }
 
+
     /** Updates position of player. */
     public fun update(){
-        val oldY = position.y
 
-        if (position.y <= 80f) {
-            onGround   = true
-            position.y = 80f
-            velocity.y = 12f
-            acceleration.y = 0.2f
-        }
-        else {
-            if(velocity.y < -9) velocity.y = -9f
-            position.y += velocity.y
-            velocity.y -= acceleration.y
-        }
+        var horizontalForce = 0
 
-        if (shouldGoToRight) position.x += velocity.x
-        if (shouldGoToLeft)  position.x -= velocity.x
+        if (shouldGoToRight)  {horizontalForce += 1; println("!")}
+        if (shouldGoToLeft)   {horizontalForce -= 1; println("@")}
 
         if (shouldJump) {
-            // need to change because of collision
-            velocity.y = 12f
-            position.y += 60f
+            getBody().applyForceToCenter(0f, 300f, false)
             shouldJump = false
-            onGround   = false
+            onGround = false
         }
+        getBody().setLinearVelocity((horizontalForce * 15).toFloat(), getBody().getLinearVelocity().y)
 
-        //if player reach right side
+        /*//if player reach right side
         if (position.x > mapLength) position.x = mapLength
 
         // if player reach left side
-        if (position.x < 2f) position.x = 2f
+        if (position.x < 2f) position.x = 2f*/
+    }
+fun inputUpdate(delta: Float) {
+        var horizontalForce = 0
 
-        delta = position.y - oldY
-        bounds.setPosition(position.x, position.y)
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            horizontalForce -= 2
+            shouldGoToLeft = true
+        }else shouldGoToLeft = false
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            horizontalForce += 2
+            shouldGoToRight = true
+        } else shouldGoToRight = false
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            getBody().applyForceToCenter(0f, 300f*assets.ppm, false)
+        }
+
+        getBody().setLinearVelocity((horizontalForce * 5).toFloat(), getBody().getLinearVelocity().y)
     }
 
     /** Draws player. */
-    public fun draw(delta : Float, batcher : SpriteBatch) {
+    public fun draw(delta: Float, batch: SpriteBatch) {
         // drawing gun
+        var current = TextureRegion()
         gun.update()
-        gun.draw(batcher)
+        gun.draw(batch)
 
-        batcher.begin()
 
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
             when (stayRight) {
                 // ... turning to the right side
-                true ->
-                    batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                true -> current = playerStayRight
                 // ... turning to the left side
                 false ->
-                    batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                    current = playerStayLeft
             }
         }
 
@@ -126,9 +135,9 @@ public class Player(public override val position : Vector2, protected override v
             if (shouldJump) onGround = false
 
             if (!onGround)
-                batcher.draw(playerStayLeft, position.x, position.y, width.toFloat(), height.toFloat())
+                current = playerStayLeft
             else
-                batcher.draw(playerGoesLeft.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+               current = playerGoesLeft.getKeyFrame(delta)
         }
 
         // player should go to right
@@ -137,27 +146,49 @@ public class Player(public override val position : Vector2, protected override v
             if (shouldJump) onGround = false
 
             if (!onGround)
-                batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+                current = playerStayRight
             else
-                batcher.draw(playerGoesRight.getKeyFrame(delta), position.x, position.y, width.toFloat(), height.toFloat())
+                current = playerGoesRight.getKeyFrame(delta)
         }
 
         // player should jump
         else if (shouldJump) {
             onGround = false
-            batcher.draw(playerStayRight, position.x, position.y, width.toFloat(), height.toFloat())
+            current = playerStayRight
         }
+        batch.begin()
+        batch.draw(current, getBody().position.x*assets.ppm - playerStayRight.regionWidth/2,
+                getBody().getPosition().y*assets.ppm - playerStayRight.regionHeight/2, width.toFloat(), height.toFloat())
 
-        update()
-        batcher.end()
+        batch.end()
+    }
+
+    fun initialise(world: World) {
+        val pBody: Body
+        val def = BodyDef()
+        def.type = BodyDef.BodyType.DynamicBody
+
+        def.position.set(position.x / assets.ppm, position.y / assets.ppm)
+        def.fixedRotation = true
+        pBody = world.createBody(def)
+
+        val shape = PolygonShape()
+        shape.setAsBox(width / 2 / assets.ppm, height / 2 / assets.ppm)
+
+        pBody.createFixture(shape, 1.0f)
+        shape.dispose()
+        body = pBody
     }
 
     /** Returns position of player on Ox axis. */
-    public override fun  getX() : Float = position.x
+    public override fun getX() : Float = body?.position?.x ?: 0f * assets.ppm
 
     /** Returns position of player on Oy axis. */
-    public override fun getY() : Float = position.y
+    public override fun getY() : Float = body?.position?.y ?: 0f * assets.ppm
 
     /** Returns bounds of player. */
     public fun getBound() : Rectangle = bounds
+
+    public fun getBody() : Body = body ?: throw Exception("")
+
 }

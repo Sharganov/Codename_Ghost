@@ -43,8 +43,7 @@ public class LevelsScreen(private val game : CGGame) : Screen {
                 if ((assets.activeMusic?.isPlaying ?: false) && assets.musicOn) assets.activeMusic?.stop()
 
                 assets.loadLevel1()
-                val player  = Player(Vector2(20f, 1500f), 120, 177, 6196f)
-                game.screen = Level1(game, player)
+                game.screen = Level1(game)
                 dispose()
             }
         })

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
@@ -18,10 +19,17 @@ import com.cypress.codenameghost.CGGame
 import java.util.*
 
 /** Contains definition of first level. */
-public class Level1(private val game : CGGame, private val player : Player) : Screen {
+public class Level1(private val game : CGGame) : Screen {
     private val assets         = AssetLoader.getInstance()
-    private val batcher        = SpriteBatch()
+    private val batch = SpriteBatch()
     private var runTime        = 0f
+    private var world = World(Vector2(0f, -9.8f), false)
+    val player  = Player(Vector2(20f, 1500f), 120, 177, 6196f)
+
+    init {
+        player.initialise(world)
+        createBox(0, 0, 250, 32, true)
+    }
     private val controls       = Controls(game, player, this)
     private val spruce         = TextureRegion(assets.levelsFP[1][0], 19, 0, 221, 417)
     private val fence          = TextureRegion(assets.levelsFP[1][0], 29, 437, 236, 356)
@@ -32,6 +40,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
     private val deadEnemies    = ArrayList<Warrior>()
     private val removedItems   = ArrayList<Item>()
     private val camera         = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+    private var b2dr = Box2DDebugRenderer()
 
     private var stage     = Stage()
     private var fan       = Animation(0.02f, Array<TextureRegion>())
@@ -87,6 +96,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // adding items
         itemsList.add(Item(Vector2( 525f,  490f), assets.gunNames[1]))
         itemsList.add(Item(Vector2(4547f, 1012f), "medikit"))
+        createBox(2048, 40, 4096, 80, true)
 
         // animation of fan
         val fanPos   = arrayOf(582, 732, 877)
@@ -173,10 +183,12 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         // remove bullets, which hit player or block
         for(bullet in removedBullets) assets.bulletsList.remove(bullet)
     }
+    private var warriorStayRight = TextureRegion(assets.warrior, 25, 11, 115, 180)
 
     /** Draws level. */
     public override fun render(delta: Float) {
-        if (player.onGround) gameStart = true
+        //if (player.onGround) gameStart = true
+        gameStart = true
         runTime += delta
         update()
         counter++
@@ -185,31 +197,31 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
+        world.step(1 / 60f, 6, 2)
         // setting camera
-        if (!gameStart) camera.position.set(120f, 1243f, 0f)
-        else camera.position.set(player.getX() + 100, player.getY() + 220, 0f)
+        camera.position.set(player.getBody().position.x*assets.ppm + 100, player.getBody().position.y*assets.ppm + 160, 0f)
         camera.zoom = assets.zoom
-        batcher.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
         camera.update()
 
         // drawing background
-        batcher.begin()
-        if (player.getX() < 3096f) batcher.draw(assets.levelsBG[1][0], -400f, 0f, 4096f, 2048f)
-        else batcher.draw(assets.levelsBG[1][1], 2696f, 0f, 4096f, 2048f)
-        batcher.end()
+        batch.begin()
+        if (player.getX() < 3096f) batch.draw(assets.levelsBG[1][0], -400f, 0f, 4096f, 2048f)
+        else batch.draw(assets.levelsBG[1][1], 2696f, 0f, 4096f, 2048f)
+        batch.end()
 
         // drawing bullets
         if (!assets.bulletsList.isEmpty() && assets.bulletsList[0].distance() > 600)
             assets.bulletsList.removeFirst()
-        for (b in assets.bulletsList) b.draw(runTime, batcher)
+        for (b in assets.bulletsList) b.draw(runTime, batch)
 
         // drawing blocks
-        for(block in blockList) block.draw(batcher)
+        for(block in blockList) block.draw(batch)
 
         // drawing player
         player.update()
-        player.checkCollision(blockList)
-        player.draw(runTime, batcher)
+        player.inputUpdate(delta)
+        player.draw(runTime, batch)
 
         // if player has a minigun
         if (player.shouldShoot && counter % 7 == 0) {
@@ -219,7 +231,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
 
         // check collision with picked up items
         for(item in itemsList) {
-            item.draw(batcher)
+            item.draw(batch)
             if (player.getBound().overlaps(item.getBounds())) {
                 item.activity(player)
                 removedItems.add(item)
@@ -233,16 +245,16 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
         for(enemy in enemyList) {
             enemy.update(runTime)
             enemy.checkCollision(blockList)
-            enemy.draw(runTime, batcher)
+            enemy.draw(runTime, batch)
         }
 
         // drawing first plan objects
-        batcher.begin()
-        batcher.enableBlending()
-        batcher.draw(spruce, 350f, 980f, 221f, 417f)
-        batcher.draw(fence, 6151f, 77f, 236f, 356f)
-        batcher.draw(fan.getKeyFrame(runTime), 5885f, 527f, 141f, 132f)
-        batcher.end()
+        batch.begin()
+        batch.enableBlending()
+        batch.draw(spruce, 350f, 980f, 221f, 417f)
+        batch.draw(fence, 6151f, 77f, 236f, 356f)
+        batch.draw(fan.getKeyFrame(runTime), 5885f, 527f, 141f, 132f)
+        batch.end()
 
         // drawing stage
         if (gameStart) {
@@ -250,6 +262,7 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
             stage.act(runTime)
             stage.draw()
         }
+        b2dr.render(world, camera.combined.scl(assets.ppm))
     }
 
     public override fun resize(width : Int, height : Int) {}
@@ -267,5 +280,25 @@ public class Level1(private val game : CGGame, private val player : Player) : Sc
     public override fun dispose() {
         stage.dispose()
         game.dispose()
+    }
+    fun createBox(x: Int, y: Int, width: Int, height: Int, isStatic: Boolean): Body {
+        val pBody: Body
+        val def = BodyDef()
+
+        if (isStatic)
+            def.type = BodyDef.BodyType.StaticBody
+        else
+            def.type = BodyDef.BodyType.DynamicBody
+
+        def.position.set(x / assets.ppm, y / assets.ppm)
+        def.fixedRotation = true
+        pBody = world.createBody(def)
+
+        val shape = PolygonShape()
+        shape.setAsBox(width / 2 / assets.ppm, height / 2 / assets.ppm)
+
+        pBody.createFixture(shape, 1.0f)
+        shape.dispose()
+        return pBody
     }
 }

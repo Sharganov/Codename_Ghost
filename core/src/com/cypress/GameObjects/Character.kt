@@ -61,6 +61,8 @@ public abstract class Character {
         }
     }
 
+
+
     /** Returns position of player on Ox axis. */
     abstract  public fun  getX() : Float
 
