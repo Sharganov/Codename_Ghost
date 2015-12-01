@@ -24,10 +24,10 @@ public class Level1(private val game : CGGame) : Screen {
     private val batch = SpriteBatch()
     private var runTime        = 0f
     private var world = World(Vector2(0f, -9.8f), false)
-    val player  = Player(Vector2(20f, 1500f), 120, 177, 6196f)
+    val player  = Player(Vector2(20f, 1500f), 120, 177, 6196f, world)
 
     init {
-        player.initialise(world)
+
         createBox(0, 0, 250, 32, true)
     }
     private val controls       = Controls(game, player, this)
@@ -61,41 +61,41 @@ public class Level1(private val game : CGGame) : Screen {
         val roof2 = TextureRegion(assets.levelsFP[1][0], 313, 529, 416, 24)
         val wall  = TextureRegion(assets.levelsFP[1][0], 754, 201, 25, 225)
 
-        blockList.add(Block(Vector2( 0f, 950f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2( 0f, 950f), 911f, 73f, hSnow, world))
       //  createBox(500, 987, 912, 74, true)
-        blockList.add(Block(Vector2(  86f, 656f), 911f, 73f, hSnow))
+        blockList.add(Block(Vector2(  86f, 656f), 911f, 73f, hSnow, world))
         //createBox(541, 692, 911, 73, true)
-        blockList.add(Block(Vector2( 997f, 950f), 125f, 73f, hSnow))
+        blockList.add(Block(Vector2( 997f, 950f), 125f, 73f, hSnow, world))
         //createBox(1060, 986, 124, 72, true)
-        blockList.add(Block(Vector2( 520f, 390f), 465f, 73f, hSnow))
+        blockList.add(Block(Vector2( 520f, 390f), 465f, 73f, hSnow, world))
        // createBox(752, 426, 465, 73, true)
-        blockList.add(Block(Vector2(1330f, 374f), 880f, 73f, hSnow))
+        blockList.add(Block(Vector2(1330f, 374f), 880f, 73f, hSnow, world))
         //createBox(-38, 132, 256, 128, true)
-        blockList.add(Block(Vector2(-166f,  68f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(-166f,  68f), 256f, 128f, crate, world))
 
         //createBox(208, 132, 256, 128, true)
-        blockList.add(Block(Vector2(  80f,  68f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(  80f,  68f), 256f, 128f, crate, world))
         //createBox(18, 254, 256, 128, true)
-        blockList.add(Block(Vector2(-110f, 190f), 256f, 128f, crate))
+        blockList.add(Block(Vector2(-110f, 190f), 256f, 128f, crate, world))
         //createBox(714, 723, 100, 550, true)
-        blockList.add(Block(Vector2( 664f, 448f), 100f, 550f, vSnow))
+        blockList.add(Block(Vector2( 664f, 448f), 100f, 550f, vSnow, world))
         //createBox(1367, 1201, 100, 618, true)
-        blockList.add(Block(Vector2( 897f, 448f), 100f, 550f, vSnow))
+        blockList.add(Block(Vector2( 897f, 448f), 100f, 550f, vSnow, world))
         //createBox(1367, 722, 100, 618, true)
-        blockList.add(Block(Vector2(1317f, 892f), 100f, 618f, vSnow))
+        blockList.add(Block(Vector2(1317f, 892f), 100f, 618f, vSnow, world))
         //createBox(1367, 722, 100, 618, true)
-        blockList.add(Block(Vector2(1317f, 413f), 100f, 618f, vSnow))
+        blockList.add(Block(Vector2(1317f, 413f), 100f, 618f, vSnow, world))
         //createBox(2179, )
-        blockList.add(Block(Vector2(2129f, 380f), 100f, 370f, vSnow))
-        blockList.add(Block(Vector2(3230f, 403f), 386f, 73f, roof))
-        blockList.add(Block(Vector2(4376f, 929f), 386f, 73f, roof))
-        blockList.add(Block(Vector2(4763f, 616f), 386f, 73f, roof))
-        blockList.add(Block(Vector2(4559f, 357f), 214f, 46f, roof1))
-        blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2))
+        blockList.add(Block(Vector2(2129f, 380f), 100f, 370f, vSnow, world))
+        blockList.add(Block(Vector2(3230f, 403f), 386f, 73f, roof, world))
+        blockList.add(Block(Vector2(4376f, 929f), 386f, 73f, roof, world))
+        blockList.add(Block(Vector2(4763f, 616f), 386f, 73f, roof, world))
+        blockList.add(Block(Vector2(4559f, 357f), 214f, 46f, roof1, world))
+        blockList.add(Block(Vector2(5860f, 434f), 416f, 24f, roof2, world))
         //blockList.add(Block(Vector2(6005f, 357f), 416f, 24f, roof2))
 
-        blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall))
-        for(block in blockList) block.initialize(world)
+        blockList.add(Block(Vector2(5860f, 434f), 25f, 225f, wall, world))
+
         // adding enemies
         enemyList.add(Warrior(Vector2(  43f,  364f), player))
         enemyList.add(Warrior(Vector2(2120f,  105f), player))
@@ -299,7 +299,6 @@ public class Level1(private val game : CGGame) : Screen {
         game.dispose()
     }
     fun createBox(x: Int, y: Int, width: Int, height: Int, isStatic: Boolean): Body {
-        val pBody: Body
         val def = BodyDef()
 
         if (isStatic)
@@ -309,13 +308,16 @@ public class Level1(private val game : CGGame) : Screen {
 
         def.position.set(x / assets.ppm, y / assets.ppm)
         def.fixedRotation = true
-        pBody = world.createBody(def)
 
         val shape = PolygonShape()
         shape.setAsBox(width / 2 / assets.ppm, height / 2 / assets.ppm)
 
-        pBody.createFixture(shape, 1.0f)
-        shape.dispose()
-        return pBody
+        val fixtureDef = FixtureDef()
+        fixtureDef.shape = shape
+        fixtureDef.density = 1.0f
+        fixtureDef.filter.categoryBits = assets.BIT_WALL // who you are
+        fixtureDef.filter.maskBits = assets.BIT_PLAYER
+        fixtureDef.filter.groupIndex = 0
+        return world.createBody(def).createFixture(fixtureDef).body
     }
 }

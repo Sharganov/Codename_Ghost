@@ -35,6 +35,9 @@ public class AssetLoader {
     public var language = "english"
     public var zoom     = 1.25f
     public val ppm = 32f
+    public var BIT_PLAYER : Short = 1
+    public var BIT_WALL : Short  = 2
+    public var BIT_ENEMY : Short = 4
 
     public var logo     : Texture? = null
     public var main     : Texture? = null

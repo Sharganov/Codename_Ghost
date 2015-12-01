@@ -4,19 +4,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Body
-import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.physics.box2d.*
 import  com.cypress.CGHelpers.*
 
 
 /** Contains definition of block. */
 public class Block(private val position : Vector2, private val width : Float, private val height : Float,
-                   private val texture : TextureRegion ){
+                   private val texture : TextureRegion,private val world: World ){
 
-    private val bounds = Rectangle(position.x, position.y, width, height)
     private val assets = AssetLoader.getInstance()
+    private val bounds = Rectangle(position.x, position.y, width, height)
+    private val body = initialize()
 
     /** Draws block. */
     public fun draw(batcher : SpriteBatch){
@@ -37,9 +35,8 @@ public class Block(private val position : Vector2, private val width : Float, pr
     /** Returns position of block. */
     public fun getPosition() = position
 
-    fun initialize(world: World): Body {
+    fun initialize(): Body {
 
-        val pBody: Body
         val def = BodyDef()
 
         def.type = BodyDef.BodyType.StaticBody
@@ -48,14 +45,17 @@ public class Block(private val position : Vector2, private val width : Float, pr
 
         def.position.set(x / assets.ppm, y / assets.ppm)
         def.fixedRotation = true
-        pBody = world.createBody(def)
 
         val shape = PolygonShape()
         shape.setAsBox(width / 2 / assets.ppm, height / 2 / assets.ppm)
 
-        pBody.createFixture(shape, 1.0f)
-        shape.dispose()
-        return pBody
+        val fixtureDef = FixtureDef()
+        fixtureDef.shape = shape
+        fixtureDef.density = 1.0f
+        fixtureDef.filter.categoryBits = assets.BIT_WALL // who you are
+        fixtureDef.filter.maskBits = assets.BIT_PLAYER
+        fixtureDef.filter.groupIndex = 0
+        return world.createBody(def).createFixture(fixtureDef).body
     }
 
 }

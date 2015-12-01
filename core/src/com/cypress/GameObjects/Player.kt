@@ -7,25 +7,22 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Body
-import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.utils.Array
 import com.cypress.CGHelpers.AssetLoader
 
 /** Contains definition of player. */
 public class Player(public override val position : Vector2, protected override val width : Int,
-                    protected override val height : Int, public val mapLength : Float) : Character() {
+                    protected override val height : Int, public val mapLength : Float,private val world: World) : Character() {
 
+    private val assets          = AssetLoader.getInstance()
     public override val isEnemy = false
     public override val bounds  = Rectangle(0f, 0f, width.toFloat(), height.toFloat())
     public override val offsetY = 18f
     public override val offsetX = 10f
 
     protected override val velocity = Vector2(4f, 12f)
-    private var body : Body? = null
-    private val assets          = AssetLoader.getInstance()
+    private var body : Body = initialise()
     private val acceleration    = Vector2(0f, 0.2f)
     private val gun             = Gun(this)
     private val playerStayRight = TextureRegion(assets.player, 47, 802, width, height)
@@ -84,11 +81,6 @@ public class Player(public override val position : Vector2, protected override v
         }
         getBody().setLinearVelocity((horizontalForce*5).toFloat(), getBody().getLinearVelocity().y)
 
-        /*//if player reach right side
-        if (position.x > mapLength) position.x = mapLength
-
-        // if player reach left side
-        if (position.x < 2f) position.x = 2f*/
     }
 
 fun inputUpdate(delta: Float) {
@@ -117,8 +109,6 @@ fun inputUpdate(delta: Float) {
         var current = TextureRegion()
         gun.update()
         gun.draw(batch)
-        println("!")
-
 
         // player should stay still ...
         if (!shouldGoToLeft && !shouldGoToRight && !shouldJump) {
@@ -153,7 +143,6 @@ fun inputUpdate(delta: Float) {
             }
             else
             {
-                println("@")
                 current = playerGoesRight.getKeyFrame(delta)
             }
         }
@@ -170,32 +159,34 @@ fun inputUpdate(delta: Float) {
         batch.end()
     }
 
-    fun initialise(world: World) {
-        val pBody: Body
+    fun initialise() : Body {
         val def = BodyDef()
         def.type = BodyDef.BodyType.DynamicBody
-
+        def.position
         def.position.set(position.x / assets.ppm, position.y / assets.ppm)
         def.fixedRotation = true
-        pBody = world.createBody(def)
 
         val shape = PolygonShape()
         shape.setAsBox(width / 2 / assets.ppm, height / 2 / assets.ppm)
 
-        pBody.createFixture(shape, 1.0f)
-        shape.dispose()
-        body = pBody
+        val fixtureDef = FixtureDef()
+        fixtureDef.shape = shape
+        fixtureDef.density = 1.0f
+        fixtureDef.filter.categoryBits = assets.BIT_PLAYER // who you are
+        fixtureDef.filter.maskBits = assets.BIT_WALL
+        fixtureDef.filter.groupIndex = 0
+        return world.createBody(def).createFixture(fixtureDef).body
     }
 
     /** Returns position of player on Ox axis. */
-    public override fun getX() : Float = body?.position?.x ?: 0f * assets.ppm
+    public override fun getX() : Float = assets.ppm * body.position.x  - width/2
 
     /** Returns position of player on Oy axis. */
-    public override fun getY() : Float = body?.position?.y ?: 0f * assets.ppm
+    public override fun getY() : Float =  assets.ppm * body.position.y  - height/2
 
     /** Returns bounds of player. */
     public fun getBound() : Rectangle = bounds
 
-    public fun getBody() : Body = body ?: throw Exception("")
+    public fun getBody() : Body = body
 
 }
